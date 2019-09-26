@@ -1,6 +1,6 @@
 function setup() {
 	createCanvas(windowWidth, windowHeight, WEBGL);
-smooth();
+	smooth();
 	noFill();
 
 }
