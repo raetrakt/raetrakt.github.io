@@ -10,7 +10,6 @@ function preload() {
 function setup() {
 	createCanvas(windowWidth, windowHeight, WEBGL);
 	textFont(font);
-	textSize(width/10);
 	textAlign(RIGHT);
 }
 
@@ -19,16 +18,20 @@ function windowResized() {
 }
 
 let rotX = 0;
-let lightDistance = 500;
+let lightDistance = 400;
 
 function draw() {
 	background(255);
 
-	fill(0);
-	text("Model by Geoffrey Marchal: https://www.blendswap.com/blend/21367", width - 1, height - 50);
-
-	pointLight(255,255,255,0,sin(rotX) * lightDistance,cos(rotX) * lightDistance);
-	ambientLight(50);
+  push();
+  let xPos = sin(radians(rotX)) * lightDistance;
+  let zPos = cos(radians(rotX)) * lightDistance;
+	pointLight(255,255,255,0,xPos,zPos);
+  push();
+  translate(xPos,0,zPos);
+  sphere(5);
+  pop();
+	ambientLight(10);
 
 	translate(0, height / 4, 0);
 	rotateX(PI);
@@ -40,8 +43,21 @@ function draw() {
 	//normalMaterial();
 
 	bust.computeNormals();
-	scale(600);
+	scale(450);
 	model(bust);
+  pop();
 
-	rotX = rotationX;
+
+//TEXT
+  fill(30);
+
+  //translate(width / 2 - (width/50), height / 2 - (width/50), 0);
+  textSize(height/80);
+  text("Model by Geoffrey Marchal: https://www.blendswap.com/blend/21367", width / 2 - (width/50), height / 2 - (width/50));
+  textSize(width/40);
+  //text(int(rotX), - width / 2 + (width/10), height / 2 - (width/50));
+  text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
+
+	rotX = rotationY;
+  rotX = mouseX;
 }
