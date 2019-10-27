@@ -54,10 +54,10 @@ function draw() {
   //translate(width / 2 - (width/50), height / 2 - (width/50), 0);
   textSize(height/80);
   text("Model by Geoffrey Marchal: https://www.blendswap.com/blend/21367", width / 2 - (width/50), height / 2 - (width/50));
-  textSize(width/40);
+  textSize(height/60);
   //text(int(rotX), - width / 2 + (width/10), height / 2 - (width/50));
-  text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
+  text(int(rotationX), - width / 2 + (width/10), height / 2 - (width/50));
 
-	rotX = rotationY;
+	rotX = rotationX;
   rotX = mouseX;
 }
