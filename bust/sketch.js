@@ -30,7 +30,7 @@ function draw() {
 	pointLight(255,255,255,0,sin(rotX) * lightDistance,cos(rotX) * lightDistance);
 	ambientLight(50);
 
-	translate(0, height / 5, 0);
+	translate(0, height / 4, 0);
 	rotateX(PI);
 	rotateY(PI);
 
