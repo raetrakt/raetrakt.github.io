@@ -16,7 +16,7 @@ let lastXY = [];
 let sphereSize;
 let textS;
 
-let letters = " HELP PLEASE "
+let letters = " FABIAN PITZER "
 let font;
 
 function preload() {
