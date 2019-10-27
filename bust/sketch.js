@@ -43,5 +43,5 @@ function draw() {
 	scale(600);
 	model(bust);
 
-	rotX += accelerationX;
+	rotX = rotationX;
 }
