@@ -56,8 +56,8 @@ function draw() {
   text("Model by Geoffrey Marchal: https://www.blendswap.com/blend/21367", width / 2 - (width/50), height / 2 - (width/50));
   textSize(height/60);
   //text(int(rotX), - width / 2 + (width/10), height / 2 - (width/50));
-  text(int(rotationZ), - width / 2 + (width/10), height / 2 - (width/50));
+  text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
 
-	rotX = rotationZ;
+	rotX = rotationY;
   //rotX = mouseX;
 }
