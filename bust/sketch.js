@@ -31,9 +31,9 @@ function draw() {
   translate(xPos,0,zPos);
   sphere(5);
   pop();
-	ambientLight(10);
+	ambientLight(40);
 
-	translate(0, height / 4, 0);
+	translate(0, height / 3.5, 0);
 	rotateX(PI);
 	rotateY(PI);
 
@@ -53,10 +53,12 @@ function draw() {
 
   //translate(width / 2 - (width/50), height / 2 - (width/50), 0);
   textSize(height/80);
-  text("Model by Geoffrey Marchal: https://www.blendswap.com/blend/21367", width / 2 - (width/50), height / 2 - (width/50));
+
+  text("Model by Geoffrey Marchal: https://www.blendswap.com/blend/21367", width / 2 - (height/50), height / 2 - (height/50));
+  text("x: " + int(rotationX) + " y: " + int(rotationY) + " z: " + int(rotationZ), width / 2 - (height/50), height / 2 - ((height/50)*2));
   textSize(height/60);
   //text(int(rotX), - width / 2 + (width/10), height / 2 - (width/50));
-  text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
+  //text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
 
 	rotX = rotationY;
   //rotX = mouseX;
