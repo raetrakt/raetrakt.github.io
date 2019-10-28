@@ -60,6 +60,11 @@ function draw() {
   //text(int(rotX), - width / 2 + (width/10), height / 2 - (width/50));
   //text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
 
-	rotation = rotationZ - 90;
-  //rotation = mouseX;
+
+  if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+      // is mobile..
+      rotation = rotationZ - 90;
+  } else {
+    rotation = mouseX;
+  }
 }
