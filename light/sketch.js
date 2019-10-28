@@ -17,15 +17,15 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
-let rotX = 0;
+let rotation = 0;
 let lightDistance = 400;
 
 function draw() {
 	background(255);
 
   push();
-  let xPos = sin(radians(rotX)) * lightDistance;
-  let zPos = cos(radians(rotX)) * lightDistance;
+  let xPos = sin(radians(rotation)) * lightDistance;
+  let zPos = cos(radians(rotation)) * lightDistance;
 	pointLight(255,255,255,0,xPos,zPos);
   push();
   translate(xPos,0,zPos);
@@ -60,6 +60,6 @@ function draw() {
   //text(int(rotX), - width / 2 + (width/10), height / 2 - (width/50));
   //text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
 
-	rotX = rotationZ;
-  //rotX = mouseX;
+	rotation = rotationZ - 90;
+  //rotation = mouseX;
 }
