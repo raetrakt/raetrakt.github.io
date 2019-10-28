@@ -25,7 +25,7 @@ let easing = 0.1;
 function draw() {
 	background(255);
   let delta = rotation - easedRotation;
-  
+
   //fix for jump around the switch from rotation 359 to 0
   if (delta > 300) delta = 0;
 
