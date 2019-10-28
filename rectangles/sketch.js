@@ -104,7 +104,7 @@ function reset() {
     strokeW = width / 40 * random(.95, 1.05);
     spacingX = (width / 22) / ((xDiv/2)*.7);
     spacingY = (width / 22) / ((yDiv/2)*.7);
-		passeParToutY = width / 5;
+		passeParToutY = width / 3;
 		passeParToutX = width / 7;
 
   } else {
