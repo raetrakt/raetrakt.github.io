@@ -60,6 +60,6 @@ function draw() {
   //text(int(rotX), - width / 2 + (width/10), height / 2 - (width/50));
   //text(int(rotationY), - width / 2 + (width/10), height / 2 - (width/50));
 
-	rotX = rotationY;
+	rotX = rotationZ;
   //rotX = mouseX;
 }
