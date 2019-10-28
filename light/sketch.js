@@ -18,14 +18,18 @@ function windowResized() {
 }
 
 let rotation = 0;
+let easedRotation = 0;
 let lightDistance = 400;
+let easing = 0.1;
 
 function draw() {
 	background(255);
+  let delta = rotation - easedRotation;
+  easedRotation += delta * easing;
 
   push();
-  let xPos = sin(radians(rotation)) * lightDistance;
-  let zPos = cos(radians(rotation)) * lightDistance;
+  let xPos = sin(radians(easedRotation)) * lightDistance;
+  let zPos = cos(radians(easedRotation)) * lightDistance;
 	pointLight(255,255,255,0,xPos,zPos);
   push();
   translate(xPos,0,zPos);
@@ -63,7 +67,7 @@ function draw() {
 
   if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
       // is mobile..
-      rotation = rotationZ - 90;
+    rotation = rotationZ - 90;
   } else {
     rotation = mouseX;
   }
