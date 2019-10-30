@@ -14,12 +14,15 @@ let easing = .7;
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  extendedScreen = width > height ? width/.85 : height/.85;
+  extendedScreen = width > height ? width/.8 : height/.8;
 
   for (i = 0; i < numberOfCircles; i++) {
     let blackOrWhite = i % 2 == 0 ? 'black' : 'white';
     circles.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(width/2, height/2)));
   }
+
+	easedMouseX = width/2;
+	easedMouseY = height/2;
 
   noStroke();
 }
