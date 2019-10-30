@@ -2,7 +2,7 @@
 //well, started off pretty clean but now..
 
 let circles = [];
-let numberOfCircles = 100;
+let numberOfCircles = 80;
 let extendedScreen;
 let moveSpeed = .5;
 
@@ -17,7 +17,7 @@ function setup() {
   extendedScreen = width > height ? width/.8 : height/.8;
 
   for (i = 0; i < numberOfCircles; i++) {
-    let blackOrWhite = i % 2 == 0 ? 'black' : 'white';
+    let blackOrWhite = i % 2 == 1 ? 'black' : 'white';
     circles.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(width/2, height/2)));
   }
 
@@ -68,18 +68,17 @@ function draw() {
 
       //attempt of a fix that puts circles back into bounds, bc sometimes, at high move speeds, the circles jump out -
       //doesnt work for some reason
-      if (c.position.dist(cBigger.position) > (cBigger.diameter/2 - c.diameter/2)) {
-        print("this triggers");
-        //attempt 1
-        //let offBoundsDirection = createVector(cBigger.position, c.position);
-        //c.position.add(offBoundsDirection.normalize().mult(c.position.dist(cBigger.position) - cBigger.diameter/2));
-        //attempt 2
-        let offBoundsVector = createVector(c.position.x - cBigger.position.x, c.position.y - cBigger.position.y);
-        c.position = cBigger.position.copy().add(offBoundsVector.limit(cBigger.diameter/2 - c.diameter/2));
-      }
-    } else { //print("blocked because pos dist to mouse too short");
+
+      // if (c.position.dist(cBigger.position) > (cBigger.diameter/2 - c.diameter/2)) {
+      //   print("this triggers");
+      //   //attempt 1
+      //   //let offBoundsDirection = createVector(cBigger.position, c.position);
+      //   //c.position.add(offBoundsDirection.normalize().mult(c.position.dist(cBigger.position) - cBigger.diameter/2));
+      //   //attempt 2
+      //   let offBoundsVector = createVector(c.position.x - cBigger.position.x, c.position.y - cBigger.position.y);
+      //   c.position = cBigger.position.copy().add(offBoundsVector.limit(cBigger.diameter/2 - c.diameter/2));
+      // }
     }
-    print(frameRate());
 
     fill(c.fillColor);
     ellipse(c.position.x, c.position.y, c.diameter, c.diameter);
