@@ -8,7 +8,7 @@ let moveSpeed = .5;
 
 let easedMouseX = 0;
 let easedMouseY = 0;
-let easing = .7;
+let easing = 1;
 
 
 function setup() {
@@ -43,6 +43,11 @@ function draw() {
   easedMouseX += deltaX * easing;
   easedMouseY += deltaY * easing;
 
+  if(frameCount % 60 == 0) {
+    print("x " + mouseX);
+    print("y " + mouseY);
+  }
+
   for (i = 0; i < circles.length - 1; i++) {
     c = circles[i+1];
     cBigger = circles[i];
@@ -53,8 +58,12 @@ function draw() {
     //though now the circles dont move individually, as i intended
     let direction = createVector(easedMouseX - circles[circles.length - 1].position.x, easedMouseY - circles[circles.length - 1].position.y);
 
-    //circles break if distance to mouse is 0 i think
-    if (direction.mag() > 30) {
+
+
+/////////ATTENTION: direction to move vector with no distance causes problems
+    //as you see you can only move the middle circle in certain steps
+    if (direction.mag() <= 10) direction = createVector(1, 1);
+
 
       let nextPosition = c.position.copy().add(direction.copy().normalize().mult(i).mult(moveSpeed));
 
@@ -63,6 +72,7 @@ function draw() {
         //move
         c.position = nextPosition;
       }
+
 
 
 
@@ -78,7 +88,7 @@ function draw() {
       //   let offBoundsVector = createVector(c.position.x - cBigger.position.x, c.position.y - cBigger.position.y);
       //   c.position = cBigger.position.copy().add(offBoundsVector.limit(cBigger.diameter/2 - c.diameter/2));
       // }
-    }
+
 
     fill(c.fillColor);
     ellipse(c.position.x, c.position.y, c.diameter, c.diameter);
