@@ -4,11 +4,16 @@
 let circles = [];
 let numberOfCircles = 80;
 let extendedScreen;
-let moveSpeed = .5;
+let moveSpeed = .001;
 
 let easedMouseX = 0;
 let easedMouseY = 0;
-let easing = 1;
+let easing = .03;
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  setup();
+}
 
 
 function setup() {
@@ -43,29 +48,15 @@ function draw() {
   easedMouseX += deltaX * easing;
   easedMouseY += deltaY * easing;
 
-  if(frameCount % 60 == 0) {
-    print("x " + mouseX);
-    print("y " + mouseY);
-  }
 
   for (i = 0; i < circles.length - 1; i++) {
     c = circles[i+1];
     cBigger = circles[i];
 
-
-    //circles.length - 1 in as index fixes the bug of it going crazy when reaching the point where the mouse is.
-    //also i think the direction.mag() >  is needed
-    //though now the circles dont move individually, as i intended
+    //REPLACE [circles.length - 1] with [i] and you get the behaviour i actually wanted, but its bugged
     let direction = createVector(easedMouseX - circles[circles.length - 1].position.x, easedMouseY - circles[circles.length - 1].position.y);
 
-
-
-/////////ATTENTION: direction to move vector with no distance causes problems
-    //as you see you can only move the middle circle in certain steps
-    if (direction.mag() <= 10) direction = createVector(1, 1);
-
-
-      let nextPosition = c.position.copy().add(direction.copy().normalize().mult(i).mult(moveSpeed));
+      let nextPosition = c.position.copy().add(direction.copy().mult(i).mult(moveSpeed));
 
       //if it will be still inside of boundary of bigger circle
       if (nextPosition.dist(cBigger.position) < (cBigger.diameter/2 - c.diameter/2)) {
@@ -73,25 +64,7 @@ function draw() {
         c.position = nextPosition;
       }
 
-
-
-
-      //attempt of a fix that puts circles back into bounds, bc sometimes, at high move speeds, the circles jump out -
-      //doesnt work for some reason
-
-      // if (c.position.dist(cBigger.position) > (cBigger.diameter/2 - c.diameter/2)) {
-      //   print("this triggers");
-      //   //attempt 1
-      //   //let offBoundsDirection = createVector(cBigger.position, c.position);
-      //   //c.position.add(offBoundsDirection.normalize().mult(c.position.dist(cBigger.position) - cBigger.diameter/2));
-      //   //attempt 2
-      //   let offBoundsVector = createVector(c.position.x - cBigger.position.x, c.position.y - cBigger.position.y);
-      //   c.position = cBigger.position.copy().add(offBoundsVector.limit(cBigger.diameter/2 - c.diameter/2));
-      // }
-
-
     fill(c.fillColor);
     ellipse(c.position.x, c.position.y, c.diameter, c.diameter);
-    //print('test');
   }
 }
