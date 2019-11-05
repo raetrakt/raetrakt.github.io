@@ -1,7 +1,7 @@
 //i think the core problem of this sketch is that when a circle collides with its boundaries, it doesnt slide along them, but gets stuck
 //well, started off pretty clean but now..
 
-let circles = [];
+let circle
 let numberOfCircles = 80;
 let extendedScreen;
 let moveSpeed = .001;
