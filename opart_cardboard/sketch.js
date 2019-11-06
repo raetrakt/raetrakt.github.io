@@ -1,11 +1,11 @@
 let circles = [];
-let numberOfCircles = 100;
+let numberOfCircles = 20;
 let extendedScreen;
 let moveSpeed = .001;
 
 let easedMouseX = 0;
 let easedMouseY = 0;
-let easing = .03;
+let easing = .05;
 
 let leftHalf, rightHalf;
 let centerX, centerY;
@@ -28,7 +28,7 @@ function setup() {
 
 
 
-  extendedScreen = width > height ? leftHalf.w/.5 : leftHalf.h/.5; // MIGHT BE TOO MUCH
+  extendedScreen = width > height ? leftHalf.w/.45 : leftHalf.h/.45;
 
   for (i = 0; i < numberOfCircles; i++) {
     let blackOrWhite = i % 2 == 1 ? 'black' : 'white';
@@ -40,8 +40,7 @@ function setup() {
 
   noStroke();
 
-  centerX = rotationZ;
-  centerY = rotationY;
+
 
 }
 
@@ -58,15 +57,24 @@ function Screenhalf(l) {
 }
 
 
+let newMouseX = 0;
+let newMouseY = 0;
 
 function draw() {
   background(255);
   translate(width/2, height/2);
 
 
-  let newMouseX  = map(rotationZ - centerX + 180, 0, 360, 0, width);
+  //let newMouseX  = map(rotationZ - centerX + 180, 0, 360, 0, width);
+  //let newMouseY = map(rotationY - centerY + 180, -180, 180, 0, height);
 
-  let newMouseY = map(rotationY - centerY + 180, -180, 180, 0, height);
+  if (frameCount % 90 == 0) {
+    newMouseX = random(-width/2, width/2);
+    newMouseY = random(-height/2, height/2);
+  }
+
+
+
 
 
 
