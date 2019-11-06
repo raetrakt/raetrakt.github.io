@@ -41,7 +41,7 @@ function setup() {
   noStroke();
 
   centerX = rotationZ;
-  centerY = roationY;
+  centerY = rotationY;
 
 }
 
