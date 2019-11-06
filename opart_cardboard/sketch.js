@@ -56,8 +56,12 @@ function draw() {
   background(255);
   translate(width/2, height/2);
 
-  let newMouseX = map(rotationZ, 0, 360, 0, width);
-  let newMouseY = map(rotationY, -100, 100, 0, height);
+  //let newMouseX = map(rotationZ, 0, 360, 0, width);
+  //let newMouseY = map(rotationY, -100, 100, 0, height);
+
+  let newMouseX, newMouseY;
+  newMouseX += accelerationZ;
+  newMouseY += accelerationY;
 
 
   let deltaX = newMouseX - easedMouseX;
