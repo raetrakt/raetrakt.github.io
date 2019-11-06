@@ -67,7 +67,7 @@
 				device.start($('#ipInput').val(),function(e){
 				$('#startPanel').hide();
 				didStart=true;
-				device.subscribeAttitude(10, function(ip,e){
+				device.subscribeOrientation(5, function(ip,e){
 						rotationAngle=e;
 					});
 				});
