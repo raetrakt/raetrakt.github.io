@@ -1,11 +1,15 @@
 let circles = [];
-let numberOfCircles = 80;
+let numberOfCircles = 100;
 let extendedScreen;
 let moveSpeed = .001;
 
 let easedMouseX = 0;
 let easedMouseY = 0;
 let easing = .03;
+
+let leftHalf, rightHalf;
+
+
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -16,11 +20,17 @@ function windowResized() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
-  extendedScreen = width > height ? width/.8 : height/.8;
+  leftHalf = new Screenhalf(true);
+  rightHalf = new Screenhalf(false);
+
+
+
+
+  extendedScreen = width > height ? leftHalf.w/.5 : leftHalf.h/.5; // MIGHT BE TOO MUCH
 
   for (i = 0; i < numberOfCircles; i++) {
     let blackOrWhite = i % 2 == 1 ? 'black' : 'white';
-    circles.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(width/2, height/2)));
+    circles.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0)));
   }
 
 	easedMouseX = width/2;
@@ -35,23 +45,40 @@ function Circle(c, d, p) {
   this.position = p;
 }
 
+function Screenhalf(l) {
+  l ? this.left = true : this.left =  false;
+  this.w = width/2;
+  this.h = height;
+}
+
 
 function draw() {
   background(255);
+  translate(width/2, height/2);
 
-  let deltaX = mouseX - easedMouseX;
-  let deltaY = mouseY - easedMouseY;
+  let newMouseX = map(rotationZ, 0, 360, 0, width);
+  let newMouseY = map(rotationY, -100, 100, 0, height);
+
+
+  let deltaX = newMouseX - easedMouseX;
+  let deltaY = newMouseY - easedMouseY;
+
+  //console.log(mouseX + " " + mouseY);
 
   easedMouseX += deltaX * easing;
   easedMouseY += deltaY * easing;
 
+for (side = 0; side < 2; side++){
+  push();
+  translate(-width/4 * (side*2-1), 0);
+  scale(.5);
 
   for (i = 0; i < circles.length - 1; i++) {
     c = circles[i+1];
     cBigger = circles[i];
 
     //REPLACE [circles.length - 1] with [i] and you get the behaviour i actually wanted, but its bugged
-    let direction = createVector(easedMouseX - circles[circles.length - 1].position.x, easedMouseY - circles[circles.length - 1].position.y);
+      let direction = createVector(easedMouseX - circles[circles.length - 1].position.x, easedMouseY - circles[circles.length - 1].position.y);
 
       let nextPosition = c.position.copy().add(direction.copy().mult(i).mult(moveSpeed));
 
@@ -64,4 +91,6 @@ function draw() {
     fill(c.fillColor);
     ellipse(c.position.x, c.position.y, c.diameter, c.diameter);
   }
+  pop();
+}
 }
