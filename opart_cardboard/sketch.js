@@ -8,6 +8,8 @@ let easedMouseY = 0;
 let easing = .03;
 
 let leftHalf, rightHalf;
+let centerX, centerY;
+
 
 
 
@@ -37,6 +39,10 @@ function setup() {
 	easedMouseY = height/2;
 
   noStroke();
+
+  centerX = rotationZ;
+  centerY = roationY;
+
 }
 
 function Circle(c, d, p) {
@@ -52,16 +58,16 @@ function Screenhalf(l) {
 }
 
 
+
 function draw() {
   background(255);
   translate(width/2, height/2);
 
-  //let newMouseX = map(rotationZ, 0, 360, 0, width);
-  //let newMouseY = map(rotationY, -100, 100, 0, height);
 
-  let newMouseX, newMouseY;
-  newMouseX += accelerationZ;
-  newMouseY += accelerationY;
+  let newMouseX  = map(rotationZ - centerX + 180, 0, 360, 0, width);
+
+  let newMouseY = map(rotationY - centerY + 180, -180, 180, 0, height);
+
 
 
   let deltaX = newMouseX - easedMouseX;
