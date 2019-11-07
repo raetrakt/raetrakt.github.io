@@ -1,11 +1,15 @@
-let circles = [];
+let circlesLeft = [];
+let circlesRight = [];
 let numberOfCircles = 20;
 let extendedScreen;
 let moveSpeed = .001;
 
-let easedMouseX = 0;
+let easedMouseXLeft = 0;
+let easedMouseXRight = 0;
 let easedMouseY = 0;
 let easing = .05;
+
+let stereoscopy = 50;
 
 let leftHalf, rightHalf;
 let centerX, centerY;
@@ -27,20 +31,22 @@ function setup() {
 
 
 
-
   extendedScreen = width > height ? leftHalf.w/.45 : leftHalf.h/.45;
+  for (side = 0; side < 2; side++) {
 
-  for (i = 0; i < numberOfCircles; i++) {
-    let blackOrWhite = i % 2 == 1 ? 'black' : 'white';
-    circles.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0)));
+
+
+    for (i = 0; i < numberOfCircles; i++) {
+      let blackOrWhite = i % 2 == 1 ? 'black' : 'white';
+      if (side == 0) {
+        circlesLeft.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0)));
+      } else {
+        circlesRight.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0)));
+      }
+    }
+
   }
-
-	easedMouseX = width/2;
-	easedMouseY = height/2;
-
   noStroke();
-
-
 
 }
 
@@ -57,7 +63,8 @@ function Screenhalf(l) {
 }
 
 
-let newMouseX = 0;
+let newMouseXLeft = 0;
+let newMouseXRight = 0;
 let newMouseY = 0;
 
 function draw() {
@@ -69,33 +76,55 @@ function draw() {
   //let newMouseY = map(rotationY - centerY + 180, -180, 180, 0, height);
 
   if (frameCount % 90 == 0) {
-    newMouseX = random(-width/2, width/2);
+    randX = random(-width/5, width/5);
+    newMouseXLeft = randX;
+    newMouseXRight = randX;
     newMouseY = random(-height/2, height/2);
   }
 
 
 
-
-
-
-  let deltaX = newMouseX - easedMouseX;
+  let deltaXLeft = newMouseXLeft - easedMouseXLeft;
+  let deltaXRight = newMouseXRight - easedMouseXRight;
   let deltaY = newMouseY - easedMouseY;
 
   //console.log(mouseX + " " + mouseY);
 
-  easedMouseX += deltaX * easing;
+  easedMouseXRight += deltaXRight * easing;
+  easedMouseXLeft += deltaXLeft * easing;
   easedMouseY += deltaY * easing;
 
-for (side = 0; side < 2; side++){
-  push();
-  translate(-width/4 * (side*2-1), 0);
-  scale(.5);
+  for (side = 0; side < 2; side++){
 
-  for (i = 0; i < circles.length - 1; i++) {
-    c = circles[i+1];
-    cBigger = circles[i];
+    let circles;
 
-    //REPLACE [circles.length - 1] with [i] and you get the behaviour i actually wanted, but its bugged
+    if (side == 0) {
+      circles = circlesLeft;
+    } else {
+      circles = circlesRight;
+    }
+
+    push();
+    translate(-width/4 * (side*2-1), 0);
+    scale(.5);
+
+    //ATTEMPT AT STEREOSCOPY
+
+    easedMouseXLeft -= stereoscopy;
+    easedMouseXRight += stereoscopy;
+
+    if (frameCount % 90 == 0) console.log(easedMouseXLeft + " " + easedMouseXRight);
+
+
+
+    for (i = 0; i < circles.length - 1; i++) {
+      c = circles[i+1];
+      cBigger = circles[i];
+
+      let easedMouseX = (side == 0 ? easedMouseXLeft : easedMouseXRight);
+      //console.log(easedMouseX);
+
+      //REPLACE [circles.length - 1] with [i] and you get the behaviour i actually wanted, but its bugged
       let direction = createVector(easedMouseX - circles[circles.length - 1].position.x, easedMouseY - circles[circles.length - 1].position.y);
 
       let nextPosition = c.position.copy().add(direction.copy().mult(i).mult(moveSpeed));
@@ -106,9 +135,13 @@ for (side = 0; side < 2; side++){
         c.position = nextPosition;
       }
 
-    fill(c.fillColor);
-    ellipse(c.position.x, c.position.y, c.diameter, c.diameter);
+      fill(c.fillColor);
+      ellipse(c.position.x, c.position.y, c.diameter, c.diameter);
+    }
+    pop();
+
+    easedMouseXLeft += stereoscopy;
+    easedMouseXRight -= stereoscopy;
+
   }
-  pop();
-}
 }
