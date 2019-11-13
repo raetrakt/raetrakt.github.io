@@ -1,6 +1,6 @@
 let circlesLeft = [];
 let circlesRight = [];
-let numberOfCircles = 20;
+let numberOfCircles = 8;
 let extendedScreen;
 let moveSpeed = .001;
 
@@ -13,6 +13,9 @@ let stereoscopy = 50;
 
 let leftHalf, rightHalf;
 let centerX, centerY;
+
+let fingerSize = 0;
+let fingerGrowth = 1;
 
 
 
@@ -31,17 +34,20 @@ function setup() {
 
 
 
-  extendedScreen = width > height ? leftHalf.w/.45 : leftHalf.h/.45;
+  extendedScreen = width > height ? leftHalf.w/.6 : leftHalf.h/.6;
+
+
+  imageMode(CENTER);
+
   for (side = 0; side < 2; side++) {
 
-
-
     for (i = 0; i < numberOfCircles; i++) {
+      console.log(i);
       let blackOrWhite = i % 2 == 1 ? 'black' : 'white';
       if (side == 0) {
-        circlesLeft.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0)));
+        circlesLeft.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0), "finger/" + int(int(i)+1) + ".png"));
       } else {
-        circlesRight.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0)));
+        circlesRight.push(new Circle(blackOrWhite, extendedScreen - (extendedScreen/numberOfCircles) * i, createVector(0,0), "finger/" + int(int(i)+1) + ".png"));
       }
     }
 
@@ -50,10 +56,11 @@ function setup() {
 
 }
 
-function Circle(c, d, p) {
+function Circle(c, d, p, path) {
   this.fillColor = c;
   this.diameter = d;
   this.position = p;
+  this.img = loadImage(path);
 }
 
 function Screenhalf(l) {
@@ -68,7 +75,7 @@ let newMouseXRight = 0;
 let newMouseY = 0;
 
 function draw() {
-  background(255);
+  background(0);
   translate(width/2, height/2);
 
 
@@ -76,10 +83,10 @@ function draw() {
   //let newMouseY = map(rotationY - centerY + 180, -180, 180, 0, height);
 
   if (frameCount % 90 == 0) {
-    randX = random(-width/5, width/5);
+    randX = random(-width/3, width/3);
     newMouseXLeft = randX;
     newMouseXRight = randX;
-    newMouseY = random(-height/2, height/2);
+    newMouseY = random(-height/3, height/3);
   }
 
 
@@ -137,11 +144,23 @@ function draw() {
 
       fill(c.fillColor);
       ellipse(c.position.x, c.position.y, c.diameter, c.diameter);
+      let fingerPart = c.img;
+      let copyOfPart = fingerPart.get();
+      copyOfPart.resize(c.diameter + i*10 + fingerSize * i, c.diameter + i*10 + fingerSize * i);
+      image(copyOfPart, c.position.x, c.position.y);
     }
     pop();
 
     easedMouseXLeft += stereoscopy;
     easedMouseXRight -= stereoscopy;
+
+    fingerSize += fingerGrowth
+
+    if (fingerSize >= 15 || fingerSize <= 0) {
+      fingerGrowth *= -1;
+    }
+    //console.log(frameRate());
+
 
   }
 }
