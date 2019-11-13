@@ -156,7 +156,7 @@ function draw() {
 
     fingerSize += fingerGrowth
 
-    if (fingerSize >= 15 || fingerSize <= 0) {
+    if (fingerSize >= 7 || fingerSize <= 0) {
       fingerGrowth *= -1;
     }
     //console.log(frameRate());
