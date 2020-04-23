@@ -1,0 +1,122 @@
+@import url(_normalize.css);
+@font-face {
+  font-family: "Glyph World AirLand";
+  src: url("../fonts/GlyphWorld-AirLand.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld1";
+  src: url("../fonts/GlyphWorld-AnimalSoul.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld2";
+  src: url("../fonts/GlyphWorld-Desert.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld3";
+  src: url("../fonts/GlyphWorld-Flower.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld4";
+  src: url("../fonts/GlyphWorld-Forest.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld5";
+  src: url("../fonts/GlyphWorld-Glacier.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld6";
+  src: url("../fonts/GlyphWorld-Meadow.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld7";
+  src: url("../fonts/GlyphWorld-Mountain.otf");
+}
+
+@font-face {
+  font-family: "GlyphWorld8";
+  src: url("../fonts/GlyphWorld-WasteLand.otf");
+}
+
+@font-face {
+  font-family: "Khmer";
+  src: url("../fonts/Khmer.ttf");
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background: #fffdfd;
+}
+
+*, *:before, *:after {
+  -webkit-box-sizing: inherit;
+          box-sizing: inherit;
+}
+
+body {
+  font-family: "Glyph World AirLand", "Helvetica", sans-serif;
+  font-size: 3vw;
+  overflow-x: hidden;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+body .missing-glyph {
+  font-family: "Khmer", sans-serif;
+}
+
+body a {
+  color: inherit;
+  text-decoration: none;
+}
+
+body p {
+  -webkit-margin-before: 0px;
+          margin-block-start: 0px;
+  -webkit-margin-after: 2vw;
+          margin-block-end: 2vw;
+}
+
+.landing-wrapper {
+  padding: 5vw;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.landing-wrapper .landing-text {
+  width: 48vw;
+}
+
+.landing-wrapper .projects {
+  text-align: right;
+}
+
+.landing-wrapper .projects .preview p {
+  -webkit-margin-after: 0px;
+          margin-block-end: 0px;
+}
+
+.landing-wrapper .projects .preview img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: -1;
+}
+/*# sourceMappingURL=style.css.map */

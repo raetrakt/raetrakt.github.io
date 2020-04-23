@@ -1,0 +1,108 @@
+@font-face {
+  font-family: "Glyph World AirLand";
+  src: url("../fonts/GlyphWorld-AirLand.otf");
+}
+@font-face {
+  font-family: "GlyphWorld1";
+  src: url("../fonts/GlyphWorld-AnimalSoul.otf");
+}
+@font-face {
+  font-family: "GlyphWorld2";
+  src: url("../fonts/GlyphWorld-Desert.otf");
+}
+@font-face {
+  font-family: "GlyphWorld3";
+  src: url("../fonts/GlyphWorld-Flower.otf");
+}
+@font-face {
+  font-family: "GlyphWorld4";
+  src: url("../fonts/GlyphWorld-Forest.otf");
+}
+@font-face {
+  font-family: "GlyphWorld5";
+  src: url("../fonts/GlyphWorld-Glacier.otf");
+}
+@font-face {
+  font-family: "GlyphWorld6";
+  src: url("../fonts/GlyphWorld-Meadow.otf");
+}
+@font-face {
+  font-family: "GlyphWorld7";
+  src: url("../fonts/GlyphWorld-Mountain.otf");
+}
+@font-face {
+  font-family: "GlyphWorld8";
+  src: url("../fonts/GlyphWorld-WasteLand.otf");
+}
+@font-face {
+  font-family: "Khmer";
+  src: url("../fonts/Khmer.ttf");
+}
+
+    
+
+// hides scrollbar    
+html::-webkit-scrollbar {
+  display: none;
+}
+
+//border-box EVERYTHING
+html {
+  box-sizing: border-box;
+  background: #fffdfd;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+    font-family: "Glyph World AirLand", "Helvetica", sans-serif;
+    font-size: 3vw;
+
+    //airland doesn't have an @ glyph so i use this random font i found that with the noto @
+    .missing-glyph {
+      font-family: "Khmer", sans-serif;
+    }
+
+    overflow-x: hidden;
+    user-select: none;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    p {
+      margin-block-start: 0px;
+      margin-block-end: 2vw;
+    }
+}
+
+.landing-wrapper {
+  padding: 5vw;
+  display: flex;
+  justify-content: space-between;  
+  .landing-text {
+    width: 48vw;
+  }
+  .projects {
+    text-align: right;
+    .preview {
+      p {
+        margin-block-end: 0px;
+      }
+
+      img {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: -1;
+
+      }
+    }
+  }
+}
+
+
+
+@import url(_normalize.css);
+
