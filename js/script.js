@@ -14,15 +14,18 @@ document.querySelectorAll(".preview").forEach(function(el) {
 });
 
 //change font on hover over clickable text
+let prevFont;
+let randomFont;
 document.querySelectorAll(".clickable").forEach(function(el) {
     el.addEventListener('mouseenter', function() {
-        let randomFont = "GlyphWorld" + Math.floor((Math.random() * 8) + 1) + ", serif";   
+        while (prevFont === randomFont) {
+            randomFont = "GlyphWorld" + Math.floor((Math.random() * 8) + 1) + ", serif";   
+        }        
         let content = this.innerHTML;
         el.style.fontFamily = randomFont;
-        el.style.fontSize = "3vw";
+        prevFont = randomFont;
     })
     el.addEventListener('mouseleave', function() {
         el.style.fontFamily = "Glyph World AirLand";
-        el.style.fontSize = "3vw";
     })
 })

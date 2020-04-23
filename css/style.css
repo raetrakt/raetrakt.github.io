@@ -1,4 +1,4 @@
-@import url(_normalize.css);
+@import url(normalize.css);
 @font-face {
   font-family: "Glyph World AirLand";
   src: url("../fonts/GlyphWorld-AirLand.otf");
@@ -66,7 +66,7 @@ html {
 
 body {
   font-family: "Glyph World AirLand", "Helvetica", sans-serif;
-  font-size: 3vw;
+  font-size: 2.8vw;
   overflow-x: hidden;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -101,7 +101,7 @@ body p {
 }
 
 .landing-wrapper .landing-text {
-  width: 48vw;
+  width: 50vw;
 }
 
 .landing-wrapper .projects {

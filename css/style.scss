@@ -57,7 +57,7 @@ html {
 
 body {
     font-family: "Glyph World AirLand", "Helvetica", sans-serif;
-    font-size: 3vw;
+    font-size: 2.8vw;
 
     //airland doesn't have an @ glyph so i use this random font i found that with the noto @
     .missing-glyph {
@@ -82,7 +82,7 @@ body {
   display: flex;
   justify-content: space-between;  
   .landing-text {
-    width: 48vw;
+    width: 50vw;
   }
   .projects {
     text-align: right;
@@ -104,5 +104,5 @@ body {
 
 
 
-@import url(_normalize.css);
+@import url(normalize.css);
 
