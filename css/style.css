@@ -66,7 +66,7 @@ html {
 
 body {
   font-family: "Glyph World AirLand", "Helvetica", sans-serif;
-  font-size: 2.8vw;
+  font-size: 5.5vh;
   overflow-x: hidden;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -104,19 +104,100 @@ body p {
   width: 50vw;
 }
 
-.landing-wrapper .projects {
+.landing-wrapper .links {
   text-align: right;
 }
 
-.landing-wrapper .projects .preview p {
+.landing-wrapper .links img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.landing-wrapper .links p {
+  z-index: 100;
+  -webkit-margin-after: 1.5vw;
+          margin-block-end: 1.5vw;
+}
+
+.landing-wrapper .links .projects {
+  margin-bottom: 4vw;
+}
+
+.landing-wrapper .links .projects .preview p {
   -webkit-margin-after: 0px;
           margin-block-end: 0px;
 }
 
-.landing-wrapper .projects .preview img {
+.landing-wrapper .links .galleries .preview p {
+  -webkit-margin-after: 0px;
+          margin-block-end: 0px;
+}
+
+.project-wrapper {
+  padding: 5vw;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.project-wrapper .project-media {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  width: 35vw;
+}
+
+.project-wrapper .project-media .item {
+  margin-bottom: 5vw;
+}
+
+.project-wrapper .project-media img {
+  width: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.project-wrapper .project-media .video-wrapper {
+  width: 100%;
+  height: 0;
+  padding-bottom: 56%;
+  /* Change this till it fits the dimensions of your video */
+  position: relative;
+}
+
+.project-wrapper .project-media .video-wrapper iframe {
+  width: 100%;
+  height: 100%;
   position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: -1;
+  display: block;
+  top: 0;
+  left: 0;
+  border: none;
+}
+
+.project-wrapper .project-description {
+  width: 50vw;
+  position: fixed;
+  right: 5vw;
+}
+
+.project-wrapper .project-description p {
+  font-size: 3.5vh;
+}
+
+.project-wrapper .close {
+  position: fixed;
+  right: 2vw;
+  top: 1.5vw;
 }
 /*# sourceMappingURL=style.css.map */

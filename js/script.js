@@ -3,7 +3,7 @@
 document.querySelectorAll(".preview").forEach(function(el) {
     el.addEventListener('mouseenter', function() {
         let image = this.lastElementChild;
-        image.style.transform = "translate(-50%,-50%) scale(" + screen.height/1300 + ")";
+        image.style.transform = "translate(-50%,-50%) scale(" + screen.width/2200 + ")";
         image.style.display = "block";
 
     });
@@ -12,6 +12,7 @@ document.querySelectorAll(".preview").forEach(function(el) {
         image.style.display = "none";
     });
 });
+
 
 //change font on hover over clickable text
 let prevFont;
@@ -29,3 +30,7 @@ document.querySelectorAll(".clickable").forEach(function(el) {
         el.style.fontFamily = "Glyph World AirLand";
     })
 })
+
+//removing the margin bottom from the last project item here
+//because it didnt work in css with :last-child
+document.querySelector(".project-media").lastElementChild.style.marginBottom = "0px";

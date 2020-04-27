@@ -39,7 +39,10 @@
   src: url("../fonts/Khmer.ttf");
 }
 
-    
+
+
+
+
 
 // hides scrollbar    
 html::-webkit-scrollbar {
@@ -57,7 +60,7 @@ html {
 
 body {
     font-family: "Glyph World AirLand", "Helvetica", sans-serif;
-    font-size: 2.8vw;
+    font-size: 5.5vh;
 
     //airland doesn't have an @ glyph so i use this random font i found that with the noto @
     .missing-glyph {
@@ -77,30 +80,108 @@ body {
     }
 }
 
+
+
+
+
+
+//landing page
+
+$passepartout: 5vw;   
+
 .landing-wrapper {
-  padding: 5vw;
+  padding: $passepartout;
   display: flex;
   justify-content: space-between;  
   .landing-text {
     width: 50vw;
   }
-  .projects {
+  .links {
     text-align: right;
-    .preview {
-      p {
-        margin-block-end: 0px;
+    img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      pointer-events: none;
+      z-index: -1;  
+    }
+    p {
+      z-index: 100;
+      margin-block-end: 1.5vw;
+    }
+    .projects {
+      margin-bottom: 4vw;
+      .preview {
+        p {
+          margin-block-end: 0px;
+        }  
       }
-
-      img {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        z-index: -1;
-
+    }
+    .galleries {
+      .preview {
+        p {
+          margin-block-end: 0px;
+        }
       }
     }
   }
 }
+
+
+//projects
+
+$mediawidth: 35vw;
+
+.project-wrapper {
+  padding: $passepartout;
+  display: flex;
+  justify-content: space-between;  
+
+  .project-media {
+    display: flex;
+    flex-direction: column;
+    width: $mediawidth;
+    .item {
+      margin-bottom: $passepartout;
+    }
+    img {
+      width: 100%;
+      object-fit: contain;
+    }
+    .video-wrapper {
+      width: 100%;
+      height: 0;
+      padding-bottom: 56%; /* Change this till it fits the dimensions of your video */
+      position: relative;
+      iframe {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: block;
+        top: 0;
+        left: 0;
+        border: none;
+      }
+    }
+  }
+  .project-description {
+    //bugged :(
+    //width: calc(100vw - (#{$mediawidth} - (#{$passepartout}*3)));
+    width: 50vw;
+    position: fixed;
+    right: $passepartout;
+    p {
+      font-size: 3.5vh;
+    }
+  }
+  .close {
+    position: fixed;
+    right: 2vw;
+    top: 1.5vw;
+  }
+}
+
+
 
 
 
