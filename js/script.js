@@ -21,7 +21,6 @@ document.querySelectorAll(".clickable").forEach(function(el) {
         while (prevFont === randomFont) {
             randomFont = "GlyphWorld" + Math.floor((Math.random() * 8) + 1) + ", serif";   
         }        
-        let content = this.innerHTML;
         el.style.fontFamily = randomFont;
         prevFont = randomFont;
     })

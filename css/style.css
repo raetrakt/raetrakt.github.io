@@ -57,6 +57,11 @@ html {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   background: #fffdfd;
+  cursor: url(../img/ui/cursor_extrasmall.svg) 10 10, auto;
+}
+
+html a {
+  cursor: url(../img/ui/cursor_extrasmall_clickable.svg) 10 10, pointer;
 }
 
 *, *:before, *:after {
