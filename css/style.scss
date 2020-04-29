@@ -243,17 +243,10 @@ $mediawidth: 35vw;
         iframe {
           background: #EEE;
           height: 100%;
+          overflow: hidden;
         }
       }
-      
-
-
-
-      
-      
-
-
-  
+       
       p {
         font-size: 2.4vh;
         text-align: right;
@@ -266,6 +259,7 @@ $mediawidth: 35vw;
     display: none;
   }
 }
+
 
 
 

@@ -85,14 +85,15 @@ if (document.querySelector(".images") != null) {
 window.onresize = function(){ location.reload(); }
 
 
-//gallery video fix aspect ratio
-let videos = document.querySelectorAll(".image-container iframe");
-videos.forEach(function(vid) {
-    let vidHeight = vid.clientHeight;
-    let vidWidth = vidHeight/9*16 + "px";
-    vid.style.width = vidWidth;
-});
-
+// //gallery video fix aspect ratio
+// let videos = document.querySelectorAll(".image-container iframe");
+// videos.forEach(function(vid) {
+//     // let vidHeight = vid.clientHeight;
+//     // let vidWidth = vidHeight/9*16 + "px";
+//     let vidHeight = getComputedStyle(vid).height;
+//     let vidWidth = parseInt(vidHeight)/9.*16 + "px";
+//     vid.style.width = vidWidth;
+// });
 
 
 

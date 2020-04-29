@@ -270,6 +270,7 @@ body p {
 .gallery-wrapper .images .item .image-container iframe {
   background: #EEE;
   height: 100%;
+  overflow: hidden;
 }
 
 .gallery-wrapper .images .item p {
