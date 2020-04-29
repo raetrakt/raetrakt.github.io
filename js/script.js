@@ -22,10 +22,15 @@ document.querySelectorAll(".clickable").forEach(function(el) {
             randomFont = "GlyphWorld" + Math.floor((Math.random() * 8) + 1) + ", serif";   
         }        
         el.style.fontFamily = randomFont;
+        let fontNumber = randomFont.match(/\d/g)[0];
+        
+        changeFavicon("img/favicons/" + fontNumber + ".ico");
         prevFont = randomFont;
     })
     el.addEventListener('mouseleave', function() {
         el.style.fontFamily = "Glyph World AirLand";
+        changeFavicon("img/favicons/favicon.ico");
+
     })
 })
 
@@ -77,6 +82,21 @@ if (document.querySelector(".images") != null) {
 
 //else layout breaks on resize
 window.onresize = function(){ location.reload(); }
+
+
+//change favicon
+function changeFavicon(src) {
+    var link = document.createElement('link'),
+        oldLink = document.getElementById('dynamic-favicon');
+    link.id = 'dynamic-favicon';
+    link.rel = 'shortcut icon';
+    link.href = src;
+    
+    if (oldLink) {
+        document.head.removeChild(oldLink);
+    }
+    document.head.appendChild(link);
+}
 
 
 // //gallery video fix aspect ratio
