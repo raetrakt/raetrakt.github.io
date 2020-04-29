@@ -61,6 +61,7 @@ html {
 body {
     font-family: "Glyph World AirLand", "Helvetica", sans-serif;
     font-size: 5.5vh;
+    hyphens: none;
 
     //airland doesn't have an @ glyph so i use this random font i found that with the noto @
     .missing-glyph {
@@ -76,7 +77,7 @@ body {
     }
     p {
       margin-block-start: 0px;
-      margin-block-end: 2vw;
+      margin-block-end: 1.6vw;
     }
 }
 
@@ -107,7 +108,7 @@ $passepartout: 5vw;
     }
     p {
       z-index: 100;
-      margin-block-end: 1.5vw;
+      //margin-block-end: 1.5vw;
     }
     .projects {
       margin-bottom: 4vw;
@@ -130,6 +131,28 @@ $passepartout: 5vw;
   }
 }
 
+.footer {
+  width: 90vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 1.5vh;
+  text-align: right;
+  position: absolute;
+  right: $passepartout;
+  bottom: $passepartout;
+  .copyright {
+    p {
+      margin-block-end: 0px;
+    }
+  }
+
+}
+
+
+
+
+
 
 //projects
 
@@ -151,12 +174,14 @@ $mediawidth: 35vw;
       width: 100%;
       object-fit: contain;
     }
-    .video-wrapper {
+    //hack to make video thumbnails 16 by 9
+    .video-container {
       width: 100%;
       height: 0;
-      padding-bottom: 56%; /* Change this till it fits the dimensions of your video */
+      padding-bottom: 56.25%; /* Change this till it fits the dimensions of your video */
       position: relative;
       iframe {
+        background: #EEE;
         width: 100%;
         height: 100%;
         position: absolute;
@@ -182,17 +207,60 @@ $mediawidth: 35vw;
 .close {
   position: fixed;
   right: 2vw;
-  top: 1.5vw;
+  top: 1.2vw;
 }
 
-.footer {
-  font-size: 1.5vh;
-  text-align: right;
-  position: absolute;
-  right: $passepartout;
-  bottom: $passepartout;
 
+
+
+
+//gallery
+
+.gallery-wrapper {
+  padding: $passepartout;
+  .images {
+    display: flex;
+    overflow: auto;
+    height: calc(100vh - 10vw);
+    margin-left: 0px;
+    scrollbar-width: none;
+
+    .image-container {
+      display: flex;
+      flex-direction: column;
+      // width: min-content;
+      margin-right: 10vw;
+      
+      img {
+        height: 90%;
+        width: auto;
+        object-fit: contain;
+        margin-bottom: 2vh;
+      }
+
+
+      iframe {
+        background: #EEE;
+        height: 90%;
+        margin-bottom: 2vh;
+      }
+      
+
+
+  
+      p {
+        font-size: 2.4vh;
+        text-align: right;
+        margin-bottom: 0px;
+      }
+    }  
+
+  }
+  .images::-webkit-scrollbar {
+    display: none;
+  }
 }
+
 
 
 

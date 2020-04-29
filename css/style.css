@@ -67,6 +67,9 @@ html {
 body {
   font-family: "Glyph World AirLand", "Helvetica", sans-serif;
   font-size: 5.5vh;
+  -webkit-hyphens: none;
+      -ms-hyphens: none;
+          hyphens: none;
   overflow-x: hidden;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -86,8 +89,8 @@ body a {
 body p {
   -webkit-margin-before: 0px;
           margin-block-start: 0px;
-  -webkit-margin-after: 2vw;
-          margin-block-end: 2vw;
+  -webkit-margin-after: 1.6vw;
+          margin-block-end: 1.6vw;
 }
 
 .landing-wrapper {
@@ -118,8 +121,6 @@ body p {
 
 .landing-wrapper .links p {
   z-index: 100;
-  -webkit-margin-after: 1.5vw;
-          margin-block-end: 1.5vw;
 }
 
 .landing-wrapper .links .projects {
@@ -138,6 +139,29 @@ body p {
 
 .landing-wrapper .legal-text {
   font-size: 3.2vh;
+}
+
+.footer {
+  width: 90vw;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+  font-size: 1.5vh;
+  text-align: right;
+  position: absolute;
+  right: 5vw;
+  bottom: 5vw;
+}
+
+.footer .copyright p {
+  -webkit-margin-after: 0px;
+          margin-block-end: 0px;
 }
 
 .project-wrapper {
@@ -171,15 +195,16 @@ body p {
      object-fit: contain;
 }
 
-.project-wrapper .project-media .video-wrapper {
+.project-wrapper .project-media .video-container {
   width: 100%;
   height: 0;
-  padding-bottom: 56%;
+  padding-bottom: 56.25%;
   /* Change this till it fits the dimensions of your video */
   position: relative;
 }
 
-.project-wrapper .project-media .video-wrapper iframe {
+.project-wrapper .project-media .video-container iframe {
+  background: #EEE;
   width: 100%;
   height: 100%;
   position: absolute;
@@ -202,14 +227,55 @@ body p {
 .close {
   position: fixed;
   right: 2vw;
-  top: 1.5vw;
+  top: 1.2vw;
 }
 
-.footer {
-  font-size: 1.5vh;
+.gallery-wrapper {
+  padding: 5vw;
+}
+
+.gallery-wrapper .images {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  overflow: auto;
+  height: calc(100vh - 10vw);
+  margin-left: 0px;
+  scrollbar-width: none;
+}
+
+.gallery-wrapper .images .image-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin-right: 10vw;
+}
+
+.gallery-wrapper .images .image-container img {
+  height: 90%;
+  width: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  margin-bottom: 2vh;
+}
+
+.gallery-wrapper .images .image-container iframe {
+  background: #EEE;
+  height: 90%;
+  margin-bottom: 2vh;
+}
+
+.gallery-wrapper .images .image-container p {
+  font-size: 2.4vh;
   text-align: right;
-  position: absolute;
-  right: 5vw;
-  bottom: 5vw;
+  margin-bottom: 0px;
+}
+
+.gallery-wrapper .images::-webkit-scrollbar {
+  display: none;
 }
 /*# sourceMappingURL=style.css.map */
