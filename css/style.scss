@@ -225,25 +225,31 @@ $mediawidth: 35vw;
     margin-left: 0px;
     scrollbar-width: none;
 
-    .image-container {
+    .item {
       display: flex;
       flex-direction: column;
+      height: 100%;
       // width: min-content;
       margin-right: 10vw;
+
+      .image-container {
+        height: 95%;
+        margin-bottom: 2vh;
+
+        img {
+          height: 100%;
+          object-fit: contain;  
+        }
+        iframe {
+          background: #EEE;
+          height: 100%;
+        }
+      }
       
-      img {
-        height: 90%;
-        width: auto;
-        object-fit: contain;
-        margin-bottom: 2vh;
-      }
 
 
-      iframe {
-        background: #EEE;
-        height: 90%;
-        margin-bottom: 2vh;
-      }
+
+      
       
 
 

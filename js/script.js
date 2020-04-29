@@ -1,8 +1,8 @@
-//preview images
+//preview images on landing page
 document.querySelectorAll(".preview").forEach(function(el) {
     el.addEventListener('mouseenter', function() {
         let image = this.lastElementChild;
-        image.style.transform = "translate(-50%,-50%) scale(" + screen.width/2200 + ")";
+        image.style.transform = "translate(-50%,-50%) scale(" + (screen.availWidth/2400) + ")";
         image.style.display = "block";
 
     });
@@ -74,14 +74,10 @@ if (document.querySelector(".images") != null) {
         }
     , 10);
 
-    //fix for not being able to scroll over iframe
-    var iframe = document.querySelector('iframe');
 
-    iframe.contentWindow.addEventListener('wheel', event => {
-        console.log("test");
-        
-        iframe.parent.document.dispatchEvent(new WheelEvent('wheel', event));
-    });
+
+
+ 
 }
 
 
@@ -96,6 +92,8 @@ videos.forEach(function(vid) {
     let vidWidth = vidHeight/9*16 + "px";
     vid.style.width = vidWidth;
 });
+
+
 
 
 
