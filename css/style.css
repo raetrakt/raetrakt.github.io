@@ -287,4 +287,12 @@ body p {
 .gallery-wrapper .images::-webkit-scrollbar {
   display: none;
 }
+
+.mobile {
+  padding: 7vw;
+}
+
+.mobile p {
+  margin-bottom: 7vw;
+}
 /*# sourceMappingURL=style.css.map */

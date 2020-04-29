@@ -71,12 +71,7 @@ if (document.querySelector(".images") != null) {
             scrollInput = parseInt(scrollInput); //whithout this line it floats when scrolling back
                
         }
-    , 10);
-
-
-
-
- 
+    , 10); 
 }
 
 
@@ -96,7 +91,17 @@ window.onresize = function(){ location.reload(); }
 
 
 
-
+//mobile hint
+if(screen.width <= 760) { 
+    document.body.innerHTML = 
+    `
+    <div class="mobile">
+        <p>Please view this portfolio on a desktop screen.</p>
+        <p>Thank you!</p>
+        <p>–Fabian Pitzer</p>        
+    </div>
+    `
+}
 
 
 
