@@ -121,10 +121,16 @@ function changeFavicon(src) {
 if(screen.width <= 760) { 
     document.body.innerHTML = 
     `
-    <div class="mobile">
-        <p class="changeontap">fabianpitzer.de</p>        
+    <meta 
+     name='viewport' 
+     content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
+    />
+    <div class="mobile" style="padding-top:10vw">
+        <p class="changeontap">fabianpitzer.de</p>   
+        <div style="position: absolute; top: 15vh;">     
         <p>Please view my portfolio on a desktop screen.</p>
         <p>Thank you!</p>
+        </div>     
     </div>
     `;
     document.addEventListener('click', function(ev) {
