@@ -14,25 +14,31 @@ document.querySelectorAll(".preview").forEach(function(el) {
 
 
 //change font on hover over clickable text
-let prevFont;
-let randomFont;
 document.querySelectorAll(".clickable").forEach(function(el) {
     el.addEventListener('mouseenter', function() {
-        while (prevFont === randomFont) {
-            randomFont = "GlyphWorld" + Math.floor((Math.random() * 8) + 1) + ", serif";   
-        }        
-        el.style.fontFamily = randomFont;
-        let fontNumber = randomFont.match(/\d/g)[0];
-        
+               
+        let font = randomFont();        
+        el.style.fontFamily = font;
+
+        let fontNumber = font.match(/\d/g)[0];        
         changeFavicon("img/favicons/" + fontNumber + ".ico");
-        prevFont = randomFont;
     })
     el.addEventListener('mouseleave', function() {
         el.style.fontFamily = "Glyph World AirLand";
         changeFavicon("img/favicons/favicon.ico");
-
     })
 })
+
+let prevFont;
+function randomFont() {
+    let rFont;
+    rFont = "GlyphWorld" + Math.floor((Math.random() * 8) + 1) + ", sans-serif";   
+    while (prevFont === rFont) {
+        rFont = "GlyphWorld" + Math.floor((Math.random() * 8) + 1) + ", sans-serif";   
+    } 
+    prevFont = rFont;
+    return rFont;
+}
 
 
 //removing the margin bottom from the last project item here
@@ -116,11 +122,16 @@ if(screen.width <= 760) {
     document.body.innerHTML = 
     `
     <div class="mobile">
-        <p>Please view this portfolio on a desktop screen.</p>
+        <p class="changeontap">fabianpitzer.de</p>        
+        <p>Please look at this portfolio on a desktop screen.</p>
         <p>Thank you!</p>
-        <p>–Fabian Pitzer</p>        
     </div>
-    `
+    `;
+    document.body.addEventListener('click', function(ev) {
+        let pFontChange = document.querySelector(".changeontap");
+        pFontChange.style.fontSize = "4.8vh";
+        pFontChange.style.fontFamily = randomFont();
+    });
 }
 
 
