@@ -123,11 +123,11 @@ if(screen.width <= 760) {
     `
     <div class="mobile">
         <p class="changeontap">fabianpitzer.de</p>        
-        <p>Please look at this portfolio on a desktop screen.</p>
+        <p>Please view my portfolio on a desktop screen.</p>
         <p>Thank you!</p>
     </div>
     `;
-    document.body.addEventListener('click', function(ev) {
+    document.addEventListener('click', function(ev) {
         let pFontChange = document.querySelector(".changeontap");
         pFontChange.style.fontSize = "4.8vh";
         pFontChange.style.fontFamily = randomFont();
