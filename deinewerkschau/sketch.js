@@ -30,18 +30,20 @@ function draw() {
 
 function mouseClicked() {
 	if (lockedIn) {
-		console.log("test");		
-		location.reload(true);
-	}
+		// trying to fix vfont issue on reload
 
+		location.reload(true);
+		window.location.href = window.location.href
+	}
 
 	lockedIn = true;
 }
 
 
 function customize() {
-	fontWeight = map(mouseX, 0, windowWidth, 100, 800);
+	fontWeight = int(map(mouseX, 0, windowWidth, 100, 800));
 	logo.style.fontVariationSettings = "\"wght\" " + fontWeight;
+	//logo.style.fontWeight = fontWeight;
 	instruction.style.fontVariationSettings = "\"wght\" " + fontWeight;
 	
 
