@@ -32,10 +32,11 @@ function draw() {
 
 function mouseClicked() {
 	if (lockedIn) {
-		window.location.href = window.location.href;
+		reset();
+	} else {
+		lockedIn = true;
 	}
 
-	lockedIn = true;
 }
 
 
@@ -107,6 +108,7 @@ function revealOthers() {
 	revealProcess++;
 }
 
+
 function blockMobile() {
 	if(screen.width <= 760) { 
 		document.body.innerHTML = 
@@ -121,6 +123,14 @@ function blockMobile() {
 		`;
 	}
 }
+
+
+function reset() {
+	revealProcess = 0;
+	otherCursors = [];
+	lockedIn = false;
+	clear();
+ }
 
 
 
