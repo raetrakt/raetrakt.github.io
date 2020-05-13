@@ -11,10 +11,10 @@ function setup() {
 	instruction = document.querySelector("h2");
 }
 
+
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
 }
-
 
 
 function draw() {
@@ -26,6 +26,7 @@ function draw() {
 	}
 	drawCursor(mouseX, mouseY, hue, fontWeight);
 }
+
 
 function mouseClicked() {
 	if (lockedIn) {
@@ -48,6 +49,7 @@ function customize() {
 	let currentColor = "hsl(" + hue + ", 60%, 50%)";
 	logo.style.color = currentColor;
 }
+
 
 function drawCursor(x, y, cursorHue, fontw) {
 	let mX = x;
