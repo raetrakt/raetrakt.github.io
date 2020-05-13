@@ -27,8 +27,14 @@ function draw() {
 	drawCursor(mouseX, mouseY, hue, fontWeight);
 }
 
-function mouseClicked() {	
-	lockedIn = true;	
+function mouseClicked() {
+	if (lockedIn) {
+		console.log("test");		
+		location.reload(true);
+	}
+
+
+	lockedIn = true;
 }
 
 
@@ -67,16 +73,20 @@ function drawCursor(x, y, cursorHue, fontw) {
 
 let revealProcess = 0;
 let otherCursors = [];
+let mouseLoc;
 
 function revealOthers() {
 	noStroke();
 	dSize = 10 * revealProcess;
 
-	ellipse(mouseX, mouseY, dSize + 50);
+	if (revealProcess == 0) { 
+		mouseLoc = createVector(mouseX, mouseY);
+	}
+	ellipse(mouseLoc.x, mouseLoc.y, dSize + 50);
 
 	//add fake cursor
-	if (revealProcess % 4 == 0) {
-		let realCursorPos = createVector(mouseX, mouseY);
+	if (revealProcess % 4 == 0 && revealProcess > 5) {
+		let realCursorPos = createVector(mouseLoc.x, mouseLoc.y);
 		let fakeCursorPos = realCursorPos.add(createVector(dSize/3, dSize/3).rotate(random(0, TWO_PI)))
 		otherCursors.push([
 			fakeCursorPos.x,
@@ -93,9 +103,4 @@ function revealOthers() {
 	}
 
 	revealProcess++;
-}
-
-function keyPressed() {
-	console.log(otherCursors[0]);
-	
 }
