@@ -9,6 +9,8 @@ function setup() {
 	createCanvas(windowWidth, windowHeight);
 	logo = document.querySelector("h1");
 	instruction = document.querySelector("h2");
+
+	blockMobile();
 }
 
 
@@ -104,3 +106,21 @@ function revealOthers() {
 
 	revealProcess++;
 }
+
+function blockMobile() {
+	if(screen.width <= 760) { 
+		document.body.innerHTML = 
+		`
+		<meta 
+		 name='viewport' 
+		 content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' 
+		/>
+		<div class="mobile" style="padding:10vw;">
+			<p style="font-size: 4vh">please open this page on a desktop screen</p>      
+		</div>
+		`;
+	}
+}
+
+
+
