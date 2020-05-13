@@ -30,7 +30,7 @@ function draw() {
 
 function mouseClicked() {
 	if (lockedIn) {
-		window.location.href = window.location.href	}
+		window.location.href = window.location.href;
 	}
 
 	lockedIn = true;
