@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>landingpagetest</title>
+
+	<script src="libraries/p5.js"></script>
+	<script src="libraries/p5.dom.js"></script>
+	<script src="libraries/p5.sound.js"></script>
+	<script src="sketch.js"></script>
+
+	<style>
+		@font-face {
+			src: url("./font/Manrope[wght].ttf") format("truetype");
+			font-family: Manrope;
+		}
+		* {
+			cursor: none;
+		}
+		body {
+			margin:0;
+			padding:0;
+			overflow: hidden;
+			font-family: Manrope;
+			pointer-events: none;
+			user-select: none;
+		}
+		canvas {
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			margin: auto;
+			z-index: 10;
+		}
+		.main-wrapper {
+			width: 100vw;
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			background: none;
+		}
+		h1 {
+			margin-top: 35vh;
+			font-size: 7vw;	
+		}
+		h2 {
+			position: fixed;
+			bottom: 5vh;
+		}
+		span {
+			font-style: italic;
+			margin-right: 3px;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="main-wrapper">
+		<h1>WERKSCHAU</h1>
+		<h2>Klick, um <span>deine</span> Werkschau zu betreten!</h2>
+	</div>
+</body>
+</html>
