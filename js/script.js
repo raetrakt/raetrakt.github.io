@@ -62,25 +62,22 @@ if (document.querySelector(".images") != null) {
 
     let images = document.querySelector(".images");
     let scrollInput = 0;
-    let easing = .18;
-    let scrollSpeed = 150;
+    let easing = .06;
+    let scrollSpeed = 1;
 
     //get scroll input
     window.addEventListener('wheel', function(e) {
         e.preventDefault();
-        if (e.deltaY > 0) scrollInput += scrollSpeed;
-        else scrollInput -= scrollSpeed;
-
-      }, { passive: false });
+        scrollInput += scrollSpeed * e.deltaY;        
+    }, { passive: false });
 
     //execute scrolling every x with easing
     setInterval(
         function scroll() {
             let easedScroll = (scrollInput * easing);
             images.scrollLeft += easedScroll;
-            scrollInput -= easedScroll;
-            scrollInput = parseInt(scrollInput); //whithout this line it floats when scrolling back
-               
+            scrollInput -= easedScroll;            
+            scrollInput = parseInt(scrollInput); //without this line it floats when scrolling back               
         }
     , 10); 
 }

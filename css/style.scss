@@ -49,16 +49,16 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-//border-box EVERYTHING
 html {
-  box-sizing: border-box;
   background: #fffdfd;
-
   //the internet forbids big cursors :,(
-  cursor: url(../img/ui/cursor_extrasmall.svg) 10 10, auto;
-  a {
-    cursor: url(../img/ui/cursor_extrasmall_clickable.svg) 10 10, pointer;
-  }
+    cursor: url(../img/ui/cursor_extrasmall.svg) 10 10, auto;
+    a {
+      cursor: url(../img/ui/cursor_extrasmall_clickable.svg) 10 10, pointer;
+    }
+
+  //border-box EVERYTHING
+  box-sizing: border-box;
 }
 *, *:before, *:after {
   box-sizing: inherit;
@@ -151,13 +151,13 @@ $passepartout: 5vw;
   text-align: right;
   position: absolute;
   right: $passepartout;
-  bottom: $passepartout;
+  bottom: calc(#{$passepartout} - .8vw);
   .copyright {
     p {
       margin-block-end: 0px;
     }
   }
-
+  
 }
 
 
