@@ -67,8 +67,11 @@ if (document.querySelector(".images") != null) {
 
     //get scroll input
     window.addEventListener('wheel', function(e) {
+        //sloppy fix for firefox...
+        if (e.wheelDeltaY === undefined) scrollSpeed = 40;
+
         e.preventDefault();
-        scrollInput += scrollSpeed * e.deltaY;        
+        scrollInput += scrollSpeed * e.deltaY;  
     }, { passive: false });
 
     //execute scrolling every x with easing
@@ -80,6 +83,7 @@ if (document.querySelector(".images") != null) {
             scrollInput = parseInt(scrollInput); //without this line it floats when scrolling back               
         }
     , 10); 
+
 }
 
 
