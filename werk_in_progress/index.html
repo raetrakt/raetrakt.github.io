@@ -166,8 +166,8 @@
                     let orientationX = radians(rotationX);
                     let orientationY = radians(rotationY);             
                     
-                    circleTargetPosY = map(orientationX, -PI, PI, padding, maxPosCircle - padding);
-                    circleTargetPosX = map(orientationY, -PI, PI, padding, maxPosCircle - padding);
+                    circleTargetPosY = map(orientationX * 2, -PI, PI, padding, maxPosCircle - padding);
+                    circleTargetPosX = map(orientationY * 2, -PI, PI, padding, maxPosCircle - padding);
                 
                 }, 100);
             } else {
