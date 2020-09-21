@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WERK IN PROGRESS</title>
+    <link rel="icon" type="image/png" href="/favicon.png"/>
+    <script src="p5.min.js"></script>
+    <style>
+
+        @font-face {
+            font-family: GTWalsheimBold;
+            src: url(GT-Walsheim-Bold.woff);
+        }   
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .landingpage-wrapper {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;    
+            overflow-x: hidden;
+            position: fixed;
+        }
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translate(0, -2vh);
+        }
+        .text-wrapper {
+            margin-bottom: 4vh;
+        }
+        .info-text {
+            font-family: GTWalsheimBold;
+            font-size: 8vh;
+            text-align: center;
+        }
+        .logo-wrapper {
+            z-index: 1;
+            position: relative;
+            user-select: none;
+            -webkit-user-drag: none;
+            width: 68.8vh; /* hack, has to be logo height times 3,13 */
+            /* transform: scale(.5); */
+        }
+        .logo {
+            user-select: none;
+            -webkit-user-drag: none;
+            height: 22vh;
+        }
+        .circle-bounding-box {
+            position: absolute;
+            top: 0;
+            right: 0;
+            /* background-color: rgba(255, 0, 0, .5); */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .circle {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            /* background-color: rgba(0, 255, 0, .5); */
+            background-color: black;
+
+        }
+        /* .circle:hover {
+            background-color: #ccff00;
+        } */
+
+        @media (max-width: 688px) {
+            .info-text {
+                font-size: 8vw;
+            }
+            .logo {
+                height: 23vw;
+            }
+            .logo-wrapper {
+                width: 72vw; /* hack, has to be logo height times 3,13 */
+            }
+            .content-wrapper {
+                transform: translate(0, -15vh);
+            }
+            
+        }
+
+    </style>
+</head>
+<body>
+    <div class="landingpage-wrapper">
+        <div class="content-wrapper">
+            <div class="text-wrapper">
+                <p class="info-text">
+                    WERKSCHAU 2020
+                </p>
+                <p class="info-text">
+                    9. & 10. OKTOBER 
+                </p>
+            </div>
+            <div class="logo-wrapper">                
+                <img class="logo" src="logo_ohnekreis_schwarz.png" alt="">
+                <div class="circle-bounding-box">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    
+    <script>
+        function setup(){};
+        function draw(){
+            console.log(rotationY);
+        };
+        const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+        let circleScaleFactor = .4;
+        let easing = 0.1;
+
+        let logo;
+        let boundingbox;
+        let boundingboxCenterPosX;
+        let padding;
+        let circle;
+        let circleSize;
+
+        let circlePosX = 0;
+        let circlePosY = 0;
+        let circleTargetPosX = 0;
+        let circleTargetPosY = 0;
+
+
+        window.addEventListener('load', function () {
+            logo = document.querySelector(".logo");
+            boundingbox = document.querySelector(".circle-bounding-box");
+            boundingboxCenterPosX = offset(logo).left + logo.clientWidth - (boundingbox.clientWidth / 2);
+            circle = document.querySelector(".circle");
+            circleSize = boundingbox.clientHeight * circleScaleFactor;
+            circleTargetPosX = boundingbox.clientHeight;
+            circleTargetPosY = boundingbox.clientHeight;
+
+
+            resizeBoundingbox(boundingbox);
+            resizeCircle(circle);
+
+            //resize content when the window is resized
+            window.addEventListener('resize', e => {
+                resizeBoundingbox(boundingbox);
+                resizeCircle(circle);
+            })
+
+            //determine new position to move to 
+            //on mobile with rotation, on desktop with mouse
+            if(screen.width <= 760) {
+                console.log("runs1");
+                window.setInterval(function(event) {
+                    let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
+                    let padding = boundingbox.clientHeight / 20;
+                    
+                    let orientationX = rotationX; //-180 to 180
+                    let orientationY = rotationY; //-90 to 90                    
+                    console.log(orientationY);
+                    
+                    circleTargetPosX = map(orientationX, -180, 180, padding, maxPosCircle - padding);
+                    circleTargetPosY = map(orientationY, -90, 90, padding, maxPosCircle - padding);
+                
+                }, 100);
+            } else {
+                document.querySelector(".landingpage-wrapper").addEventListener('mousemove', e => {
+                    // we need two cases because the logo circle is not horizontally centered
+                    // so we use two different mappings based on left and right side of the circle
+                    let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
+                    let padding = boundingbox.clientHeight / 20;
+
+                    if (e.clientX > boundingboxCenterPosX) {
+                        circleTargetPosX = map(e.clientX, boundingboxCenterPosX, window.innerWidth, maxPosCircle / 2, maxPosCircle - padding);
+                    } else {
+                        circleTargetPosX = map(e.clientX, 0, boundingboxCenterPosX, padding, maxPosCircle / 2);
+                    };
+                    circleTargetPosY = map(e.clientY, 0, window.innerHeight, padding, boundingbox.clientHeight - circle.clientHeight - padding);                        
+                });
+            }
+        
+            //ease position then move circle every 10 ms
+            const interval = setInterval(function() {
+                let easingDistX = circleTargetPosX - circlePosX;
+                let easingDistY = circleTargetPosY - circlePosY;
+                circlePosX = circlePosX + easing * easingDistX;
+                circlePosY = circlePosY + easing * easingDistY; 
+                moveCircle(circle, circlePosX, circlePosY);
+            }, 10);
+
+            function resizeBoundingbox(b) {
+                boundingbox.setAttribute("style", "width:" + logo.clientHeight + "px;height:" + logo.clientHeight + "px");
+            }
+
+            function resizeCircle() {
+                circleSize = boundingbox.clientHeight * circleScaleFactor;                
+            }        
+
+            function moveCircle(c, x, y) {
+                c.setAttribute("style",
+                "position: absolute;" + 
+                "bottom:" + y + 
+                "px;right:" + x + 
+                "px;width:" + circleSize + 
+                "px;height:" + circleSize + "px");
+            }
+
+
+
+            function offset(el) {
+                var rect = el.getBoundingClientRect(),
+                scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+                scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+            }
+
+        })
+
+    </script>
+</body>
+</html>
