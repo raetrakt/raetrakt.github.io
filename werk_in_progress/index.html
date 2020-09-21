@@ -114,10 +114,11 @@
     </div> 
     
     <script>
-        function setup(){};
-        function draw(){
-            console.log(rotationY);
+        function setup(){
+            var initialRotX = rotationX;
+            var initialRotY = rotationY;
         };
+        function draw(){};
         const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
         let circleScaleFactor = .4;
         let easing = 0.1;
@@ -164,10 +165,9 @@
                     
                     let orientationX = rotationX; //-180 to 180
                     let orientationY = rotationY; //-90 to 90                    
-                    console.log(orientationY);
                     
-                    circleTargetPosY = map(orientationX, -180, 180, padding, maxPosCircle - padding);
-                    circleTargetPosX = map(orientationY, -90, 90, padding, maxPosCircle - padding);
+                    circleTargetPosY = map(orientationX * 4, -180, 180, padding, maxPosCircle - padding);
+                    circleTargetPosX = map(orientationY * 2, -90, 90, padding, maxPosCircle - padding);
                 
                 }, 100);
             } else {
