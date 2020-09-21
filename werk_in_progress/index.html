@@ -163,11 +163,11 @@
                     let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
                     let padding = boundingbox.clientHeight / 20;
                     
-                    let orientationX = rotationX; //-180 to 180
-                    let orientationY = rotationY; //-90 to 90                    
+                    let orientationX = radians(rotationX);
+                    let orientationY = radians(rotationY);             
                     
-                    circleTargetPosY = map(orientationX * 4, -180, 180, padding, maxPosCircle - padding);
-                    circleTargetPosX = map(orientationY * 2, -90, 90, padding, maxPosCircle - padding);
+                    circleTargetPosY = map(orientationX, -PI, PI, padding, maxPosCircle - padding);
+                    circleTargetPosX = map(orientationY, -PI, PI, padding, maxPosCircle - padding);
                 
                 }, 100);
             } else {
