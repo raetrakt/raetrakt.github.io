@@ -179,10 +179,10 @@ jittert manchmal -->
                     let orientationY = radians(rotationY) - initialRotY; 
                     document.querySelector(".info-text").nextElementSibling.innerText = "x" + orientationX.toFixed(2) + "y" + orientationY.toFixed(2);
 
-                    if (orientationX < -PI) {orientationX = -PI;}
-                    if (orientationX >  PI) {orientationX =  PI;}
-                    if (orientationY < -PI) {orientationY = -PI;}
-                    if (orientationY >  PI) {orientationY =  PI;}
+                    if (orientationX < -1) {orientationX = -1;}
+                    if (orientationX >  1) {orientationX =  1;}
+                    if (orientationY < -1) {orientationY = -1;}
+                    if (orientationY >  1) {orientationY =  1;}
                     
 
                     
