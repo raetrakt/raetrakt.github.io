@@ -119,13 +119,7 @@ jittert manchmal -->
     
     
     <script>
-        var initialRotX;
-        var initialRotY;
-
-        function setup(){
-            initialRotX = radians(rotationX);
-            initialRotY = radians(rotationY);
-        };
+        function setup(){};
         function draw(){};
         const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
         let circleScaleFactor = .4;
@@ -137,6 +131,9 @@ jittert manchmal -->
         let padding;
         let circle;
         let circleSize;
+        
+        var initialRotX;
+        var initialRotY;
 
         let circlePosX = 0;
         let circlePosY = 0;
@@ -151,7 +148,9 @@ jittert manchmal -->
             circle = document.querySelector(".circle");
             circleSize = boundingbox.clientHeight * circleScaleFactor;
             circleTargetPosX = boundingbox.clientHeight;
-            circleTargetPosY = boundingbox.clientHeight;
+            circleTargetPosY = boundingbox.clientHeight;        
+            initialRotX = radians(rotationX);
+            initialRotY = radians(rotationY);
 
 
             resizeBoundingbox(boundingbox);
