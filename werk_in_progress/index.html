@@ -169,7 +169,7 @@ jittert manchmal -->
                     let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
                     let padding = boundingbox.clientHeight / 20;
                     
-                    document.querySelector(".info-text").innerText = "x" + orientationX.toFixed(2) + "y" + orientationY.toFixed(2);
+                    document.querySelector(".info-text").innerText = "x" + initialRotX.toFixed(2) + "y" + initialRotY.toFixed(2);
                     let orientationX = radians(rotationX) - initialRotX;
                     let orientationY = radians(rotationY) - initialRotY; 
                     document.querySelector(".info-text").nextElementSibling.innerText = "x" + orientationX.toFixed(2) + "y" + orientationY.toFixed(2);
