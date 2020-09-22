@@ -149,8 +149,7 @@ jittert manchmal -->
             circleSize = boundingbox.clientHeight * circleScaleFactor;
             circleTargetPosX = boundingbox.clientHeight;
             circleTargetPosY = boundingbox.clientHeight;        
-            initialRotX = radians(rotationX);
-            initialRotY = radians(rotationY);
+      
 
 
             resizeBoundingbox(boundingbox);
@@ -165,6 +164,8 @@ jittert manchmal -->
             //determine new position to move to 
             //on mobile with rotation, on desktop with mouse
             if(screen.width <= 760) {
+                initialRotX = radians(rotationX);
+                initialRotY = radians(rotationY);
                 window.setInterval(function(event) {
                     let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
                     let padding = boundingbox.clientHeight / 20;
