@@ -117,10 +117,14 @@ jittert manchmal -->
         </div>
     </div> 
     
+    
     <script>
+        var initialRotX;
+        var initialRotY;
+
         function setup(){
-            var initialRotX = radians(rotationX);
-            var initialRotY = radians(rotationY);
+            initialRotX = radians(rotationX);
+            initialRotY = radians(rotationY);
         };
         function draw(){};
         const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
