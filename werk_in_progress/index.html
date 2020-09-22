@@ -186,8 +186,8 @@ jittert manchmal -->
                     
 
                     
-                    circleTargetPosY = map(orientationX, initialRotX - 1, initialRotX + 1, padding, maxPosCircle - padding);
-                    circleTargetPosX = map(orientationY, initialRotY - 1, initialRotY + 1, padding, maxPosCircle - padding);
+                    circleTargetPosY = map(orientationX, -1, 1, padding, maxPosCircle - padding);
+                    circleTargetPosX = map(orientationY, -1, 1, padding, maxPosCircle - padding);
                 
                 }, 100);
             } else {
