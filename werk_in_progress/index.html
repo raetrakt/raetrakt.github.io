@@ -163,8 +163,10 @@ jittert manchmal -->
             //on mobile with rotation, on desktop with mouse
             if(screen.width <= 760) {
                 window.setInterval(function(event) {
+                    document.querySelector(".info-text").innerText = "RUNS";
                     let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
                     let padding = boundingbox.clientHeight / 20;
+
                     
                     let orientationX = radians(rotationX) - initialRotX;
                     let orientationY = radians(rotationY) - initialRotY;      
@@ -172,6 +174,8 @@ jittert manchmal -->
                     if (orientationX >  PI) orientationX =  PI;
                     if (orientationY < -PI) orientationY = -PI;
                     if (orientationY >  PI) orientationY =  PI;
+
+
                     
                     circleTargetPosY = map(orientationX, initialRotX - 1, initialRotX + 1, padding, maxPosCircle - padding);
                     circleTargetPosX = map(orientationY, initialRotY - 1, initialRotY + 1, padding, maxPosCircle - padding);
