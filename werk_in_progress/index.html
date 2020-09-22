@@ -132,8 +132,8 @@ jittert manchmal -->
         let circle;
         let circleSize;
 
-        var initialRotX;
-        var initialRotY;
+        var initialRotX = 0;
+        var initialRotY = 0;
 
         let circlePosX = 0;
         let circlePosY = 0;
@@ -166,15 +166,15 @@ jittert manchmal -->
             if(screen.width <= 760) {
                 let roundOne = true; //another hack...
                 window.setInterval(function(event) {
-                    if (roundOne) {
+                    if (roundOne && rotationX != 0) {
                         initialRotX = radians(rotationX);
                         initialRotY = radians(rotationY);
+                        roundOne = false;
+                        document.querySelector(".info-text").innerText = "x" + initialRotX.toFixed(2) + "y" + initialRotY.toFixed(2);
                     }
-                    roundOne = false;
                     let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
                     let padding = boundingbox.clientHeight / 20;
                     
-                    document.querySelector(".info-text").innerText = "x" + initialRotX.toFixed(2) + "y" + initialRotY.toFixed(2);
                     let orientationX = radians(rotationX) - initialRotX;
                     let orientationY = radians(rotationY) - initialRotY; 
                     document.querySelector(".info-text").nextElementSibling.innerText = "x" + orientationX.toFixed(2) + "y" + orientationY.toFixed(2);
