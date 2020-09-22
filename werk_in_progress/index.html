@@ -119,8 +119,11 @@ jittert manchmal -->
     
     <script>
         function setup(){
+            document.querySelector(".info-text").innerText = "RUNS1";
+
             var initialRotX = radians(rotationX);
             var initialRotY = radians(rotationY);
+
         };
         function draw(){};
         const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
@@ -162,8 +165,9 @@ jittert manchmal -->
             //determine new position to move to 
             //on mobile with rotation, on desktop with mouse
             if(screen.width <= 760) {
+                document.querySelector(".info-text").innerText = "RUNS2";
                 window.setInterval(function(event) {
-                    document.querySelector(".info-text").innerText = "RUNS";
+                    document.querySelector(".info-text").innerText = "RUNS3";
                     let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
                     let padding = boundingbox.clientHeight / 20;
 
