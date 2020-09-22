@@ -131,7 +131,7 @@ jittert manchmal -->
         let padding;
         let circle;
         let circleSize;
-        
+
         var initialRotX;
         var initialRotY;
 
@@ -169,17 +169,16 @@ jittert manchmal -->
                     let maxPosCircle = boundingbox.clientHeight - circle.clientHeight;
                     let padding = boundingbox.clientHeight / 20;
                     
-                    document.querySelector(".info-text").innerText = "still works1";
-                    
+                    document.querySelector(".info-text").innerText = "x" + orientationX.toFixed(2) + "y" + orientationY.toFixed(2);
                     let orientationX = radians(rotationX) - initialRotX;
-                    let orientationY = radians(rotationY) - initialRotY;      
-                    document.querySelector(".info-text").innerText = "still works2";
+                    let orientationY = radians(rotationY) - initialRotY; 
+                    document.querySelector(".info-text").nextElementSibling.innerText = "x" + orientationX.toFixed(2) + "y" + orientationY.toFixed(2);
+
                     if (orientationX < -PI) {orientationX = -PI;}
                     if (orientationX >  PI) {orientationX =  PI;}
                     if (orientationY < -PI) {orientationY = -PI;}
                     if (orientationY >  PI) {orientationY =  PI;}
                     
-                    document.querySelector(".info-text").innerText = "x" + orientationX + "y" + orientationY;
 
                     
                     circleTargetPosY = map(orientationX, initialRotX - 1, initialRotX + 1, padding, maxPosCircle - padding);
