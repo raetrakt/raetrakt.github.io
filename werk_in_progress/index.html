@@ -49,6 +49,7 @@ jittert manchmal -->
             font-family: GTWalsheimBold;
             font-size: 8vh;
             text-align: center;
+            /* text-align-last: justify; */
         }
         .info-text {
             user-select: none;
@@ -161,7 +162,7 @@ jittert manchmal -->
         function setup(){};
         function draw(){};
         const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
-        let circleScaleFactor = .4;
+        let circleScaleFactor = .45;
         let easing = 0.1;
 
         let logo;
