@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FABIGAN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+        }
+
+        .video {
+            position: absolute;
+            height: 100vh;
+            z-index: -1;
+        }
+
+        .debugtext {
+            color: white;
+            font-size: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <video class="video" preload="metadata" muted loop>
+        <source src="./fabian_gan_latent_space.mp4" type="video/mp4">
+    </video>
+    <div class="test">
+        <p class="debugtext">test</p>
+    </div>
+    <script>
+        window.onload = function () {
+
+            //get elements
+            let video = document.querySelector(".video");
+            let debug = document.querySelector(".debugtext")
+
+            //get vid duration
+            video.onloadedmetadata = function () {
+                let videoDuration = video.duration;
+            };
+
+            //step through video
+            setInterval(function () {
+                video.currentTime += .1;
+            }, 100);
+
+
+
+
+            //accelerometer code
+            if (window.DeviceMotionEvent == undefined) {
+                //No accelerometer is present. Use buttons. 
+                alert("no accelerometer");
+            }
+            else {
+                alert("accelerometer found");
+                window.addEventListener("devicemotion", accelerometerUpdate, true);
+            }
+
+            function accelerometerUpdate(e) {
+                // var aX = event.accelerationIncludingGravity.x * 1;
+                // var aY = event.accelerationIncludingGravity.y * 1;
+                // var aZ = event.accelerationIncludingGravity.z * 1;
+                var aX = event.acceleration.x;
+                var aY = event.acceleration.y;
+                var aZ = event.acceleration.z;
+                debug.innerText = " aX: " + aX + " aY: " + aY + " aZ: " + aZ;
+
+            }
+
+        }
+    </script>
+</body>
+
+</html>
