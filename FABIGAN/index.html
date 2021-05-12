@@ -60,10 +60,8 @@
             //accelerometer code
             if (window.DeviceMotionEvent == undefined) {
                 //No accelerometer is present. Use buttons. 
-                alert("no accelerometer");
             }
             else {
-                alert("accelerometer found");
                 window.addEventListener("devicemotion", accelerometerUpdate, true);
             }
 
@@ -74,7 +72,7 @@
                 var aX = event.acceleration.x;
                 var aY = event.acceleration.y;
                 var aZ = event.acceleration.z;
-                debug.innerText = " aX: " + aX + " aY: " + aY + " aZ: " + aZ;
+                debug.innerHTML =  " aX: " + aX.toFixed(2) + "<br>aY: " + aY.toFixed(2) + "<br>aZ: " + aZ.toFixed(2);
 
             }
 
