@@ -74,25 +74,14 @@
                 
                 console.log("accumu " + accumulatedCombinedAcceleration);
 
-                let playbackRateFromAcc;
 
-                // if (addedVideoTimeFromAcc !== NaN) {
-                //     let vidPlaybackPos = video.currentTime += addedVideoTimeFromAcc;
-                //     if (vidPlaybackPos >= videoDuration) {
-                //         console.log("resetting video");
-                //         vidPlaybackPos = vidPlaybackPos % videoDuration;
-                //     }
-                //     video.currentTime = vidPlaybackPos
-                // }
-
-
-                time += .1;
-                // console.log(time);
+                // time += .1;
+                // // console.log(time);
                 
-                playbackSpeed = 1.1 + Math.sin(time);
-                // console.log(playbackSpeed);
+                // playbackSpeed = 1.1 + Math.sin(time);
+                // // console.log(playbackSpeed);
 
-                video.playbackRate = playbackSpeed;
+                video.playbackRate = accumulatedCombinedAcceleration;
             }, 100);
 
 
