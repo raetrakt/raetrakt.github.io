@@ -55,7 +55,7 @@
             //range 0 - 1
             var delay = .8;
 
-            var baseSpeed = .3;
+            var baseSpeed = 0;
 
             //acceleration variables
             var aX;
@@ -78,9 +78,16 @@
                 if (!isNaN(combinedAcceleration)) accumulatedCombinedAcceleration += combinedAcceleration;
                 accumulatedCombinedAcceleration *= delay;
                 
-                console.log("accumu " + (baseSpeed + accumulatedCombinedAcceleration));
+                console.log("accumu " + (accumulatedCombinedAcceleration));
 
-                video.playbackRate = baseSpeed + accumulatedCombinedAcceleration;
+                video.playbackRate = accumulatedCombinedAcceleration;
+
+                if (video.playbackRate < .15) {
+                    video.pause();
+                } else {
+                    video.play();
+                }
+
             }, 100);
 
 
