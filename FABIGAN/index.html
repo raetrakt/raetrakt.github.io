@@ -31,7 +31,7 @@
 </head>
 
 <body>
-    <video class="video" preload="metadata" muted loop>
+    <video class="video" preload="metadata" muted loop autoplay>
         <source src="./fabian_gan_latent_space.mp4" type="video/mp4">
     </video>
     <div class="test">
@@ -50,25 +50,38 @@
             var aY;
             var aZ;
 
+            var time = 0;
+
             //get vid duration
             video.onloadedmetadata = function () {
                 videoDuration = video.duration;
+                video.playbackRate = 1;
+
             };
 
             //step through video
             setInterval(function () {
-                let addedVideoTimeFromAcc = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ) / 10) / 10;
-                if (addedVideoTimeFromAcc !== NaN) {
-                    let vidPlaybackPos = video.currentTime += addedVideoTimeFromAcc;
-                    if (vidPlaybackPos >= videoDuration) {
-                        console.log("resetting video");
-                        vidPlaybackPos = vidPlaybackPos % videoDuration;
-                    }
-                    video.currentTime = vidPlaybackPos
-                }
-                console.log(video.currentTime); 
-                console.log(addedVideoTimeFromAcc);
-            }, 500);
+                let combinedAcceleration = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ)) / 10;
+                console.log(combinedAcceleration);
+
+                // if (addedVideoTimeFromAcc !== NaN) {
+                //     let vidPlaybackPos = video.currentTime += addedVideoTimeFromAcc;
+                //     if (vidPlaybackPos >= videoDuration) {
+                //         console.log("resetting video");
+                //         vidPlaybackPos = vidPlaybackPos % videoDuration;
+                //     }
+                //     video.currentTime = vidPlaybackPos
+                // }
+
+
+                time += .1;
+                // console.log(time);
+                
+                playbackSpeed = 1.1 + Math.sin(time);
+                // console.log(playbackSpeed);
+
+                video.playbackRate = playbackSpeed;
+            }, 100);
 
 
 
