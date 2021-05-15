@@ -44,13 +44,15 @@
             let video = document.querySelector(".video");
             let debug = document.querySelector(".debugtext")
 
+            var videoDuration;
+
             var aX;
             var aY;
             var aZ;
 
             //get vid duration
             video.onloadedmetadata = function () {
-                let videoDuration = video.duration;
+                videoDuration = video.duration;
             };
 
             //step through video
