@@ -57,7 +57,11 @@
             setInterval(function () {
                 let addedVideoTimeFromAcc = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ) / 10) / 10;
                 if (addedVideoTimeFromAcc !== NaN) {
-                    let vidPlaybackPos = (video.currentTime += addedVideoTimeFromAcc) % videoDuration;
+                    let vidPlaybackPos = video.currentTime += addedVideoTimeFromAcc;
+                    if (vidPlaybackPos >= videoDuration) {
+                        console.log("resetting video");
+                        vidPlaybackPos = vidPlaybackPos % videoDuration;
+                    }
                     video.currentTime = vidPlaybackPos
                 }
                 console.log(video.currentTime); 
