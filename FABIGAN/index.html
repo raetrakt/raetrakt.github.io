@@ -51,7 +51,7 @@
 
             //step through video
             setInterval(function () {
-                video.currentTime += (aX + aY + aZ) / 10;
+                video.currentTime += (abs(aX) + abs(aY) + abs(aZ)) / 10;
             }, 100);
 
 
