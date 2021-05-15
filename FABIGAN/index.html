@@ -35,7 +35,7 @@
         <source src="./fabian_gan_latent_space.mp4" type="video/mp4">
     </video>
     <div class="test">
-        <p class="debugtext">reload please</p>
+        <p class="debugtext"></p>
     </div>
     <script>
         window.onload = function () {
@@ -48,61 +48,56 @@
 
             var accumulatedCombinedAcceleration = 0;
 
+            //the higher the value, the lower the sensitivity and the less the face will move
+            var sensitivity = 5;
+
+            //the lower, the quicker the face will return to not moving
+            //range 0 - 1
+            var delay = .9;
+
+            //acceleration variables
             var aX;
             var aY;
             var aZ;
 
-            var time = 0;
 
-            //get vid duration
+            //get video duration
             video.onloadedmetadata = function () {
                 videoDuration = video.duration;
                 video.playbackRate = 1;
 
             };
 
+
             //step through video
             setInterval(function () {
-                let combinedAcceleration = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ)) / 10;
+                let combinedAcceleration = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ)) / sensitivity;
                 
-                // console.log("combined " + combinedAcceleration);
-
-                if (!isNaN(combinedAcceleration)){
-                    accumulatedCombinedAcceleration += combinedAcceleration;
-                } 
-                accumulatedCombinedAcceleration *= .95;
+                if (!isNaN(combinedAcceleration)) accumulatedCombinedAcceleration += combinedAcceleration;
+                accumulatedCombinedAcceleration *= delay;
                 
                 console.log("accumu " + accumulatedCombinedAcceleration);
-
-
-                // time += .1;
-                // // console.log(time);
-                
-                // playbackSpeed = 1.1 + Math.sin(time);
-                // // console.log(playbackSpeed);
 
                 video.playbackRate = accumulatedCombinedAcceleration;
             }, 100);
 
 
-
-
             //accelerometer code
             if (window.DeviceMotionEvent == undefined) {
                 //No accelerometer is present. Use buttons. 
+                console.log("no accelerometer found");
             }
             else {
                 window.addEventListener("devicemotion", accelerometerUpdate, true);
             }
 
             function accelerometerUpdate(e) {
-                // var aX = event.accelerationIncludingGravity.x * 1;
-                // var aY = event.accelerationIncludingGravity.y * 1;
-                // var aZ = event.accelerationIncludingGravity.z * 1;
                 aX = event.acceleration.x;
                 aY = event.acceleration.y;
-                aZ = event.acceleration.z;
-                debug.innerHTML =  " aX: " + Number(Math.abs(aX)).toFixed(2) + "<br>aY: " + Number(Math.abs(aY)).toFixed(2) + "<br>aZ: " + Number(Math.abs(aZ)).toFixed(2);
+                aZ = event.acceleration.z;              
+
+                // //show acceleration values in debug p
+                // debug.innerHTML =  " aX: " + Number(Math.abs(aX)).toFixed(2) + "<br>aY: " + Number(Math.abs(aY)).toFixed(2) + "<br>aZ: " + Number(Math.abs(aZ)).toFixed(2);
 
             }
 
