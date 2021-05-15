@@ -57,8 +57,9 @@
             setInterval(function () {
                 let addedVideoTimeFromAcc = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ) / 10);
                 if (addedVideoTimeFromAcc !== NaN) {
-                    video.playbackRate += addedVideoTimeFromAcc;
+                    video.currentTime += addedVideoTimeFromAcc;
                 }
+                console.log(video.currentTime); 
                 console.log(addedVideoTimeFromAcc);
             }, 100);
 
