@@ -65,6 +65,8 @@
             setInterval(function () {
                 let combinedAcceleration = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ)) / 10;
                 
+                console.log("combined " + combinedAcceleration);
+
                 accumulatedCombinedAcceleration += combinedAcceleration;
                 // accumulatedCombinedAcceleration *= .99;
                 
