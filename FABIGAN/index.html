@@ -44,6 +44,10 @@
             let video = document.querySelector(".video");
             let debug = document.querySelector(".debugtext")
 
+            var aX;
+            var aY;
+            var aZ;
+
             //get vid duration
             video.onloadedmetadata = function () {
                 let videoDuration = video.duration;
@@ -69,9 +73,9 @@
                 // var aX = event.accelerationIncludingGravity.x * 1;
                 // var aY = event.accelerationIncludingGravity.y * 1;
                 // var aZ = event.accelerationIncludingGravity.z * 1;
-                var aX = event.acceleration.x;
-                var aY = event.acceleration.y;
-                var aZ = event.acceleration.z;
+                aX = event.acceleration.x;
+                aY = event.acceleration.y;
+                aZ = event.acceleration.z;
                 debug.innerHTML =  " aX: " + aX.toFixed(2) + "<br>aY: " + aY.toFixed(2) + "<br>aZ: " + aZ.toFixed(2);
 
             }
