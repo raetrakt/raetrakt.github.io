@@ -46,6 +46,8 @@
 
             var videoDuration;
 
+            var accumulatedCombinedAcceleration;
+
             var aX;
             var aY;
             var aZ;
@@ -62,7 +64,13 @@
             //step through video
             setInterval(function () {
                 let combinedAcceleration = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ)) / 10;
-                console.log(combinedAcceleration);
+                
+                accumulatedCombinedAcceleration += combinedAcceleration;
+                accumulatedCombinedAcceleration *= .99
+                
+                console.log(accumulatedCombinedAcceleration);
+
+                let playbackRateFromAcc;
 
                 // if (addedVideoTimeFromAcc !== NaN) {
                 //     let vidPlaybackPos = video.currentTime += addedVideoTimeFromAcc;
