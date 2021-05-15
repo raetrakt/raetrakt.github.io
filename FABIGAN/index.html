@@ -78,7 +78,7 @@
                 if (!isNaN(combinedAcceleration)) accumulatedCombinedAcceleration += combinedAcceleration;
                 accumulatedCombinedAcceleration *= delay;
                 
-                console.log("accumu " + baseSpeed + accumulatedCombinedAcceleration);
+                console.log("accumu " + (baseSpeed + accumulatedCombinedAcceleration));
 
                 video.playbackRate = baseSpeed + accumulatedCombinedAcceleration;
             }, 100);
