@@ -55,9 +55,10 @@
 
             //step through video
             setInterval(function () {
-                let addedVideoTimeFromAcc = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ) / 10);
+                let addedVideoTimeFromAcc = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ) / 10) / 10;
                 if (addedVideoTimeFromAcc !== NaN) {
-                    video.currentTime += addedVideoTimeFromAcc;
+                    let vidPlaybackPos = (video.currentTime += addedVideoTimeFromAcc) % videoDuration;
+                    video.currentTime = vidPlaybackPos
                 }
                 console.log(video.currentTime); 
                 console.log(addedVideoTimeFromAcc);
