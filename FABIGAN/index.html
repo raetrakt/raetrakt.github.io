@@ -28,22 +28,22 @@
             font-size: 3rem;
         }
 
-        .indicatorDot{
+        .indicatorDot {
             width: 30px;
             height: 30px;
             background-color: #ffab56;
             border-radius: 50%;
-            position:fixed;
+            position: fixed;
             z-index: 1;
         }
     </style>
 </head>
 
 <body>
-    <button id="accelPermsButton" style="height:50px;" onclick="getAccel()">
-        <h1>Get Accelerometer Permissions</h1>
-    </button>
-    <div class="indicatorDot" style="left:30%; top:30%;"></div>
+    <div class="main">
+        <button id="accelPermsButton" onclick="getAccel()" style="height:50px;">Get Accelerometer Permissions</button>
+        <div class="indicatorDot" style="left:30%; top:30%;"></div>
+    </div>
 
     <video class="video" preload="metadata" muted loop autoplay>
         <source src="./interpolation_linear.mp4" type="video/mp4">
@@ -124,12 +124,6 @@
 
             }
 
-            var px = 50; // Position x and y
-            var py = 50;
-            var vx = 0.0; // Velocity x and y
-            var vy = 0.0;
-            var updateRate = 1 / 60; // Sensor refresh rate
-
             function getAccel() {
                 DeviceMotionEvent.requestPermission().then(response => {
                     if (response == 'granted') {
@@ -167,6 +161,7 @@
                     }
                 });
             }
+        }
 
         }
     </script>
