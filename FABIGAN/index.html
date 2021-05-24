@@ -57,7 +57,7 @@
 
     <div id="log"></div> -->
 
-    <video class="video" preload="metadata" muted loop > 
+    <video class="video" preload="metadata" muted loop autoplay controls> 
         <!-- playsinline controls autoplay -->
         <source src="./interpolation_linear_slowed_compressed.mp4" type="video/mp4">
     </video>
@@ -94,8 +94,6 @@
             video.onloadedmetadata = function () {
                 videoDuration = video.duration;
                 video.playbackRate = 1;
-                video.webkitEnterFullscreen();
-                video.enterFullscreen();
 
             };
 
