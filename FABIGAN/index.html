@@ -57,7 +57,7 @@
 
     <div id="log"></div> -->
 
-    <video class="video" preload="metadata" muted loop playsinline >
+    <video class="video" preload="metadata" muted loop playsinline controls autoplay>
         <source src="./interpolation_linear_slowed_compressed.mp4" type="video/mp4">
     </video>
     <div class="test">
@@ -127,10 +127,10 @@
             if (window.DeviceMotionEvent == undefined) {
                 //No accelerometer is present. Use buttons. 
                 console.log("no accelerometer found");
-                video.play();
+                // video.play();
             } else {
                 window.addEventListener("devicemotion", accelerometerUpdate, true);
-                video.play();
+                // video.play();
             }
 
             function accelerometerUpdate(e) {
