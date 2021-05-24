@@ -49,16 +49,16 @@
 </head>
 
 <body>
-    <div class="main">
+    <!-- <div class="main">
         <button id="accelPermsButton" onclick="getAccel()" style="height:50px;">v4 Get Accelerometer
             Permissions</button>
         <div class="indicatorDot" style="left:30%; top:30%;"></div>
     </div>
 
-    <div id="log"></div>
+    <div id="log"></div> -->
 
-    <video class="video" preload="metadata" muted loop autoplay>
-        <source src="./interpolation_linear.mp4" type="video/mp4">
+    <video class="video" preload="metadata" muted loop>
+        <source src="./interpolation_linear_slowed_compressed.mp4" type="video/mp4">
     </video>
     <div class="test">
         <p class="debugtext"></p>
@@ -67,7 +67,7 @@
         window.onload = function () {
 
             //get elements
-            let video = document.querySelector(".video");
+            var video = document.querySelector(".video");
             let debug = document.querySelector(".debugtext")
 
             var videoDuration;
@@ -97,22 +97,28 @@
             };
 
 
+
+            let sine = 0;
             //step through video
             setInterval(function () {
-                let combinedAcceleration = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ)) / rigidity;
+                // let combinedAcceleration = Math.floor(Math.abs(aX) + Math.abs(aY) + Math.abs(aZ)) / rigidity;
 
-                if (!isNaN(combinedAcceleration)) accumulatedCombinedAcceleration += combinedAcceleration;
-                accumulatedCombinedAcceleration *= delay;
+                // if (!isNaN(combinedAcceleration)) accumulatedCombinedAcceleration += combinedAcceleration;
+                // accumulatedCombinedAcceleration *= delay;
 
-                // console.log("accumu " + (accumulatedCombinedAcceleration));
+                // // console.log("accumu " + (accumulatedCombinedAcceleration));
 
-                video.playbackRate = accumulatedCombinedAcceleration;
+                // video.playbackRate = accumulatedCombinedAcceleration;
 
-                if (video.playbackRate < .15) {
-                    video.pause();
-                } else {
-                    video.play();
-                }
+                // if (video.playbackRate < .15) {
+                //     video.pause();
+                // } else {
+                //     video.play();
+                // }
+                
+                let fac = .4
+                video.playbackRate = Math.sin(sine)*fac + (2*fac) + 1;
+                sine += .1
 
             }, 100);
 
@@ -121,9 +127,11 @@
             if (window.DeviceMotionEvent == undefined) {
                 //No accelerometer is present. Use buttons. 
                 console.log("no accelerometer found");
+                video.play();
             }
             else {
                 window.addEventListener("devicemotion", accelerometerUpdate, true);
+                video.play();
             }
 
             function accelerometerUpdate(e) {
@@ -135,60 +143,78 @@
                 // debug.innerHTML =  " aX: " + Number(Math.abs(aX)).toFixed(2) + "<br>aY: " + Number(Math.abs(aY)).toFixed(2) + "<br>aZ: " + Number(Math.abs(aZ)).toFixed(2);
 
             }
+            
 
-            var log = document.querySelector('#log');
-            ['log', 'debug', 'info', 'warn', 'error'].forEach(function (verb) {
-                console[verb] = (function (method, verb, log) {
-                    return function () {
-                        method.apply(console, arguments);
-                        var msg = document.createElement('div');
-                        msg.classList.add(verb);
-                        msg.textContent = verb + ': ' + Array.prototype.slice.call(arguments).join(' ');
-                        log.appendChild(msg);
-                    };
-                })(console[verb], verb, log);
-            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // var log = document.querySelector('#log');
+            // ['log', 'debug', 'info', 'warn', 'error'].forEach(function (verb) {
+            //     console[verb] = (function (method, verb, log) {
+            //         return function () {
+            //             method.apply(console, arguments);
+            //             var msg = document.createElement('div');
+            //             msg.classList.add(verb);
+            //             msg.textContent = verb + ': ' + Array.prototype.slice.call(arguments).join(' ');
+            //             log.appendChild(msg);
+            //         };
+            //     })(console[verb], verb, log);
+            // });
 
 
         }
 
-        function getAccel() {
-                DeviceMotionEvent.requestPermission().then(response => {
-                    if (response == 'granted') {
-                        // Add a listener to get smartphone orientation 
-                        // in the alpha-beta-gamma axes (units in degrees)
-                        window.addEventListener('deviceorientation', (event) => {
-                            // Expose each orientation angle in a more readable way
-                            rotation_degrees = event.alpha;
-                            frontToBack_degrees = event.beta;
-                            leftToRight_degrees = event.gamma;
+        // function getAccel() {
+        //         DeviceMotionEvent.requestPermission().then(response => {
+        //             if (response == 'granted') {
+        //                 // Add a listener to get smartphone orientation 
+        //                 // in the alpha-beta-gamma axes (units in degrees)
+        //                 window.addEventListener('deviceorientation', (event) => {
+        //                     // Expose each orientation angle in a more readable way
+        //                     rotation_degrees = event.alpha;
+        //                     frontToBack_degrees = event.beta;
+        //                     leftToRight_degrees = event.gamma;
 
-                            // Update velocity according to how tilted the phone is
-                            // Since phones are narrower than they are long, double the increase to the x velocity
-                            vx = vx + leftToRight_degrees * updateRate * 2;
-                            vy = vy + frontToBack_degrees * updateRate;
+        //                     // Update velocity according to how tilted the phone is
+        //                     // Since phones are narrower than they are long, double the increase to the x velocity
+        //                     vx = vx + leftToRight_degrees * updateRate * 2;
+        //                     vy = vy + frontToBack_degrees * updateRate;
 
-                            // Update position and clip it to bounds
-                            px = px + vx * .5;
-                            if (px > 98 || px < 0) {
-                                px = Math.max(0, Math.min(98, px)) // Clip px between 0-98
-                                vx = 0;
-                            }
+        //                     // Update position and clip it to bounds
+        //                     px = px + vx * .5;
+        //                     if (px > 98 || px < 0) {
+        //                         px = Math.max(0, Math.min(98, px)) // Clip px between 0-98
+        //                         vx = 0;
+        //                     }
 
-                            py = py + vy * .5;
-                            if (py > 98 || py < 0) {
-                                py = Math.max(0, Math.min(98, py)) // Clip py between 0-98
-                                vy = 0;
-                            }
+        //                     py = py + vy * .5;
+        //                     if (py > 98 || py < 0) {
+        //                         py = Math.max(0, Math.min(98, py)) // Clip py between 0-98
+        //                         vy = 0;
+        //                     }
 
-                            dot = document.getElementsByClassName("indicatorDot")[0]
-                            dot.setAttribute('style', "left:" + (px) + "%;" +
-                                "top:" + (py) + "%;");
+        //                     dot = document.getElementsByClassName("indicatorDot")[0]
+        //                     dot.setAttribute('style', "left:" + (px) + "%;" +
+        //                         "top:" + (py) + "%;");
 
-                        });
-                    }
-                });
-            }
+        //                 });
+        //             }
+        //         });
+        //     }
     </script>
 </body>
 
