@@ -40,14 +40,22 @@
         #accelPermsButton {
             z-index: 2;
         }
+
+        #log {
+            z-index: 1;
+            color: white;
+        }
     </style>
 </head>
 
 <body>
     <div class="main">
-        <button id="accelPermsButton" onclick="getAccel()" style="height:50px;">v3 Get Accelerometer Permissions</button>
+        <button id="accelPermsButton" onclick="getAccel()" style="height:50px;">v3 Get Accelerometer
+            Permissions</button>
         <div class="indicatorDot" style="left:30%; top:30%;"></div>
     </div>
+
+    <div id="log"></div>
 
     <video class="video" preload="metadata" muted loop autoplay>
         <source src="./interpolation_linear.mp4" type="video/mp4">
@@ -96,7 +104,7 @@
                 if (!isNaN(combinedAcceleration)) accumulatedCombinedAcceleration += combinedAcceleration;
                 accumulatedCombinedAcceleration *= delay;
 
-                console.log("accumu " + (accumulatedCombinedAcceleration));
+                // console.log("accumu " + (accumulatedCombinedAcceleration));
 
                 video.playbackRate = accumulatedCombinedAcceleration;
 
@@ -128,11 +136,23 @@
 
             }
 
+            var log = document.querySelector('#log');
+            ['log', 'debug', 'info', 'warn', 'error'].forEach(function (verb) {
+                console[verb] = (function (method, verb, log) {
+                    return function () {
+                        method.apply(console, arguments);
+                        var msg = document.createElement('div');
+                        msg.classList.add(verb);
+                        msg.textContent = verb + ': ' + Array.prototype.slice.call(arguments).join(' ');
+                        log.appendChild(msg);
+                    };
+                })(console[verb], verb, log);
+            });
 
 
-
-
-            function getAccel() {
+        }
+        
+        function getAccel() {
                 DeviceMotionEvent.requestPermission().then(response => {
                     if (response == 'granted') {
                         // Add a listener to get smartphone orientation 
@@ -169,7 +189,6 @@
                     }
                 });
             }
-        }
     </script>
 </body>
 
