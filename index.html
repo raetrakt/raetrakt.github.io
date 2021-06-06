@@ -1,86 +1,263 @@
 <!DOCTYPE html>
-<html lang="de" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Fabian Pitzer</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preload" href="/fonts/GlyphWorld-AirLand.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-AnimalSoul.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-Desert.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-Flower.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-Forest.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-Glacier.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-Meadow.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-Mountain.otf" as="font" crossorigin="anonymous" />
-    <link rel="preload" href="/fonts/GlyphWorld-WasteLand.otf" as="font" crossorigin="anonymous" />
-    <meta property="og:image" content="img/share/preview.jpg" />
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I/M/D Portfolio Fabian Pitzer</title>
+    <style>
+        @font-face {
+            font-family: Cabinet Grotesk;
+            src: url(kabk/CabinetGrotesk-Variable.ttf);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: Cabinet Grotesk, Helvetica, sans-serif;
+        }
+
+        .wrapper {
+            padding: 4rem;
+            display: flex;
+            max-width: 110rem;
+            overflow: hidden;
+        }
+
+        .bg-image-wrapper {
+            position: absolute;
+            width: 70vw;
+            top: 0;
+            right: 0;
+            z-index: -1;
+            /* width: 37rem; */
+        }
+
+        .bg-image {
+            object-fit: contain;
+            width: 100%;
+        }
+
+        .text-area {
+            width: auto;
+            max-width: 40rem;
+        }
+
+        .text {}
+
+        .menu {
+            width: 33%;
+            min-width: 33rem;
+            margin-right: 4rem;
+        }
+
+ 
+
+        .menu-item {
+            display: block;
+            /* text-decoration: underline; */
+            font-size: 3rem;
+            cursor: pointer;
+            line-height: 2.3rem;
+            margin-bottom: 1rem;
+            user-select: none;
+            font-variation-settings: 'wght'600, 'wdth'85;
+            transition: font-variation-settings .2s ease-in-out;
+
+        }
+
+        .menu-item:hover {
+            font-variation-settings: 'wght'300, 'wdth'85;
+            /* animation: breathe 1000ms forwards; */
+        }
+
+        .title {
+            line-height: 2.7rem !important;
+            margin-bottom: 3rem;
+        }
+
+        .title:hover {
+            font-variation-settings: 'wght'600, 'wdth'85;
+            color: red;
+        }
+
+        h2 {
+            font-size: 3rem;
+            font-variation-settings: 'wght' 300;
+            margin-block-start: 0;
+            line-height: 2.3rem;
+            margin-bottom: 3rem;
+        }
+
+        small {
+            font-size: 1.5rem;
+            white-space: pre-wrap;
+            margin-bottom: 1rem;
+            font-variation-settings: 'wght' 400;
+            display: block;
+
+        }
+
+        img, video{
+            width: 100%;
+            object-fit: contain;
+            margin-bottom: 2rem;
+        }
 
 
-  </head>
-  
-  <body>
 
-    <div class="landing-wrapper">
+        .desc-wrapper {
+            margin-top: 3rem;
+            font-size: 1.5rem;
+            font-variation-settings: 'wght' 600;
 
-      <div class="landing-text">
-        <p>Hi, I’m Fabian!</p>
-        <p>
-          Currently studying Interactive Media Design at the University of Applied Sciences Augsburg. <br>
-          I also work as a research assistant at the Hybrid Things Lab.
-        </p>
-        <p>
-          Reach out to me via 
-          <a class="clickable" href="mailto:hello@fabianpitzer.de">hello<span class="missing-glyph">@</span>fabianpitzer.de</a>
-        </p>
-      </div>
+        }
 
+        .main_container {
+            min-height: 0 !important;
+        }
 
+        .quotmarks {
+            transform: translate(-.8rem, 0);
+        }
 
+        .spark-wrapper  {
+            overflow: hidden;
+        }
 
-      <div class="links">
-        <div class="projects">
-          <p>Projects</p>
-          <div class="preview donnerwetter">
-            <p class="clickable"><a href="donnerwetter.html">Donnerwetter</a></p>          
-            <img src="img/previews/3_donner.png" alt="Donnerwetter" style="display: none;">
-          </div>
-          <div class="preview tt">
-            <p class="clickable"><a href="thinktwice.html">Think Twice</a></p>
-            <img src="img/previews/4_tt.png" alt="Think Twice" style="display: none;">
-          </div>
+        .spark {
+            margin-top: -100px;
+            margin-bottom: -180px;
+        }
+
+        a {
+            color: black;
+        }
+
+        a:visited {
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        
+
+        <div class="menu">
+            <h1 class="menu-item title">Fabian Pitzer<br>
+                KABK I/M/D 2021</h1>
+            <h1 class="menu-item">The Sundial</h1>
+            <h1 class="menu-item">FABIGAN: Becoming Me</h1>
+            <h1 class="menu-item">Default Cube</h1>
+            <h1 class="menu-item">Stanzas and Paragraphs</h1>
+            <h1 class="menu-item">Alive Albums</h1>
+
+            <div class="desc-wrapper">
+                <bodycopy class="desc"></bodycopy>
+            </div>
         </div>
-        <div class="galleries">
-          <p>Gallery</p>
-          <div class="preview photo">
-            <p class="clickable"><a href="photography.html">Photography</a></p>          
-            <img src="img/previews/1_photo.jpg" alt="Photography" style="display: none;">
-          </div> 
-          <div class="preview 3d">
-            <p class="clickable"><a href="3D.html">3D Work</a></p>          
-            <img src="img/previews/2_3d.jpg" alt="3D Work" style="display: none;">
-          </div>
-          <div class="preview gd">
-            <p class="clickable"><a href="graphics.html">Graphic Design</a></p>
-            <img src="img/previews/5_gd.jpg" alt="Graphic Design" style="display: none;">
-          </div>
-          <div class="preview drawing">
-            <p class="clickable"><a href="drawing.html">Drawing</a></p>
-            <img src="img/previews/6_drawing.jpg" alt="Drawing" style="display: none;">
-          </div>          
+
+
+        <div class="text-area">
+            <div class="bg-image-wrapper text">
+                <img src="kabk/fab_kabk.png" alt="" srcset="" class="bg-image">
+            </div>
+
+            <div class="text">
+                <h2 class="poem">The Sundial</h2>
+                <small class="poem">The sundial is a tangible VR installation in which one explores a mythical desert environment. With a narrative based on a poem I wrote, the user is confronted with the external, internal and eternal forces in life, manifestations of which were created through an AI’s interpretation of the key three stanzas. 
+                    
+Hissing winds, rumbling of the emerging creatures and sand between fingers and toes allow for an immersive experience that blurs the borders between real and dream worlds. The scene’s naturalistic look and feel is contrasted by the surreality of the sundial, the centerpiece of the installation. Touching it allows you to control the position of the sun, in line with the reversal of the power structure in the poem, where the commanding sun ends up in the hands of the protagonist.
+                </small>
+                <img src="kabk/images/yannik.jpg" alt="" srcset="">
+                <img src="kabk/images/myth.jpg" alt="">
+                <video src="kabk/videos/sundial_trim.mp4" autoplay muted loop></video>
+            </div>
+
+            <div class="text">
+                <h2>FABIGAN: Becoming Me</h2>
+                <small>FABIGAN is an exploration of my childhood that, using the technology of today, allows for a glance into the world to come. The helmet displays an amalgamation of my past selves from child to young adult. As such it might be a more accurate representation of myself than my true face. This immediate juxtaposition of the virtual past and the futuristic present raises questions about the impending changes to digital avatars, irreversibility of aging and the role of the human body in our society.
+                    
+The work was created with a generative adversarial network, in which the faces of nonexistent people were transformed into mine through transfer learning. The resulting interpolation regained life in the form of a wearable headpiece. Code accessing accelerometer data allows the wearer to step back in time and by that take a literal walk in the networks latent space.
+                </small>
+                <img src="kabk/images/helmet.jpg" alt="" srcset="">
+                <img src="kabk/images/wearing.jpg" alt="" srcset="">
+                <video src="kabk/videos/interpolation_easing.mp4" autoplay muted loop></video>
+            </div>
+
+            <div class="text">
+                <h2>Default Cube</h2>
+                <small>Current digital spaces make limited use of our bodies and hinder the collaborative processes that are essential for creating. Video calls reduce our rapid flow of thoughts to a delayed, compressed audio stream. Interfaces like “the desktop” merely imitate the three dimensional world we orient ourselves in and hours of work vanish with the close of a laptop lid. 
+
+The “Default” Cube is an intrinsically collaborative anti-tool Pam and I developed. It transforms the miniscule movement required to move a heavy object in the virtual space into an dynamically emerging choreography of rope pulling. By translating movement through various programs and programming languages it emphasizes the distance between human interaction and digital operations. Furthermore, the elevation of the planar rope pulling to the third dimension happens through the volume of audio in the space, a digitally quantified measure of human communication. Finally, the object being moved around is Blender’s gray “Default Cube”. Having become a symbol of digital content creation, the participants are shaking up the “defaults” in the design of the virtual world which we have come to accept.
+                    </small>
+                <img src="kabk/images/default_cube_edit.jpg" alt="" srcset="">
+                <video src="kabk/videos/orange.mp4" autoplay muted loop></video>
+            </div>
+
+            <div class="text">
+                <h2>Stanzas and Paragraphs</h2>
+                <small>In my writing I focused on developing my concise style and expanding my vocabulary. Poetic processes were often guided by constraints like the use of stylistic devices.
+
+For the visualizations of my pieces I chose to work with text to image neural networks as their style works well with themes of dreams and metamorphosis.
+                    
+Find my collected writing work here:
+<a href="https://stanzasandparagraphsatkabk.cargo.site/" target="_blank" rel="noopener noreferrer">stanzasandparagraphsatkabk.cargo.site</a>                     
+                </small>
+                <img src="kabk/images/scarab.jpg" alt="" srcset="">
+                <div class="spark-wrapper">
+                    <video src="kabk/videos/universallaws.mp4" class="spark" autoplay muted loop></video>
+                </div>
+            </div>
+
+            <div class="text">
+                <h2>Alive Albums</h2>
+                <small>Vinyl records are experiencing a resurgence in popularity and the experience of holding a record in your hands explains why. An analog artifact of your favorite music, wrapped in a graphic that is large enough to let your eyes wander.
+
+Still, technology evolves and on demand streaming proposes a near unbeatable offer: All of your favorite albums, playing at a single tap, accompanied by visual loops by the world's biggest digital artists. 
+                    
+Alive albums is an application that showcases a way to get the best of both worlds. Holding up your phone to the record triggers an augmented reality loop that brings classic albums to new life or enhances the modern collectors item by a new dimension. The detection can also be linked to start streaming the album, making vinyl accessible to people without a record player or those who want to conveniently play via bluetooth.
+                </small>
+                <div class="spark-wrapper">
+                    <video src="kabk/videos/man_alive_Trim.mp4" class="spark" autoplay muted loop></video>
+                </div>
+            </div>     
+
+
+
         </div>
-      </div>
+
+
     </div>
 
-    <div class="footer">
-      <div class="copyright">
-        <p>&copy;</p>
-      </div>
-      <div class="links">
-        <a href="https://leahmaldonado.com/" target="_blank" rel="noopener noreferrer" class="clickable">GlyphWorld Typeface</a>&nbsp;–&nbsp;<a href="legalnotice.html" class="clickable">Legal Notice</a>
-      </div>
-    </div>
-    
-      
-    <script src="js/script.js"></script>
-  </body>
+    <script>
+        addClickToMenu()
+        hideAll(true)
+
+        function addClickToMenu() {
+            document.querySelectorAll(".menu-item").forEach(function (el, i) {
+                el.addEventListener("click", function (e) {
+                    hideAll();
+                    document.querySelectorAll(".text")[i].style.display = "block";
+
+                })
+            })
+        }
+
+        function hideAll(leaveFirst) {
+            document.querySelectorAll(".text").forEach((el, i) => {
+                if (leaveFirst) {
+
+                    if (i !== 0) el.style.display = "none";
+                } else  {
+                    el.style.display = "none";
+                }
+            })
+        }
+
+    </script>
+</body>
+
 </html>
