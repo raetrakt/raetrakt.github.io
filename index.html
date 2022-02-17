@@ -10,25 +10,46 @@
       src: url(./wip/KollektionGrotesque_Normal.otf);
     }
 
+    html {
+      width: 100%;
+    }
 
     body {
       background-color: #fff;
       margin: 0;
+      padding: 0;
       overflow: hidden;
+      width: 100vw;
     }
 
-    .title {
+    footer {
       position: absolute;
       bottom: 1rem;
-      left: 1rem;
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      justify-content: space-between;
       font-family: Kollektion-Grotesque, sans-serif;
       font-size: 2rem;
     }
+
+    .right {
+      margin-right: 1rem; 
+    }
+
+    .left {
+      margin-left: 1rem;
+    }
+
+  
   </style>
 
 </head>
 <body>
-  <div class="title">pitzer.xyz</div>
+  <footer>
+    <div class="left">Fabian Pitzer</div>
+    <div class="right">pitzer.xyz</div>
+  </footer>
 
   <!-- matter.js code by jonah grindler see license.txt -->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.14.2/matter.min.js'></script>
