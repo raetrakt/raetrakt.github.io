@@ -10,26 +10,34 @@
       src: url(./wip/KollektionGrotesque_Normal.otf);
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       background-color: #fff;
       margin: 0;
       padding: 0;
       overflow: hidden;
-      width: 100vw;
+      width: 100%;
       height: 100%;
+      
     }
 
     .info {
       position: absolute;
-      margin: 1rem;
+      padding: 1.5rem;
       display: flex;
       flex-direction: row;
+      gap: 2rem;
+
       font-family: Kollektion-Grotesque, sans-serif;
-      font-size: 2.5rem;
+      font-size: 2rem;
+      width: 100%;
     }
 
-    .block {
-      margin-right: 12rem;
+    .star {
+      margin-left: auto;
     }
 
     p {
@@ -56,13 +64,16 @@
   <div class="info">
     <div class="block">
       <p>Fabian&nbsp;Pitzer</p>
-      <p id="des">Interdisciplinary Designer</p>
-      <p id="tech">Creative Technologist</p>
+      <p id="desc">Designer &</p>
+      <p id="desc">Creative Technologist</p>
     </div>
     <div class="block">
-      <a href = "mailto: fabian@pitzer.xyz" target="_blank">Email</a>
-      <a href="https://www.instagram.com/raetrakt/" target="_blank" rel="noopener noreferrer">Instagram</a>
-      <a href="https://werkschau.hs-augsburg.de/ws_21_22/students/nina-faulhaber" target="_blank" rel="noopener noreferrer">Typeface</a>
+      <p>Arthur-Piechler-Str. 7d</p>
+      <p>86161 Augsburg, Germany</p>
+      <a href = "mailto:fabian@pitzer.xyz" title="Send an email to Fabian Pitzer"  target="_blank">fabian@pitzer.xyz</a>
+    </div>
+    <div class="block star">
+      <a href="https://werkschau.hs-augsburg.de/ws_21_22/students/nina-faulhaber" target="_blank" rel="noopener noreferrer" title="Kollektion Grotesque by Nina Faulhaber" >*</a>
     </div>
   </div>
 
@@ -124,9 +135,12 @@ let s = 1;
 if (isMobile()) s = .65;
 
 if (isMobile()) {
-  document.querySelector("#des").innerText = "Designer";
-  document.querySelector("#tech").innerText = "Technologist";
-  document.querySelector(".info").style.fontSize = "60px";
+  document.querySelector(".info").style.fontSize = "70px";
+  document.querySelector(".info").style.flexDirection = "column";
+  document.querySelector(".star").style.alignSelf = "flex-start";
+  document.querySelector(".star").style.position = "absolute";
+  document.querySelector(".star").style.top = "1.5rem";
+  document.querySelector(".star").style.right = "1.5rem";
 }
 
 // create bounds
