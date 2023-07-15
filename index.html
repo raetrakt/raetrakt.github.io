@@ -1,248 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PITZER.XYZ</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 
-<head>
-
-  <meta charset="UTF-8">
-  <title>Fabian Pitzer</title>
-  <style>
-    @font-face {
-      font-family: Kollektion-Grotesque;
-      src: url(./wip/KollektionGrotesque_Normal.otf);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      background-color: #fff;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      width: 100%;
-      height: 100%;
-
-    }
-
-    .info {
-      position: absolute;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: row;
-      gap: 2rem;
-
-      font-family: Kollektion-Grotesque, sans-serif;
-      font-size: 2rem;
-      width: 100%;
-    }
-
-    .star {
-      margin-left: auto;
-      display: flex;
-      line-height: 2rem;
-    }
-
-    p {
-      margin: 0;
-    }
-
-    a {
-      text-decoration: none;
-      color: black;
-      /* display: block; */
-    }
-
-    a:hover {
-      text-decoration: underline;
-      text-decoration-thickness: .13rem;
-      text-underline-offset: .17rem;
-    }
-
-    /* canvas {
-      position: absolute;
-      top:0;
-    } */
-  </style>
-
-</head>
-
-<body>
-  <div class="info">
-    <div class="block">
-      <p>Fabian&nbsp;Pitzer</p>
-      <p id="desc">Interdisciplinary Designer</p>
-      <p id="desc">Creative Technologist</p>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="content">
+      <div class="header">
+        <div class="home-button">
+          <div class="name-button" href="index.html">
+            <a href="index.html" class="name-text">FABIAN PITZER</a>
+          </div>
+        </div>
+        <div class="projects-button">PROJECTS</div>
+        <div class="about-button">ABOUT</div>
+      </div>
+      <div class="project">
+        <div class="info">
+          <div class="title">SHAPE INDEX</div>
+          <div class="tags">Code, Print</div>
+          <div class="year">2021</div>
+        </div>
+        <div class="description">
+          <p>Generative compositions inspired by analog experiments</p>
+        </div>
+        <div class="images">
+          <img src="images/shape_index/shape_index_sky_web.jpg" alt="" />
+          <video
+            class="main-image"
+            muted
+            autoplay
+            loop
+            style="pointer-events: none; aspect-ratio: 1434/1080"
+          >
+            <source
+              src="images/shape_index/shape_index_shapes_landscape_web.mp4"
+              type="video/mp4"
+            />
+          </video>
+          <img src="images/shape_index/shape_index_warehouse_web.jpg" />
+        </div>
+      </div>
+      <div class="project">
+        <div class="info">
+          <div class="title">NOT WORLD MUSIC</div>
+          <div class="tags">Web, API, 3D</div>
+          <div class="year">2022</div>
+        </div>
+        <div class="description">
+          <p>Global music exploration against discriminative algorithms</p>
+        </div>
+        <div class="images">
+          <video
+            class="main-image"
+            muted
+            autoplay
+            loop
+            style="pointer-events: none; aspect-ratio: 1.568"
+          >
+            <source
+              src="images/not_world_music/nwm_screenrecording_web.mp4"
+              type="video/mp4"
+            />
+          </video>
+          <img
+            src="images/not_world_music/nwm_poster_web.png"
+            alt=""
+            srcset=""
+          />
+          <img src="images/not_world_music/nwm_devices_web.png" alt="" />
+        </div>
+      </div>
+      <div class="project">
+        <div class="info">
+          <div class="title">FABIGAN</div>
+          <div class="tags">AI, GAN</div>
+          <div class="year">2021</div>
+        </div>
+        <div class="description">
+          <p>Distilling my young self past into a .pkl file</p>
+        </div>
+        <div class="images">
+          <img src="images/fabigan/fabigan_helmet_web.jpg" alt="" srcset="" />
+          <img src="images/fabigan/fabigan_scaffolding_web.jpg" alt="" srcset="" />
+          <video
+            class="main-image"
+            muted
+            autoplay
+            loop
+            style="pointer-events: none; aspect-ratio: 1 / 1"
+          >
+            <source
+              src="images/fabigan/fabigan_latent_web.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </div>
+      </div>
     </div>
-    <div class="block">
-      <p>Currently in Utrecht</p>
-      <p>Interning at <a href="http://studiomoniker.com" title="Studio Moniker" target="_blank" rel="noopener noreferrer">Studio Moniker</a>
-      </p>
-      <a href="mailto:fabian@pitzer.xyz" title="Send me an email" target="_blank">fabian@pitzer.xyz</a>
-    </div>
-    <div class="block star">
-      <a href="https://www.instagram.com/_ninafaulhaber/" target="_blank"
-        rel="noopener noreferrer" title="Kollektion Grotesque by Nina Faulhaber">:)</a>
-    </div>
-  </div>
-
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.14.2/matter.min.js'></script>
-
-
-  <script>
-
-
-    // Copyright (c) 2022 by Jonah  Grindler (https://codepen.io/JonahGrindler/pen/VwLWxrY) modified by Fabian Pitzer
-    // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-    // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-    // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-    document.addEventListener("DOMContentLoaded", function (event) {
-      // Your code to run since DOM is loaded and ready
-      var Engine = Matter.Engine,
-        Render = Matter.Render,
-        Events = Matter.Events,
-        MouseConstraint = Matter.MouseConstraint,
-        Mouse = Matter.Mouse,
-        World = Matter.World,
-        Bodies = Matter.Bodies;
-
-      // create an engine
-      var engine = Engine.create(),
-        world = engine.world;
-
-      // create a renderer
-      var render = Render.create({
-        element: document.body,
-        engine: engine,
-        options: {
-          width: window.innerWidth,
-          height: window.innerHeight,
-          pixelRatio: 2,
-          background: '#fff',
-          wireframes: false,
-        }
-      });
-
-
-
-
-
-
-      var border = 0
-      var radius = 2
-
-      function isMobile() {
-        return (window.innerHeight > window.innerWidth) ? true : false;
-      }
-
-      console.log(isMobile());
-
-      let s = 1;
-
-      if (isMobile()) s = .65;
-
-      if (isMobile()) {
-        document.querySelector(".info").style.fontSize = "70px";
-        document.querySelector(".info").style.flexDirection = "column";
-        document.querySelector(".star").style.alignSelf = "flex-start";
-        document.querySelector(".star").style.position = "absolute";
-        document.querySelector(".star").style.top = "1.5rem";
-        document.querySelector(".star").style.right = "1.5rem";
-        document.querySelector(".star").style.lineHeight = "70px";
-
-      }
-
-      // create bounds
-      var ground = Bodies.rectangle((window.innerWidth / 2), window.innerHeight + 80, window.innerWidth + 320, 160, { render: { fillStyle: '#fff' }, isStatic: true });
-      var wallLeft = Bodies.rectangle(-80, window.innerHeight / 2, 160, window.innerHeight + 320, { render: { fillStyle: '#000' }, isStatic: true });
-      var wallRight = Bodies.rectangle(window.innerWidth + 80, window.innerHeight / 2, 160, window.innerHeight + 320, { render: { fillStyle: '#000' }, isStatic: true });
-      var roof = Bodies.rectangle((window.innerWidth / 2) + 160, -80, window.innerWidth + 320, 160, { render: { fillStyle: '#000' }, isStatic: true });
-
-      // create objects
-      var p = Bodies.rectangle(500 * s, 200 * s, 828 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../wip/portfolio.png', xScale: s, yScale: s } } })
-      var u = Bodies.rectangle(820 * s, 200 * s, 526 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../wip/under.png', xScale: s, yScale: s } } })
-      var d = Bodies.rectangle(0 * s, 500 * s, 372 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../wip/de.png', xScale: s, yScale: s } } })
-      var c = Bodies.rectangle(800 * s, 500 * s, 1181 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../wip/construction.png', xScale: s, yScale: s } } })
-      // var instagram = Bodies.rectangle(320, 180, 40, 40, {id: 'instagramBody', chamfer: {radius: radius}, render: { sprite: { texture: 'https://i.imgur.com/RStSwfG.png', xScale: 0.5, yScale: 0.5 }}, url: 'https://www.instagram.com/fuse.blog/'})
-
-
-
-      // Original Shape
-      // var illustration = Bodies.rectangle(70, 500, 133, 40, {render: { fillStyle: arts}, chamfer: {radius: 20}})
-
-
-      // add all of the bodies to the world
-      World.add(engine.world, [
-        ground, wallLeft, wallRight, roof, p, u, d, c]);
-
-      // add mouse control
-      var mouse = Mouse.create(render.canvas),
-        mouseConstraint = MouseConstraint.create(engine, {
-          mouse: mouse,
-          constraint: {
-            stiffness: 0.2,
-            render: {
-              visible: false
-            }
-          }
-        });
-
-      World.add(world, mouseConstraint);
-
-      // keep the mouse in sync with rendering
-      render.mouse = mouse;
-
-      // Allow page scrolling in matter.js window
-      mouse.element.removeEventListener("mousewheel", mouse.mousewheel);
-      mouse.element.removeEventListener("DOMMouseScroll", mouse.mousewheel);
-
-      // Detect clicks vs. drags
-      let click = false;
-
-      document.addEventListener('mousedown', () => click = true);
-      document.addEventListener('mousemove', () => click = false);
-      document.addEventListener('mouseup', () => console.log(click ? 'click' : 'drag'));
-
-      // Create a On-Mouseup Event-Handler
-      Events.on(mouseConstraint, 'mouseup', function (event) {
-        var mouseConstraint = event.source;
-        var bodies = engine.world.bodies;
-        if (!mouseConstraint.bodyB) {
-          for (i = 0; i < bodies.length; i++) {
-            var body = bodies[i];
-            // Check if clicked or dragged
-            if (click === true) {
-              if (Matter.Bounds.contains(body.bounds, mouseConstraint.mouse.position)) {
-                var bodyUrl = body.url;
-                console.log("Body.Url >> " + bodyUrl);
-                // Hyperlinking feature
-                if (bodyUrl != undefined) {
-                  //window.location.href = bodyUrl;
-                  window.open(bodyUrl, '_blank');
-                  console.log("Hyperlink was opened");
-                }
-                break;
-              }
-            }
-          }
-        }
-      });
-
-      // run the engine
-      Engine.run(engine);
-
-      // run the renderer
-      Render.run(render);
-
-      window.onresize = function () { location.reload(); }
-    });
-
-
-
-  </script>
-
-</body>
-
+    <script src="js/name_hover.js"></script>
+  </body>
 </html>

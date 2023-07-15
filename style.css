@@ -1,0 +1,125 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: "Heinz";
+  src: url("fonts/Heinz-Regular.otf") format("opentype");
+  font-display: swap;
+}
+
+::selection {
+  color: white;
+  background: black;
+}
+
+body {
+  font-family: "Heinz", sans-serif;
+  font-size: 1.5rem;
+}
+
+a {
+  text-decoration: none;
+  color: unset;
+}
+
+.content {
+  padding: 50px;
+}
+
+.header {
+  display: flex;
+  height: 300px;
+}
+
+.home-button {
+  min-width: 60%;
+}
+
+.projects-button {
+  min-width: 30%;
+}
+
+.project {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 400px;
+  padding: 25px 0;
+  border-top: 0.1rem solid black;
+}
+
+.project:last-child {
+  border-bottom: 0.1rem solid black;
+}
+
+.info {
+  display: flex;
+}
+
+.title {
+  min-width: 60%;
+}
+
+.tags {
+  min-width: 30%;
+}
+
+.description {
+  margin-bottom: 18px;
+  line-height: 1.3;
+}
+
+.images {
+  display: flex;
+  height: 100%;
+  min-height: 0; /* weird css thing: https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */
+}
+
+img,
+video {
+  object-fit: cover;
+  max-height: 100%;
+  margin-right: 25px;
+}
+
+/* Styles for mobile devices */
+@media (max-width: 767px) {
+  .content {
+    padding: 25px;
+  }
+
+  .header {
+    justify-content: space-between;
+  }
+
+  .projects-button {
+    display: none;
+  }
+
+  .project {
+    height: auto;
+  }
+
+  .tags {
+    display: none;
+  }
+
+  .year {
+    display: none;
+  }
+
+  img:not(.main-image),
+  video:not(.main-image) {
+    display: none;
+  }
+
+  img,
+  video {
+    min-width: 100%;
+    height: auto;
+    margin-right: 0;
+  }
+}
