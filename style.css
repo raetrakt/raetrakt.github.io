@@ -196,4 +196,8 @@ video {
     height: auto;
     margin-right: 0;
   }
+  
+  .project.section.disclaimer {
+    display: block !important;
+  }
 }

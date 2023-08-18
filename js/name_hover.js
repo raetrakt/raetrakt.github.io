@@ -29,13 +29,9 @@ let currentTransitionIndex = 0;
 let transitionStepDuration = 40;
 
 // Only add this functionality on desktop, because touch devices don't have hover
-function isTouchDevice() {
-  return (('ontouchstart' in window) ||
-     (navigator.maxTouchPoints > 0) ||
-     (navigator.msMaxTouchPoints > 0));
-}
-
-if (!isTouchDevice()) {
+if (window.matchMedia("(max-width: 767px)").matches) {
+} else {
+  nameText.innerHTML = '<a href="index.html">PITZER.XYZ</a>';
   nameButton.addEventListener("mouseenter", () => {
     isReverting = false;
     startTransition();
@@ -45,12 +41,16 @@ if (!isTouchDevice()) {
     isReverting = true;
     startTransition();
   });
-} else {
-  
-  nameText.innerHTML = "<a href=\"index.html\">PITZER.XYZ</a>"
 }
 
-
+// Touch approach didn't work because my stupid laptop has touch haha
+// function isTouchDevice() {
+//   return (
+//     "ontouchstart" in window ||
+//     navigator.maxTouchPoints > 0 ||
+//     navigator.msMaxTouchPoints > 0
+//   );
+// }
 
 function startTransition() {
   clearTimeout(transitionTimeout);
