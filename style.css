@@ -106,7 +106,7 @@ p {
   width: 60%;
 }
 
-.about-text .paragraph {
+.paragraph {
   line-height: 1.3;
 }
 
@@ -171,11 +171,6 @@ video {
 
   .about-text .paragraph {
     width: auto;
-  }
-
-  .portrait {
-    width: 100%;
-    margin-bottom: 2rem;
   }
 
   .project {

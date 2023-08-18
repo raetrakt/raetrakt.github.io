@@ -28,15 +28,29 @@ let currentTransitionIndex = 0;
 // Amount of time the change of one letter should take in ms
 let transitionStepDuration = 40;
 
-nameButton.addEventListener("mouseenter", () => {
-  isReverting = false;
-  startTransition();
-});
+// Only add this functionality on desktop, because touch devices don't have hover
+function isTouchDevice() {
+  return (('ontouchstart' in window) ||
+     (navigator.maxTouchPoints > 0) ||
+     (navigator.msMaxTouchPoints > 0));
+}
 
-nameButton.addEventListener("mouseleave", () => {
-  isReverting = true;
-  startTransition();
-});
+if (!isTouchDevice()) {
+  nameButton.addEventListener("mouseenter", () => {
+    isReverting = false;
+    startTransition();
+  });
+  
+  nameButton.addEventListener("mouseleave", () => {
+    isReverting = true;
+    startTransition();
+  });
+} else {
+  
+  nameText.innerHTML = "<a href=\"index.html\">PITZER.XYZ</a>"
+}
+
+
 
 function startTransition() {
   clearTimeout(transitionTimeout);
