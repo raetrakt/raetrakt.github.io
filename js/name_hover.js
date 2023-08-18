@@ -1,31 +1,32 @@
 const nameButton = document.querySelector(".name-button");
 const nameText = document.querySelector(".name-text");
+const nameTextMaxWidth = document.querySelector(".name-text-maxwidth");
 const nameStates = [
-  "FABIAN PITZER",
-  "FABIA PITZER",
-  "FABI PITZER",
-  "FAB PITZER",
-  "FA PITZER",
-  "F PITZER",
-  " PITZER",
-  "PITZER",
-  "PITZER.",
-  "PITZER.X",
-  "PITZER.XY",
   "PITZER.XYZ",
+  "PITZER.XY",
+  "PITZER.X",
+  "PITZER.",
+  "PITZER",
+  " PITZER",
+  "F PITZER",
+  "FA PITZER",
+  "FAB PITZER",
+  "FABI PITZER",
+  "FABIA PITZER",
+  "FABIAN PITZER",
 ];
-// Ensuring that the size of the button stays the same when text changes
+
+// Ensuring that the width of the button stays the maximum of the content
 window.addEventListener("load", () => {
-  const initialWidth = nameText.getBoundingClientRect().width;
+  const initialWidth = nameTextMaxWidth.getBoundingClientRect().width;
   nameButton.style.width = `${initialWidth}px`;
-  nameText.style.display = "block";
 });
 
 let transitionTimeout;
 let isReverting = false;
 let currentTransitionIndex = 0;
 // Amount of time the change of one letter should take in ms
-let transitionStepDuration = 30;
+let transitionStepDuration = 40;
 
 nameButton.addEventListener("mouseenter", () => {
   isReverting = false;
