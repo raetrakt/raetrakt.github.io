@@ -5,8 +5,8 @@
 }
 
 @font-face {
-  font-family: "Heinz";
-  src: url("fonts/Heinz-Regular.otf") format("opentype");
+  font-family: "Uncut Sans";
+  src: url("fonts/UncutSans-Regular.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -25,7 +25,8 @@ html {
 }
 
 body {
-  font-family: "Heinz", sans-serif;
+  font-family: "Uncut Sans", sans-serif;
+  font-feature-settings: "ss05" on, "ss02" on;
   font-size: 1.5rem;
   background-color: #f0f0f0;
 }
