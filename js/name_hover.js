@@ -30,8 +30,8 @@ let transitionStepDuration = 40;
 
 // Only add this functionality on desktop, because touch devices don't have hover
 if (window.matchMedia("(max-width: 767px)").matches) {
-} else {
   nameText.innerHTML = '<a href="index.html">PITZER.XYZ</a>';
+} else {
   nameButton.addEventListener("mouseenter", () => {
     isReverting = false;
     startTransition();

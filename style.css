@@ -199,6 +199,10 @@ video {
     display: none;
   }
 
+  .images {
+    height: auto;
+  }
+
   img:not(.main-image),
   video:not(.main-image) {
     display: none;
@@ -206,9 +210,19 @@ video {
 
   img,
   video {
-    min-width: 100%;
+    object-fit: contain;
+    width: 100%;
     height: auto;
     margin-right: 0;
+  }
+
+  .project-text {
+    display: block;
+  }
+
+  .project-text-paragraph {
+    width: 100%;
+    margin-bottom: 1rem;
   }
 
   .project.section.disclaimer {
