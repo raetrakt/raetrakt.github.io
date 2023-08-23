@@ -28,8 +28,7 @@ body {
   font-family: "Uncut Sans", sans-serif;
   font-size: 1.5rem;
   background-color: #f0f0f0;
-  /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
-  font-feature-settings: "ss05" on;
+  font-feature-settings: "ss05" on; /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
 }
 
 a {
@@ -74,7 +73,7 @@ p {
 .project {
   display: flex;
   flex-direction: column;
-  width: 100%;  
+  width: 100%;
 }
 
 .section {
@@ -104,6 +103,10 @@ p {
   height: 300px;
   min-height: 0; /* weird css thing: https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */
   margin-bottom: 2rem;
+}
+
+.mobile-image {
+  display: none;
 }
 
 .project-text {
@@ -140,12 +143,12 @@ video {
   object-fit: cover;
   max-height: 100%;
   margin-right: 25px;
-  background-color: black;
 }
 
 /* Styles for mobile devices */
 @media (max-width: 767px) {
   body {
+    --mobile-margin: 1.5rem;
     font-size: 1.2rem;
   }
 
@@ -160,6 +163,7 @@ video {
 
   .projects-button {
     display: none;
+    min-width: unset;
   }
 
   .about-page-header .projects-button {
@@ -187,6 +191,10 @@ video {
     width: auto;
   }
 
+  .section {
+    padding: var(--mobile-margin) 0;
+  }
+
   .project {
     height: auto;
   }
@@ -199,13 +207,26 @@ video {
     display: none;
   }
 
-  .images {
-    height: auto;
+  .description {
+    margin-bottom: calc(var(--mobile-margin) - .2rem);
   }
 
-  img:not(.main-image),
-  video:not(.main-image) {
+  .images {
+    height: auto;
+    margin-bottom: var(--mobile-margin);
+  }
+
+  .images img:not(.main-image),
+  .images video:not(.main-image) {
     display: none;
+  } 
+
+  .mobile-image {
+    display: block;
+  }
+
+  .mobile-image:not(:last-child){
+    margin-bottom: var(--mobile-margin);
   }
 
   img,
@@ -222,10 +243,13 @@ video {
 
   .project-text-paragraph {
     width: 100%;
-    margin-bottom: 1rem;
+  }
+  
+  .project-text-paragraph:not(:last-child){
+    margin-bottom: var(--mobile-margin);
   }
 
-  .project.section.disclaimer {
+  .scroll-button {
     display: block !important;
   }
 }
