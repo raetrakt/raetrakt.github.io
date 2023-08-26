@@ -29,7 +29,7 @@ body {
   font-size: 1.5rem;
   background-color: #f0f0f0;
   font-feature-settings: "ss05" on; /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
-}
+  }
 
 a {
   text-decoration: none;
@@ -100,9 +100,21 @@ p {
 
 .images {
   display: flex;
-  height: 300px;
+  height: 280px;
   min-height: 0; /* weird css thing: https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */
   margin-bottom: 2rem;
+  transition: height .3s;
+}
+
+.hover .images {
+  height: 320px;
+}
+
+img,
+video {
+  object-fit: cover;
+  max-height: 100%;
+  margin-right: 25px;
 }
 
 .mobile-image {
@@ -136,13 +148,6 @@ p {
 .portrait {
   max-width: 250px;
   margin-bottom: 0;
-}
-
-img,
-video {
-  object-fit: cover;
-  max-height: 100%;
-  margin-right: 25px;
 }
 
 /* Styles for mobile devices */
