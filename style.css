@@ -155,7 +155,7 @@ video {
 @media (max-width: 767px) {
   body {
     --mobile-margin: 1.5rem;
-    font-size: 1.2rem;
+    font-size: 1.35rem;
   }
 
   .content {
@@ -164,7 +164,7 @@ video {
 
   .header {
     justify-content: space-between;
-    height: 200px;
+    height: 140px;
   }
 
   .projects-button {
@@ -226,6 +226,10 @@ video {
   .images video:not(.main-image) {
     display: none;
   } 
+
+  .hover .images {
+    height: unset;
+  }
 
   .mobile-image {
     display: block;
