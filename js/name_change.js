@@ -1,5 +1,5 @@
-const nameChangeTrigger = document.querySelector(".portrait");
-const nameText = document.querySelector(".name-text");
+const nameElem = document.querySelector(".about-name");
+const nameElemLine = document.querySelector(".about-title");
 const nameStates = [
   "PITZER.XYZ",
   "PITZER.XY",
@@ -18,13 +18,13 @@ const nameStates = [
 let transitionTimeout;
 let isReverting = false;
 let currentTransitionIndex = 0;
-let transitionStepDuration = 40; // Amount of time the change of one letter should take in ms
+let transitionStepDuration = 90; // Amount of time the change of one letter should take in ms
 
 function startTransition() {
   clearTimeout(transitionTimeout);
 
   function updateState() {
-    nameText.innerText = nameStates[currentTransitionIndex];
+    nameElem.innerText = nameStates[currentTransitionIndex];
 
     if (!isReverting) {
       if (currentTransitionIndex < nameStates.length - 1) {
@@ -42,15 +42,21 @@ function startTransition() {
   updateState();
 }
 
-// Only add this functionality on desktop, because touch devices don't have hover
-if (!window.matchMedia("(max-width: 767px)").matches) {
-  nameChangeTrigger.addEventListener("mouseenter", () => {
-    isReverting = false;
-    startTransition();
-  });
+window.onload = function() {
+  setTimeout(function() {startTransition()}, 1500); 
+};
 
-  nameChangeTrigger.addEventListener("mouseleave", () => {
+// Add hover functionality on desktop and a line break on mobile
+if (!window.matchMedia("(max-width: 767px)").matches) {
+  nameElemLine.addEventListener("mouseenter", () => {
     isReverting = true;
     startTransition();
   });
+
+  nameElemLine.addEventListener("mouseleave", () => {
+    isReverting = false;
+    startTransition();
+  });
+} else {
+  document.querySelector(".about-profession").innerText = `\nCREATIVE TECHNOLOGIST`
 }

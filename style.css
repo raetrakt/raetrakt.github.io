@@ -29,7 +29,8 @@ body {
   font-size: 1.5rem;
   background-color: #f0f0f0;
   font-feature-settings: "ss05" on; /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
-  }
+  user-select: none;
+}
 
 a {
   text-decoration: none;
@@ -58,17 +59,20 @@ p {
 }
 
 .home-button {
-  min-width: 60%;
+  min-width: 65%;
 }
 
 .name-button {
   white-space: nowrap;
   user-select: none;
-  width: fit-content;
+}
+
+.name-text:hover {
+  text-decoration: none !important;
 }
 
 .projects-button {
-  min-width: 33%;
+  min-width: 28%;
 }
 
 .project {
@@ -87,11 +91,11 @@ p {
 }
 
 .title {
-  min-width: 60%;
+  min-width: 65%;
 }
 
 .tags {
-  min-width: 33%;
+  min-width: 28%;
 }
 
 .description {
@@ -104,11 +108,11 @@ p {
   height: 280px;
   min-height: 0; /* weird css thing: https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */
   margin-bottom: 2rem;
-  transition: height .4s;
+  transition: height .5s;
 }
 
 .hover .images {
-  height: 320px;
+  height: 310px;
 }
 
 img,
@@ -138,8 +142,13 @@ video {
   display: flex;
 }
 
-.about-info {
-  width: 60%;
+.about-text {
+  width: 65%;
+}
+
+.about-text p {
+  max-width: 36rem;
+  padding-right: 2rem;
 }
 
 .paragraph {
@@ -147,8 +156,8 @@ video {
 }
 
 .portrait {
-  max-width: 250px;
-  margin-bottom: 0;
+  max-width: 220px;
+  margin-bottom: 1rem;
 }
 
 /* Styles for mobile devices */
@@ -186,15 +195,30 @@ video {
 
   .about-text {
     width: auto;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+
+  .about-title {
+    font-size: 1.35rem;
+  }
+  
+  .about-info {
+    width: auto;
     margin-bottom: 3rem;
   }
 
   .about-info {
     width: auto;
+    margin-bottom: 3rem;
   }
 
-  .about-text .paragraph {
+  .about-info .paragraph {
     width: auto;
+  }
+
+  .portrait {
+    max-width: unset;
   }
 
   .section {
