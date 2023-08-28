@@ -4,9 +4,11 @@ window.addEventListener('scroll', function () {
 
   document.querySelectorAll('.project').forEach(function(elem) {
     var rect = elem.getBoundingClientRect();
-    var centerElem = rect.top + elem.offsetHeight / 2;
+    var quarterImagesHeight = document.querySelector(".images").offsetHeight / 4;
+    var elemCenter = rect.top + elem.offsetHeight / 2;
+    var adjustedElemCenter = elemCenter - quarterImagesHeight;
 
-    if (Math.abs(centerWindow - centerElem) < elem.offsetHeight / 2) {
+    if (Math.abs(centerWindow - adjustedElemCenter) < elem.offsetHeight / 2) {
       elem.classList.add('hover');
     } else {
       elem.classList.remove('hover');
