@@ -173,6 +173,13 @@ video {
   margin-bottom: 1rem;
 }
 
+@media (max-width: 1200px) {
+  .images {
+    height: 20vw;
+  }
+}
+
+
 /* Styles for mobile devices */
 @media (max-width: 767px) {
   body {
@@ -188,6 +195,7 @@ video {
     --initial-height: 140px;
     justify-content: space-between;
     height: var(--initial-height);
+    z-index: 1;
   }
 
   .sticky {
