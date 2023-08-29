@@ -178,6 +178,10 @@ video {
   .images {
     height: 20vw;
   }
+
+  .hover .images {
+    height: 23vw;
+  }
 }
 
 
