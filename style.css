@@ -254,7 +254,12 @@ video {
   }
 
   .section {
-    padding: calc(var(--mobile-margin) + .5rem) 0;
+    padding-top: var(--mobile-margin);
+    padding-bottom: 6rem;
+  }
+
+  .section:last-child {
+    padding-bottom: var(--mobile-margin);
   }
 
   .project {
