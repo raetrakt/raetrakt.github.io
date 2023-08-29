@@ -25,9 +25,10 @@ html {
 }
 
 body {
+  --bg-color: #bbb;
   font-family: "Uncut Sans", sans-serif;
   font-size: 1.5rem;
-  background-color: #f0f0f0;
+  background-color: var(--bg-color);
   font-feature-settings: "ss05" on; /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
   user-select: none;
 }
@@ -64,7 +65,7 @@ p {
   top: 0;
   width: calc(100% - 2*50px);
   height: 68px;
-  background-color: #f0f0f0;
+  background-color: var(--bg-color);
 }
 
 .sticky-border {
