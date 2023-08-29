@@ -40,7 +40,7 @@ a {
 a:not(.section):hover,
 a:hover .title {
   text-decoration: underline;
-  text-decoration-thickness: 0.1rem;
+  text-decoration-thickness: 1.4px;
   text-decoration-skip-ink: all;
   text-underline-offset: 0.22rem;
 }
@@ -68,7 +68,7 @@ p {
 }
 
 .sticky-border {
-  border-bottom: 0.1rem solid black;
+  border-bottom: 2px solid black;
 }
 
 .home-button {
@@ -96,7 +96,7 @@ p {
 
 .section {
   padding: 2rem 0;
-  border-top: 0.1rem solid black;
+  border-top: 2px solid black;
 }
 
 .info {
