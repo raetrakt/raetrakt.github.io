@@ -231,6 +231,10 @@ video {
     font-size: 1.1rem;
   }
 
+  .about-text p {
+    padding-right: 0;
+  }
+
   .about-title {
     font-size: 1.35rem;
   }
