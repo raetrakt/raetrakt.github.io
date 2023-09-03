@@ -56,7 +56,6 @@ function updateHeaderValues() {
   initialHeaderHeight = getComputedStyle(header).getPropertyValue("--initial-height");
   headerHeight = getComputedStyle(header).getPropertyValue("height");
   contentPadding = getComputedStyle(content).getPropertyValue("padding");
-  header.style.paddingTop = parseFloat(contentPadding) * 0.4 + "px";
 }
 
 updateHeaderValues(); // Initial call
