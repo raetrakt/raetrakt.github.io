@@ -63,7 +63,7 @@ p {
 .sticky {
   position: fixed;
   top: 0;
-  width: calc(100% - 2*50px);
+  width: calc(100% - 2 * 50px);
   height: 68px;
   background-color: var(--bg-color);
 }
@@ -122,7 +122,7 @@ p {
   height: 280px;
   min-height: 0; /* weird css thing: https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */
   margin-bottom: 2rem;
-  transition: height .5s;
+  transition: height 0.5s;
 }
 
 .hover .images {
@@ -134,6 +134,7 @@ video {
   object-fit: cover;
   max-height: 100%;
   margin-right: 25px;
+  pointer-events: none;
 }
 
 .mobile-image {
@@ -174,6 +175,30 @@ video {
   margin-bottom: 1rem;
 }
 
+/* painting */
+.transparent-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+.pencil-toggle {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  background-image: url("./images/other/pencil.svg");
+  background-repeat: no-repeat;
+  cursor: pointer;
+  filter: drop-shadow(2px 1px 1.5px rgb(0 0 0 / 0.3));
+}
+
+.pencil-toggle:hover {
+  transform: translate(-2px, -2px);
+  filter: drop-shadow(3px 3px 4px rgb(0 0 0 / 0.2));
+}
+
 @media (max-width: 1200px) {
   .images {
     height: 20vw;
@@ -182,8 +207,15 @@ video {
   .hover .images {
     height: 23vw;
   }
-}
 
+  .pencil-toggle {
+    display: none;
+  }
+
+  .transparent-canvas {
+    display: none;
+  }
+}
 
 /* Styles for mobile devices */
 @media (max-width: 767px) {
@@ -204,7 +236,7 @@ video {
   }
 
   .sticky {
-    width: calc(100% - 2*25px);
+    width: calc(100% - 2 * 25px);
     height: 46px;
   }
 
@@ -238,7 +270,7 @@ video {
   .about-title {
     font-size: 1.35rem;
   }
-  
+
   .about-info {
     width: auto;
     margin-bottom: 3rem;
@@ -279,7 +311,7 @@ video {
   }
 
   .description {
-    margin-bottom: calc(var(--mobile-margin) - .2rem);
+    margin-bottom: calc(var(--mobile-margin) - 0.2rem);
   }
 
   .images {
@@ -290,7 +322,7 @@ video {
   .images img:not(.main-image),
   .images video:not(.main-image) {
     display: none;
-  } 
+  }
 
   .hover .images {
     height: unset;
@@ -300,7 +332,7 @@ video {
     display: block;
   }
 
-  .mobile-image:not(:last-child){
+  .mobile-image:not(:last-child) {
     margin-bottom: var(--mobile-margin);
   }
 
@@ -319,8 +351,8 @@ video {
   .project-text-paragraph {
     width: 100%;
   }
-  
-  .project-text-paragraph:not(:last-child){
+
+  .project-text-paragraph:not(:last-child) {
     margin-bottom: var(--mobile-margin);
   }
 }
