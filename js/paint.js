@@ -33,7 +33,7 @@ let numRows, numCols;
 // Function to set canvas size
 function setCanvasSize() {
   canvas.width = window.innerWidth;
-  canvas.height = document.documentElement.scrollHeight;
+  canvas.height = document.documentElement.scrollHeight * 1.01;
 
   // Calculate the number of rows and columns based on canvas size and cell size
   numRows = Math.ceil(canvas.height / cellSize);
@@ -44,9 +44,6 @@ function setCanvasSize() {
     Array.from({ length: numCols }, () => false)
   );
 }
-
-// Set initial canvas size and grid
-setCanvasSize();
 
 // Function to draw on the canvas using Bresenham's line algorithm
 function draw(e) {
@@ -124,13 +121,6 @@ window.addEventListener("mouseup", () => {
   saveDrawingData();
 });
 
-// Update canvas size and grid when the window is resized
-window.addEventListener("resize", () => {
-  setCanvasSize();
-  // Clear drawing data when the window is resized
-  clearDrawingData();
-});
-
 // Initial state of the floating div
 let isPencilActive = false;
 
@@ -197,5 +187,18 @@ function clearDrawingData() {
   localStorage.removeItem(`${aboutPrefix}drawingData`);
 }
 
-// Call the loadDrawingData function when the page is loaded
-window.addEventListener("load", loadDrawingData);
+// Prepare canvas after page load
+window.addEventListener("load", () => {
+  // Set initial canvas size and grid
+  setCanvasSize();
+  // Call the loadDrawingData function when the page is loaded
+  loadDrawingData();
+});
+
+// Update canvas size and grid when the window is resized
+window.addEventListener("resize", () => {
+    //Update size
+    setCanvasSize();
+    // Clear drawing data when the window is resized
+    clearDrawingData();
+  });
