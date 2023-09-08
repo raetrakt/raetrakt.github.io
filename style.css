@@ -27,7 +27,7 @@ html {
 body {
   --bg-color: #eee;
   font-family: "Uncut Sans", sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   background-color: var(--bg-color);
   font-feature-settings: "ss05" on; /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
   user-select: none;
