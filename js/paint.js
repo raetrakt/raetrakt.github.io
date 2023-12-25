@@ -135,7 +135,7 @@ function togglePencilMode() {
   // Toggle cursor style and canvas pointer events
   if (isPencilActive) {
     pencilToggle.style.backgroundImage = 'url("./images/other/cursor.svg")';
-    document.body.style.cursor = `url("./images/other/pencil.svg") 8 30, crosshair`;
+    document.body.style.cursor = `url("./images/other/pencil_32px.png") 8 30, crosshair`;
   } else {
     pencilToggle.style.backgroundImage = 'url("./images/other/pencil.svg")';
     document.body.style.cursor = "auto";
