@@ -30,7 +30,10 @@ body {
   font-size: 1.6rem;
   background-color: var(--bg-color);
   font-feature-settings: "ss05" on; /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
-  user-select: none;
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;  
 }
 
 a {
