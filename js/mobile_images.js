@@ -4,7 +4,7 @@ const projects = document.querySelectorAll('.project');
 // Iterate through each project
 projects.forEach(project => {
     // Get all 'img' elements within the project
-    const images = Array.from(project.querySelectorAll('img'));
+    const images = Array.from(project.querySelectorAll('.images img'));
 
     // Get all 'project-text-paragraph' elements within the project
     const paragraphs = Array.from(project.querySelectorAll('.project-text-paragraph'));

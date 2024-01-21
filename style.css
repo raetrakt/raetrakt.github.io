@@ -41,8 +41,7 @@ a {
   color: unset;
 }
 
-a:not(.section):hover,
-a:hover .title {
+a:not(.section):hover {
   text-decoration: underline;
   text-decoration-thickness: 1.4px;
   text-decoration-skip-ink: all;
@@ -122,10 +121,19 @@ p {
 
 .images {
   display: flex;
-  height: 280px;
+  height: 20vw;
   min-height: 0; /* weird css thing: https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */
   margin-bottom: 2rem;
   transition: height 0.5s;
+}
+
+.fragments {
+  height: 10vw;
+  margin-top: 2rem;
+}
+
+.fragments img, .fragments video {
+  height: 100%;
 }
 
 .hover .images {
@@ -337,6 +345,10 @@ video {
 
   .mobile-image:not(:last-child) {
     margin-bottom: var(--mobile-margin);
+  }
+
+  .fragments {
+    display: none;
   }
 
   img,
