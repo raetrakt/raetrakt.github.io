@@ -33,7 +33,7 @@ let numRows, numCols;
 // Function to set canvas size
 function setCanvasSize() {
   canvas.width = window.innerWidth;
-  canvas.height = document.documentElement.scrollHeight * 1.01;
+  canvas.height = document.documentElement.scrollHeight;
 
   // Calculate the number of rows and columns based on canvas size and cell size
   numRows = Math.ceil(canvas.height / cellSize);
