@@ -1,30 +1,30 @@
-const nameElem = document.querySelector(".about-name");
-const nameElemLine = document.querySelector(".about-title");
+const nameElem = document.querySelector(".name-button");
+const nameElemText = document.querySelector(".name-text");
 const nameStates = [
-  "PITZER.XYZ",
-  "PITZER.XY",
-  "PITZER.X",
-  "PITZER.",
-  "PITZER",
-  " PITZER",
-  "F PITZER",
-  "FA PITZER",
-  "FAB PITZER",
-  "FABI PITZER",
-  "FABIA PITZER",
   "FABIAN PITZER",
+  "FABIA PITZER",
+  "FABI PITZER",
+  "FAB PITZER",
+  "FA PITZER",
+  "F PITZER",
+  " PITZER",
+  "PITZER",
+  "PITZER.",
+  "PITZER.X",
+  "PITZER.XY",
+  "PITZER.XYZ",
 ];
 
 let transitionTimeout;
 let isReverting = false;
-let currentTransitionIndex = 0;
+let currentTransitionIndex = nameStates.length - 1;
 let transitionStepDuration = 90; // Amount of time the change of one letter should take in ms
 
 function startTransition() {
   clearTimeout(transitionTimeout);
 
   function updateState() {
-    nameElem.innerText = nameStates[currentTransitionIndex];
+    nameElemText.innerText = nameStates[currentTransitionIndex];
 
     if (!isReverting) {
       if (currentTransitionIndex < nameStates.length - 1) {
@@ -42,21 +42,15 @@ function startTransition() {
   updateState();
 }
 
-window.onload = function() {
-  setTimeout(function() {startTransition()}, 1500); 
-};
-
-// Add hover functionality on desktop and a line break on mobile
+// Add hover functionality on desktop
 if (!window.matchMedia("(max-width: 767px)").matches) {
-  nameElemLine.addEventListener("mouseenter", () => {
+  nameElem.addEventListener("mouseenter", () => {
     isReverting = true;
     startTransition();
   });
 
-  nameElemLine.addEventListener("mouseleave", () => {
+  nameElem.addEventListener("mouseleave", () => {
     isReverting = false;
     startTransition();
   });
-} else {
-  document.querySelector(".about-profession").innerText = `\nCREATIVE TECHNOLOGIST`
 }
