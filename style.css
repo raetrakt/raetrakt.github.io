@@ -113,6 +113,7 @@ p {
 
 .tags {
   min-width: 28%;
+  padding-right: 2rem;
 }
 
 .description {
