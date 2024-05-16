@@ -8,7 +8,7 @@
   <style>
     @font-face {
       font-family: Kollektion-Grotesque;
-      src: url(./KollektionGrotesque_Normal.otf);
+      src: url(KollektionGrotesque_Normal.otf);
     }
 
     * {
@@ -161,10 +161,10 @@
       var roof = Bodies.rectangle((window.innerWidth / 2) + 160, -80, window.innerWidth + 320, 160, { render: { fillStyle: '#000' }, isStatic: true });
 
       // create objects
-      var p = Bodies.rectangle(500 * s, 200 * s, 828 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../portfolio.png', xScale: s, yScale: s } } })
-      var u = Bodies.rectangle(820 * s, 200 * s, 526 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../under.png', xScale: s, yScale: s } } })
-      var d = Bodies.rectangle(0 * s, 500 * s, 372 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../de.png', xScale: s, yScale: s } } })
-      var c = Bodies.rectangle(800 * s, 500 * s, 1181 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: '../construction.png', xScale: s, yScale: s } } })
+      var p = Bodies.rectangle(500 * s, 200 * s, 828 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: 'portfolio.png', xScale: s, yScale: s } } })
+      var u = Bodies.rectangle(820 * s, 200 * s, 526 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: 'under.png', xScale: s, yScale: s } } })
+      var d = Bodies.rectangle(0 * s, 500 * s, 372 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: 'de.png', xScale: s, yScale: s } } })
+      var c = Bodies.rectangle(800 * s, 500 * s, 1181 * s, 170 * s, { chamfer: { radius: radius }, render: { sprite: { texture: 'construction.png', xScale: s, yScale: s } } })
       // var instagram = Bodies.rectangle(320, 180, 40, 40, {id: 'instagramBody', chamfer: {radius: radius}, render: { sprite: { texture: 'https://i.imgur.com/RStSwfG.png', xScale: 0.5, yScale: 0.5 }}, url: 'https://www.instagram.com/fuse.blog/'})
 
 
