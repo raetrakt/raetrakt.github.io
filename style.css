@@ -43,7 +43,7 @@ a {
 
 a:not(.section):hover {
   text-decoration: underline;
-  text-decoration-thickness: 1.4px;
+  text-decoration-thickness: 1.6px;
   text-decoration-skip-ink: all;
   text-underline-offset: 0.22rem;
 }
@@ -132,6 +132,7 @@ p {
 .fragments {
   height: 10vw;
   margin-top: 2rem;
+  display: none;
 }
 
 .fragments img, .fragments video {
