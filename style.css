@@ -29,16 +29,20 @@ body {
   font-family: "Uncut Sans", sans-serif;
   font-size: 1.6rem;
   background-color: var(--bg-color);
-  font-feature-settings: "ss05" on; /* Can't use alt "Y" ss02 because it activates weird caps on the sans fallback... */
   -webkit-user-select: none;  /* Chrome all / Safari all */
   -moz-user-select: none;     /* Firefox all */
   -ms-user-select: none;      /* IE 10+ */
   user-select: none;
 }
 
+.font-loaded body {
+  font-feature-settings: "ss05" on, "ss02" on; /* Alt "Y" ss02 because it activates weird caps on the sans fallback... */
+}
+
 a {
   text-decoration: none;
   color: unset;
+  -webkit-user-drag: none;
 }
 
 a:not(.section):hover {

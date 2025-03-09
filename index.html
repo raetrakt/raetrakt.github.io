@@ -81,7 +81,8 @@
       </div>
       <div class="images">
         <img src="images/shape_index/shape_index_sky_web.jpg" alt="" />
-        <video class="main-image" muted autoplay loop playsinline style="aspect-ratio: 1434/1080;background-color: unset;">
+        <video class="main-image" muted autoplay loop playsinline
+          style="aspect-ratio: 1434/1080;background-color: unset;">
           <source src="images/shape_index/shape_index_shapes_landscape_web.mp4" type="video/mp4" />
         </video>
         <img src="images/shape_index/shape_index_warehouse_web.jpg" />
@@ -242,11 +243,18 @@
         </video>
         <img src="images/verni/verni_glitch_web.png" alt="" />
       </div> -->
+    </div>
   </div>
-  </div>
+  <script>
+    if (document.fonts) {
+      document.fonts.ready.then(() => {
+        document.documentElement.classList.add('font-loaded');
+      });
+    }
+  </script>
   <script src="js/scroll.js"></script>
   <script src="js/mobile_images.js"></script>
-  <script src="js/paint.js"></script>^
+  <script src="js/paint.js"></script>
   <script src="js/name_change.js"></script>
 </body>
 
