@@ -33,7 +33,7 @@ body {
   -webkit-user-select: none;  /* Chrome all / Safari all */
   -moz-user-select: none;     /* Firefox all */
   -ms-user-select: none;      /* IE 10+ */
-  user-select: none;  
+  user-select: none;
 }
 
 a {
@@ -148,6 +148,7 @@ video {
   max-height: 100%;
   margin-right: 25px;
   pointer-events: none;
+  background-color: black;
 }
 
 .mobile-image {
