@@ -125,8 +125,8 @@ window.addEventListener("mouseup", () => {
 let isPencilActive = false;
 
 // Set size of button
-pencilToggle.style.height = `${16 * cellSize}px`;
-pencilToggle.style.width = `${16 * cellSize}px`;
+pencilToggle.style.height = `${20 * cellSize}px`;
+pencilToggle.style.width = `${20 * cellSize}px`;
 
 // Function to toggle pencil mode
 function togglePencilMode() {
