@@ -31,6 +31,18 @@ function applyRules() {
   }
 }
 
+// Function to handle keypress events
+function handleKeyPress(event) {
+  if (event.key === 'w') {
+    document.body.style.backgroundColor = 'white';
+  } else if (event.key === 'b') {
+    document.body.style.backgroundColor = 'black';
+  }
+}
+
+// Add event listener for keypress
+window.addEventListener('keydown', handleKeyPress);
+
 // Apply rules on load
 window.addEventListener('DOMContentLoaded', applyRules);
 
