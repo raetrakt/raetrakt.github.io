@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Falling Image Simulation</title>
+  <style>
+    /* CSS reset (modern, minimal) */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      line-height: 1.15;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+    }
+
+    img,
+    picture,
+    video,
+    canvas,
+    svg {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+      background: transparent;
+      border: 0;
+      outline: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul,
+    ol {
+      list-style: none;
+    }
+
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+
+    /* Accessibility: visible focus for keyboard users (can be adjusted) */
+    :focus {
+      outline: 2px solid #4D90FE;
+      outline-offset: 2px;
+    }
+
+    body {
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* hide scrollbar */
+    html,
+    body {
+      overflow: hidden;
+      /* remove scrollbars */
+      scrollbar-width: none;
+      /* Firefox */
+      -ms-overflow-style: none;
+      /* IE 10+ */
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+      /* Chrome, Safari, Edge */
+    }
+
+    canvas {
+      background: #fff;
+      image-rendering: pixelated;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas"></canvas>
+  <script type="module">
+    import { startSimulation } from './sand.js';
+    // pass an array of fragment image paths; consecutive clicks will load
+    // the next fragment from this array into the simulation
+    startSimulation([
+      'fragments/fragment_1.png',
+      'fragments/fragment_2.png',
+      'fragments/fragment_3.png',
+      'fragments/fragment_4.png',
+      'fragments/fragment_5.png',
+      'fragments/fragment_6.png',
+      'fragments/fragment_7.png',
+      'fragments/fragment_8.png',
+      'fragments/fragment_9.png',
+      'fragments/fragment_10.png',
+      'fragments/fragment_11.png',
+      'fragments/fragment_12.png',
+      'fragments/fragment_13.png',
+      'fragments/fragment_14.png',
+      'fragments/fragment_15.png',
+      'fragments/fragment_16.png',
+      'fragments/fragment_17.png',
+      'fragments/fragment_18.png',
+      'fragments/fragment_19.png',
+    ]);
+
+  </script>
+</body>
+
+</html>
