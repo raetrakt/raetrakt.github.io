@@ -3,8 +3,8 @@
 export async function startSimulation(imagePathOrArray) {
   // normalize fragments list
   const fragments = Array.isArray(imagePathOrArray) ? imagePathOrArray.slice() : [imagePathOrArray];
-  const PAUSE_AFTER_PILE = 5000; // ms to wait before erasing after full pile
-  const PAUSE_AFTER_CLEAR = 500; // ms to wait before spawning new pile
+  const PAUSE_AFTER_PILE = 6000; // ms to wait before erasing after full pile
+  const PAUSE_AFTER_CLEAR = 1000; // ms to wait before spawning new pile
 
   const img = await loadImage(fragments[0]);
   const canvas = document.getElementById('canvas');
@@ -38,15 +38,29 @@ export async function startSimulation(imagePathOrArray) {
   const stepsPerFrame = Math.min(16, Math.max(1, Math.floor((width * height) / 200000)));
   const bottomBase = (height - 1) * width;
   let hitFloor = false;
-  let speed = 0.5; // fractional "steps per frame" that accelerates
-  const acc = 0.18; // acceleration per animation frame
+  // NOTE: `speed` and `acc` control the cellular automaton (settled pixels) step rate
+  // (how many CA steps run per animation frame). They do NOT affect the smooth
+  // sprite fall velocity (that's driven by `gravity` below). Keep `acc` at 0 to
+  // disable CA acceleration.
+  let speed = 0; // fractional "steps per frame" that accelerates (CA only)
+  const acc = 0; // acceleration per animation frame (CA only)
   const maxSteps = 10000; // safety cap
   let animating = false;
 
   // Sprite-based fragments (each fragment is a textured sprite that falls smoothly)
   // sprite = { tmpCanvas, w, h, pixels32: Uint32Array, x: float, y: float, vy: float, vx: float }
   const sprites = [];
-  const gravity = 0.6;
+  const gravity = 0.6; // base gravity applied each frame to sprite.vy
+  // Multiply gravity by this to slow/speed sprite falling. 1 = normal speed.
+  // Set to e.g. 0.5 for half-speed, 0.25 for quarter-speed.
+  let spriteFallMultiplier = 0.1;
+  // Expose a tiny helper for debugging / quick tuning from the browser console:
+  // call setSandFallMultiplier(0.5) to slow to half speed.
+  try {
+    window.setSandFallMultiplier = (v) => {
+      spriteFallMultiplier = Number(v) || 0;
+    };
+  } catch (e) {}
 
   // Remove initial paused sprite; draw an empty initial frame instead
   // draw empty initial frame so canvas isn't blank
@@ -114,7 +128,8 @@ export async function startSimulation(imagePathOrArray) {
     for (let si = sprites.length - 1; si >= 0; si--) {
       const s = sprites[si];
       // update velocities and positions (include horizontal movement)
-      s.vy += gravity;
+      // apply spriteFallMultiplier to slow/speed sprite falling
+      s.vy += gravity * spriteFallMultiplier;
       s.y += s.vy;
       if (s.vx) s.x += s.vx;
 
@@ -242,7 +257,7 @@ export async function startSimulation(imagePathOrArray) {
   function erasePileTopDown() {
     return new Promise((resolve) => {
       translating = true;
-      const ERASE_SPEED = Math.max(2, Math.floor(height / 100));
+      const ERASE_SPEED = 2;
       let clearedY = 0;
 
       function tick() {
