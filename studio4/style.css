@@ -1,0 +1,75 @@
+@font-face {
+  font-family: 'Tilt Warp';
+  font-weight: normal;
+  font-style: normal;
+  src: url('./assets/TiltWarp-Regular-VariableFont_XROT\,YROT.ttf') format('truetype');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body {
+  background-color: black;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.text {
+  color: #00af46;
+  font-family: 'Tilt Warp';
+  font-size: 10rem;
+  line-height: 10rem;
+  text-align: center;
+  white-space: nowrap;
+}
+.line:nth-child(odd) {
+  --x-rot: 30;
+  font-variation-settings: 'XROT' var(--x-rot), 'YROT' 0;
+}
+.line:nth-child(4n + 1) {
+  --inv-x-rot: calc(var(--x-rot) * -1);
+  font-variation-settings: 'XROT' var(--inv-x-rot), 'YROT' 0;
+}
+
+.mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body {
+    background-color: #00af46;
+  }
+  .text {
+    color: white;
+    font-size: 6rem;
+    line-height: 5.5rem;
+  }
+
+  .infos {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.19);
+  }
+
+  .mobile {
+    display: block;
+  }
+
+  .desktop {
+    display: none;
+  }
+}
