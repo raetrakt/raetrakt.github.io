@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #ffffff;
+      font-family: "Geist Mono", monospace;
+      font-optical-sizing: auto;
+      font-style: normal;
+    }
+
+    svg {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    foreignObject {
+      overflow: visible;
+    }
+
+    .node {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      background: #222;
+      color: white;
+      font-size: 13px;
+      white-space: normal;
+      overflow-wrap: break-word;
+      word-break: normal;
+      cursor: grab;
+      width: max-content;
+      height: max-content;
+    }
+
+    .node-text {
+      text-align: center;
+    }
+
+    .node.main {
+      background: #ffd014;
+      color: #000;
+    }
+
+    .node.theory {
+      background: #66c2ff;
+    }
+
+    .node.tool {
+      background: #f76587;
+    }
+
+    .node.sub {
+      background: #77d4a9;
+      color: #000;
+    }
+
+    .node.term {
+      background: #ffffff;
+      color: #000;
+    }
+
+    .node.library {
+      background: #555;
+    }
+
+    .node.work {
+      background: transparent;
+      /* border: 1px solid #555; */
+      padding: 6px;
+    }
+
+    .node.work img {
+      display: block;
+      max-width: 140px;
+      max-height: 140px;
+      height: auto;
+      width: auto;
+    }
+
+
+    .link {
+      stroke: #555;
+      stroke-width: 1px;
+      opacity: 0.6;
+    }
+
+    text {
+      fill: #fff;
+      font-size: 12px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <svg></svg>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const SUPABASE_URL = 'https://rowvcuuqebamsxndzhxn.supabase.co'
+    const SUPABASE_KEY = 'sb_publishable_LBTefqV0J1vkvYXriS5gUA_AychNVUb'
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    const { data: concepts, error: conceptError } = await supabase
+      .from('concepts')
+      .select('id, name, type')
+
+    const { data: relations, error: relationError } = await supabase
+      .from('concept_relations')
+      .select('from_concept, to_concept')
+
+    const { data: works, error: workError } = await supabase
+      .from('works')
+      .select('id, media_path, title')
+
+    const { data: workConcepts, error: workConceptError } = await supabase
+      .from('work_concept_relations')
+      .select('work, concept')
+
+    if (conceptError || relationError || workError || workConceptError) {
+      console.error(conceptError || relationError || workError || workConceptError)
+    }
+
+    const conceptNodes = concepts.map(c => ({
+      id: `c-${c.id}`,
+      name: c.name,
+      type: c.type
+    }))
+
+    const workNodes = works.map(w => ({
+      id: `w-${w.id}`,
+      name: w.title ?? '',
+      type: 'work',
+      media_path: w.media_path
+    }))
+
+    const nodes = [...conceptNodes, ...workNodes]
+
+    const conceptLinks = relations.map(r => ({
+      source: `c-${r.from_concept}`,
+      target: `c-${r.to_concept}`
+    }))
+
+    const workLinks = workConcepts.map(r => ({
+      source: `w-${r.work}`,
+      target: `c-${r.concept}`
+    }))
+
+    const links = [...conceptLinks, ...workLinks]
+
+
+    const svg = d3.select('svg')
+    const width = window.innerWidth
+    const height = window.innerHeight
+
+    const container = svg.append('g')
+
+    const zoom = d3.zoom()
+      .scaleExtent([.5, 2])
+      .on('zoom', (event) => {
+        container.attr('transform', event.transform)
+      })
+
+    svg.call(zoom).call(zoom.transform, d3.zoomIdentity.scale(0.8))
+
+    const simulation = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(120))
+      .force('charge', d3.forceManyBody().strength(-200))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide().radius(60))
+      .alphaDecay(0.02)
+      .velocityDecay(0.3)
+
+    const link = container.append('g')
+      .selectAll('line')
+      .data(links)
+      .enter()
+      .append('line')
+      .attr('class', 'link')
+
+    const node = container.append('g')
+      .selectAll('foreignObject')
+      .data(nodes)
+      .enter()
+      .append('foreignObject')
+      .call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended)
+      )
+
+    const nodeDiv = node.append('xhtml:div')
+      .attr('class', d => `node ${d.type}`)
+      .html(d => {
+        if (d.type === 'work') return `<img src="${d.media_path}" alt="${d.name}">`
+        return `<span class="node-text">${d.name.split(' ').join('<br>')}</span>`
+      })
+
+    node.sort((a, b) => (b.type === 'work') - (a.type === 'work'))
+
+    function measureNodes() {
+      node.each(function (d) {
+        const div = d3.select(this).select('div').node()
+        const rect = div.getBoundingClientRect()
+        const w = Math.ceil(rect.width) + 6
+        const h = Math.ceil(rect.height) + 6
+        d.w = w
+        d.h = h
+        d3.select(this).attr('width', w).attr('height', h)
+      })
+      simulation.force('collision', d3.forceCollide().radius(d => Math.max(d.w, d.h) / 2 + 8))
+    }
+
+    async function waitForImages() {
+      const imgs = Array.from(document.querySelectorAll('.node.work img'))
+      await Promise.all(imgs.map(img => img.decode?.().catch(() => new Promise(res => {
+        img.onload = img.onerror = res
+      })) ?? Promise.resolve()))
+    }
+
+    await document.fonts.ready
+    await waitForImages()
+    requestAnimationFrame(() => {
+      measureNodes()
+      simulation.alpha(1).restart()
+    })
+
+    const collisionPadding = 30
+
+    function applyBoxCollision() {
+      const padding = collisionPadding
+      const qt = d3.quadtree(nodes, d => d.x, d => d.y)
+
+      nodes.forEach(d => {
+        const nx1 = d.x - d.w / 2 - padding
+        const nx2 = d.x + d.w / 2 + padding
+        const ny1 = d.y - d.h / 2 - padding
+        const ny2 = d.y + d.h / 2 + padding
+
+        qt.visit((q, x1, y1, x2, y2) => {
+          const o = q.data
+          if (!o || o === d) return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1
+
+          const dx = (d.x - o.x) || (Math.random() - 0.5)
+          const dy = (d.y - o.y) || (Math.random() - 0.5)
+          const overlapX = (d.w / 2 + o.w / 2 + padding) - Math.abs(dx)
+          const overlapY = (d.h / 2 + o.h / 2 + padding) - Math.abs(dy)
+
+          if (overlapX > 0 && overlapY > 0) {
+            if (overlapX < overlapY) {
+              const shift = overlapX * Math.sign(dx) * 0.5
+              d.x += shift
+              o.x -= shift
+            } else {
+              const shift = overlapY * Math.sign(dy) * 0.5
+              d.y += shift
+              o.y -= shift
+            }
+          }
+
+          return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1
+        })
+      })
+    }
+
+    simulation.on('tick', () => {
+      applyBoxCollision()
+
+      link
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y)
+
+      node
+        .attr('x', d => d.x - (d.w / 2))
+        .attr('y', d => d.y - (d.h / 2))
+    })
+
+    function dragstarted(event, d) {
+      if (!event.active) simulation.alphaTarget(0.3).restart()
+      d.fx = d.x
+      d.fy = d.y
+    }
+
+    function dragged(event, d) {
+      d.fx = event.x
+      d.fy = event.y
+    }
+
+    function dragended(event, d) {
+      if (!event.active) simulation.alphaTarget(0)
+      d.fx = null
+      d.fy = null
+    }
+  </script>
+</body>
+
+</html>
