@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Witzfindig – Random Image Combiner</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #0b0b0c;
+      color: #e8e8ea;
+      overflow-x: hidden; /* prevent accidental horizontal scrolling on mobile */
+    }
+
+    .wrap {
+      height: 100svh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 10px;
+      padding: 12px;
+      box-sizing: border-box;
+      min-height: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    header small {
+      opacity: .75;
+    }
+
+    .stage {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 10px;
+      background: #0f0f12;
+
+      /* critical for CSS Grid: allow the 1fr row to actually shrink */
+      min-height: 0;
+      min-width: 0;
+    }
+
+    canvas {
+      display: block;
+      background: #111;
+      image-rendering: auto;
+
+      /* safety net (JS still sets explicit CSS size) */
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0; /* allow children to shrink (important in flex layouts) */
+    }
+
+    .controls .btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, .16);
+      background: #17171b;
+      color: #e8e8ea;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .meta {
+      font-size: 12px;
+      opacity: .8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      min-width: 0; /* prevents long text from forcing horizontal overflow */
+    }
+
+    a {
+      color: inherit;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div style="font-weight:600;">Witzfindig V1</div>
+        <small>Loads all images from <code>/bilder_v1/**</code></small>
+      </div>
+      <small id="status">Loading…</small>
+    </header>
+
+    <div class="stage" id="stage">
+      <canvas id="c" aria-label="combined image canvas"></canvas>
+    </div>
+
+    <div class="controls">
+      <div class="btns">
+        <button id="btnNew" disabled>New image</button>
+        <button id="btnPrev" disabled>Previous image</button>
+        <button id="btnSave" disabled>Save image</button>
+      </div>
+      <div class="meta" id="meta" title=""></div>
+    </div>
+  </div>
+
+  <script>
+    // --- Config ---
+    const ROOT_DIR = "bilder_v1"; // (kept only if you want to validate paths; otherwise safe to remove)
+    const IMAGE_EXT_RE = /\.(png|jpe?g|webp)$/i;
+    const MANIFEST_URL = "./manifest.json"; // generated + committed
+    const MAX_SAVE_LONG_SIDE = 2000; // px: limit downloaded image long edge
+
+    const $ = (id) => document.getElementById(id);
+    const canvas = $("c");
+    const ctx = canvas.getContext("2d", { alpha: false });
+
+    const statusEl = $("status");
+    const metaEl = $("meta");
+    const btnNew = $("btnNew");
+    const btnPrev = $("btnPrev");
+    const btnSave = $("btnSave");
+
+    const state = {
+      allImages: /** @type {string[]} */ ([]),   // same-origin URLs like "/bilder_v1/sub/a.jpg"
+      history: /** @type {Array<{a:string,b:string,dir:"v"|"h",cut:number}>} */ ([]),
+      index: -1,
+      lastRender: null,
+      busy: false,
+    };
+
+    function setStatus(msg) { statusEl.textContent = msg; }
+
+    function sanitizeFilenamePart(s) {
+      return s
+        .replace(/^\/+/, "")
+        .replace(/[\/\\]+/g, "__")
+        .replace(/[^a-zA-Z0-9._-]+/g, "-")
+        .replace(/-+/g, "-")
+        .slice(0, 160);
+    }
+
+    function normalizeImagePath(u) {
+      // Prefer storing pathnames ("/bilder_v1/...") for clean metadata + filenames.
+      try {
+        const url = new URL(u, location.href);
+        return url.pathname;
+      } catch {
+        const s = String(u || "");
+        if (s.startsWith("/")) return s;
+        return "/" + s.replace(/^\.?\//, "");
+      }
+    }
+
+    function pickTwoDistinct(arr) {
+      const a = arr[Math.floor(Math.random() * arr.length)];
+      let b = a;
+      if (arr.length > 1) {
+        while (b === a) b = arr[Math.floor(Math.random() * arr.length)];
+      }
+      return [a, b];
+    }
+
+    function loadImage(url) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.loading = "eager";
+        img.crossOrigin = "anonymous"; // safe for same-origin; helps if you switch to raw URLs
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("Failed to load: " + url));
+        img.src = url;
+      });
+    }
+
+    function fitCanvasCSS() {
+      // Portrait viewport => prefer fit-by-width.
+      // Landscape viewport => prefer fit-by-height.
+      const stage = $("stage");
+
+      const w = canvas.width || 1;
+      const h = canvas.height || 1;
+
+      const containerW = stage.clientWidth || 1;
+      const containerH = stage.clientHeight || 1;
+
+      const portraitViewport = window.innerHeight >= window.innerWidth;
+
+      let scale;
+      if (portraitViewport) {
+        scale = containerW / w;           // fit by width
+        if (h * scale > containerH) scale = containerH / h; // fallback to fit by height
+      } else {
+        scale = containerH / h;           // fit by height
+        if (w * scale > containerW) scale = containerW / w; // fallback to fit by width
+      }
+
+      const cssW = Math.max(1, Math.floor(w * scale));
+      const cssH = Math.max(1, Math.floor(h * scale));
+
+      canvas.style.width = cssW + "px";
+      canvas.style.height = cssH + "px";
+    }
+
+    function updateButtons() {
+      btnPrev.disabled = state.index <= 0 || state.busy;
+      btnNew.disabled = state.allImages.length < 2 || state.busy;
+      btnSave.disabled = !state.lastRender || state.busy;
+    }
+
+    function showError(err) {
+      console.error(err);
+      setStatus("Error (see console)");
+      metaEl.textContent = String(err?.message || err);
+      metaEl.title = metaEl.textContent;
+      state.busy = false;
+      updateButtons();
+    }
+
+    async function renderCombo(combo) {
+      state.busy = true;
+      updateButtons();
+
+      try {
+        const [imgA, imgB] = await Promise.all([loadImage(combo.a), loadImage(combo.b)]);
+
+        const w = imgA.naturalWidth || imgA.width;
+        const h = imgA.naturalHeight || imgA.height;
+        canvas.width = w;
+        canvas.height = h;
+
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, w, h);
+
+        // Draw A scaled to output (A is output size anyway, but keep consistent).
+        ctx.drawImage(
+          imgA,
+          0, 0, (imgA.naturalWidth || imgA.width), (imgA.naturalHeight || imgA.height),
+          0, 0, w, h
+        );
+
+        // IMPORTANT: clip in DESTINATION space, then draw B scaled to output.
+        // This avoids "empty slice" when B's dimensions differ from A.
+        const cut = combo.cut;
+
+        if (combo.dir === "v") {
+          const x = Math.floor(w * cut);
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(x, 0, w - x, h);
+          ctx.clip();
+          ctx.drawImage(
+            imgB,
+            0, 0, (imgB.naturalWidth || imgB.width), (imgB.naturalHeight || imgB.height),
+            0, 0, w, h
+          );
+          ctx.restore();
+        } else {
+          const y = Math.floor(h * cut);
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(0, y, w, h - y);
+          ctx.clip();
+          ctx.drawImage(
+            imgB,
+            0, 0, (imgB.naturalWidth || imgB.width), (imgB.naturalHeight || imgB.height),
+            0, 0, w, h
+          );
+          ctx.restore();
+        }
+
+        state.lastRender = combo;
+
+        const meta = `${combo.dir === "v" ? "vertical" : "horizontal"} cut @ ${(combo.cut * 100).toFixed(1)}%  |  A: ${combo.a}  +  B: ${combo.b}`;
+        metaEl.textContent = meta;
+        metaEl.title = meta;
+
+        fitCanvasCSS();
+      } finally {
+        state.busy = false;
+        updateButtons();
+      }
+    }
+
+    function makeRandomCombo() {
+      const [a, b] = pickTwoDistinct(state.allImages);
+      const dir = Math.random() < 0.5 ? "v" : "h";
+      const cut = (1 / 3) + Math.random() * (1 / 3); // between 1/3 and 2/3
+      return { a, b, dir, cut };
+    }
+
+    async function newImage() {
+      if (state.allImages.length < 2) return;
+
+      // If user went back in history, overwrite "future".
+      if (state.index < state.history.length - 1) {
+        state.history = state.history.slice(0, state.index + 1);
+      }
+
+      const combo = makeRandomCombo();
+      state.history.push(combo);
+      state.index = state.history.length - 1;
+      await renderCombo(combo);
+    }
+
+    async function prevImage() {
+      if (state.index <= 0) return;
+      state.index -= 1;
+      await renderCombo(state.history[state.index]);
+    }
+
+    async function saveImage() {
+      if (!state.lastRender) return;
+
+      const aPart = sanitizeFilenamePart(state.lastRender.a);
+      const bPart = sanitizeFilenamePart(state.lastRender.b);
+      const filename = `${aPart}__PLUS__${bPart}.png`;
+
+      const srcW = canvas.width || 1;
+      const srcH = canvas.height || 1;
+      const longSide = Math.max(srcW, srcH);
+      const scale = Math.min(1, MAX_SAVE_LONG_SIDE / longSide);
+
+      // Export from a scaled offscreen canvas (only downsizes; never upsizes)
+      const outCanvas = document.createElement("canvas");
+      outCanvas.width = Math.max(1, Math.round(srcW * scale));
+      outCanvas.height = Math.max(1, Math.round(srcH * scale));
+
+      const outCtx = outCanvas.getContext("2d", { alpha: false });
+      outCtx.imageSmoothingEnabled = true;
+      outCtx.imageSmoothingQuality = "high";
+      outCtx.fillStyle = "#111";
+      outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+      outCtx.drawImage(canvas, 0, 0, outCanvas.width, outCanvas.height);
+
+      const blob = await new Promise((resolve) => outCanvas.toBlob(resolve, "image/png"));
+      if (!blob) return;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    async function fetchJSON(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText} @ ${url}`);
+      return res.json();
+    }
+
+    async function init() {
+      setStatus("Loading manifest…");
+
+      const manifest = await fetchJSON(MANIFEST_URL);
+      if (!Array.isArray(manifest)) throw new Error("manifest.json must be a JSON array of image paths");
+
+      state.allImages = manifest
+        .filter((u) => typeof u === "string" && IMAGE_EXT_RE.test(u))
+        .map(normalizeImagePath)
+        .sort();
+
+      if (state.allImages.length < 2) {
+        throw new Error("Not enough images found in manifest.json (need at least 2)");
+      }
+
+      setStatus(`Found ${state.allImages.length} images`);
+
+      // Ensure async handler errors are visible (prevents "silent fails")
+      btnNew.onclick = () => newImage().catch(showError);
+      btnPrev.onclick = () => prevImage().catch(showError);
+      btnSave.onclick = () => saveImage().catch(showError);
+
+      window.addEventListener("resize", () => fitCanvasCSS(), { passive: true });
+
+      updateButtons();
+      await newImage();
+    }
+
+    init().catch(showError);
+  </script>
+</body>
+
+</html>
