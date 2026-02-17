@@ -234,6 +234,9 @@
       btnPrev.disabled = state.index <= 0 || state.busy;
       btnNew.disabled = state.allImages.length < 2 || state.busy;
       btnSave.disabled = !state.lastRender || state.busy;
+
+      const hasNext = state.index >= 0 && state.index < state.history.length - 1;
+      btnNew.textContent = hasNext ? "Next image" : "New image";
     }
 
     function showError(err) {
@@ -320,11 +323,14 @@
     async function newImage() {
       if (state.allImages.length < 2) return;
 
-      // If user went back in history, overwrite "future".
-      if (state.index < state.history.length - 1) {
-        state.history = state.history.slice(0, state.index + 1);
+      // If we're not at the end of the stack, "New image" becomes "Next image".
+      if (state.index >= 0 && state.index < state.history.length - 1) {
+        state.index += 1;
+        await renderCombo(state.history[state.index]);
+        return;
       }
 
+      // Otherwise, generate a brand new combo and append to history.
       const combo = makeRandomCombo();
       state.history.push(combo);
       state.index = state.history.length - 1;
