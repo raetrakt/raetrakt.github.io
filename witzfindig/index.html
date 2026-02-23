@@ -15,7 +15,8 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: #0b0b0c;
       color: #e8e8ea;
-      overflow-x: hidden; /* prevent accidental horizontal scrolling on mobile */
+      overflow-x: hidden;
+      /* prevent accidental horizontal scrolling on mobile */
     }
 
     .wrap {
@@ -68,7 +69,8 @@
       gap: 8px;
       align-items: center;
       justify-content: space-between;
-      min-width: 0; /* allow children to shrink (important in flex layouts) */
+      min-width: 0;
+      /* allow children to shrink (important in flex layouts) */
     }
 
     .controls .btns {
@@ -99,7 +101,8 @@
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 100%;
-      min-width: 0; /* prevents long text from forcing horizontal overflow */
+      min-width: 0;
+      /* prevents long text from forcing horizontal overflow */
     }
 
     a {
@@ -127,6 +130,25 @@
         <button id="btnNew" disabled>New image</button>
         <button id="btnPrev" disabled>Previous image</button>
         <button id="btnSave" disabled>Save image</button>
+        <button id="btnSaveBoth" disabled>Save both images</button>
+
+        <!-- Arrow controls for A -->
+        <button id="btnAUp" title="Move A up" aria-label="Move A up">A ▲</button>
+        <button id="btnALeft" title="Move A left" aria-label="Move A left">A ◀</button>
+        <button id="btnARight" title="Move A right" aria-label="Move A right">A ▶</button>
+        <button id="btnADown" title="Move A down" aria-label="Move A down">A ▼</button>
+        <!-- Zoom controls for A -->
+        <button id="btnAZoomIn" title="Zoom A in" aria-label="Zoom A in">A +</button>
+        <button id="btnAZoomOut" title="Zoom A out" aria-label="Zoom A out">A −</button>
+
+        <!-- Arrow controls for B -->
+        <button id="btnBUp" title="Move B up" aria-label="Move B up">B ▲</button>
+        <button id="btnBLeft" title="Move B left" aria-label="Move B left">B ◀</button>
+        <button id="btnBRight" title="Move B right" aria-label="Move B right">B ▶</button>
+        <button id="btnBDown" title="Move B down" aria-label="Move B down">B ▼</button>
+        <!-- Zoom controls for B -->
+        <button id="btnBZoomIn" title="Zoom B in" aria-label="Zoom B in">B +</button>
+        <button id="btnBZoomOut" title="Zoom B out" aria-label="Zoom B out">B −</button>
       </div>
       <div class="meta" id="meta" title=""></div>
     </div>
@@ -138,6 +160,9 @@
     const IMAGE_EXT_RE = /\.(png|jpe?g|webp)$/i;
     const MANIFEST_URL = "./manifest.json"; // generated + committed
     const MAX_SAVE_LONG_SIDE = 2000; // px: limit downloaded image long edge
+    const MOVE_STEP = 10; // pixels per arrow click
+    const ZOOM_STEP = 1.15; // multiply scale by this for zoom in, divide for zoom out
+    const CUT_STEP = 0.01; // fraction to move cut per key press
 
     const $ = (id) => document.getElementById(id);
     const canvas = $("c");
@@ -148,10 +173,24 @@
     const btnNew = $("btnNew");
     const btnPrev = $("btnPrev");
     const btnSave = $("btnSave");
+    const btnSaveBoth = $("btnSaveBoth");
+    const btnAUp = $("btnAUp");
+    const btnADown = $("btnADown");
+    const btnALeft = $("btnALeft");
+    const btnARight = $("btnARight");
+    const btnAZoomIn = $("btnAZoomIn");
+    const btnAZoomOut = $("btnAZoomOut");
+    const btnBUp = $("btnBUp");
+    const btnBDown = $("btnBDown");
+    const btnBLeft = $("btnBLeft");
+    const btnBRight = $("btnBRight");
+    const btnBZoomIn = $("btnBZoomIn");
+    const btnBZoomOut = $("btnBZoomOut");
 
     const state = {
       allImages: /** @type {string[]} */ ([]),   // same-origin URLs like "/bilder_v1/sub/a.jpg"
-      history: /** @type {Array<{a:string,b:string,dir:"v"|"h",cut:number}>} */ ([]),
+      // history entries now also keep pixel offsets for each image
+      history: /** @type {Array<{a:string,b:string,dir:"v"|"h",cut:number,ax?:number,ay?:number,bx?:number,by?:number}>} */ ([]),
       index: -1,
       lastRender: null,
       busy: false,
@@ -201,6 +240,34 @@
       });
     }
 
+    function drawImageNoStretch(
+      ctx,
+      img,
+      destW,
+      destH,
+      { allowUpscale = true, fit = "cover", offsetX = 0, offsetY = 0, userScale = 1 } = {}
+    ) {
+      const sw = img.naturalWidth || img.width || 1;
+      const sh = img.naturalHeight || img.height || 1;
+
+      // contain = no crop, possible empty bars
+      // cover   = fills destination, possible crop
+      let scale =
+        fit === "contain"
+          ? Math.min(destW / sw, destH / sh)
+          : Math.max(destW / sw, destH / sh);
+
+      if (!allowUpscale) scale = Math.min(scale, 1);
+
+      // apply user-controlled scale multiplier (zoom)
+      const dw = Math.max(1, Math.round(sw * scale * userScale));
+      const dh = Math.max(1, Math.round(sh * scale * userScale));
+      const dx = Math.floor((destW - dw) / 2) + Math.round(offsetX);
+      const dy = Math.floor((destH - dh) / 2) + Math.round(offsetY);
+
+      ctx.drawImage(img, 0, 0, sw, sh, dx, dy, dw, dh);
+    }
+
     function fitCanvasCSS() {
       // Portrait viewport => prefer fit-by-width.
       // Landscape viewport => prefer fit-by-height.
@@ -230,24 +297,6 @@
       canvas.style.height = cssH + "px";
     }
 
-    function updateButtons() {
-      btnPrev.disabled = state.index <= 0 || state.busy;
-      btnNew.disabled = state.allImages.length < 2 || state.busy;
-      btnSave.disabled = !state.lastRender || state.busy;
-
-      const hasNext = state.index >= 0 && state.index < state.history.length - 1;
-      btnNew.textContent = hasNext ? "Next image" : "New image";
-    }
-
-    function showError(err) {
-      console.error(err);
-      setStatus("Error (see console)");
-      metaEl.textContent = String(err?.message || err);
-      metaEl.title = metaEl.textContent;
-      state.busy = false;
-      updateButtons();
-    }
-
     async function renderCombo(combo) {
       state.busy = true;
       updateButtons();
@@ -263,28 +312,29 @@
         ctx.fillStyle = "#111";
         ctx.fillRect(0, 0, w, h);
 
-        // Draw A scaled to output (A is output size anyway, but keep consistent).
-        ctx.drawImage(
-          imgA,
-          0, 0, (imgA.naturalWidth || imgA.width), (imgA.naturalHeight || imgA.height),
-          0, 0, w, h
-        );
+        // Draw A scaled to output (apply A offsets and A scale if any).
+        const ax = Math.round(combo.ax || 0);
+        const ay = Math.round(combo.ay || 0);
+        const aScale = typeof combo.axScale === "number" ? combo.axScale : 1;
+        drawImageNoStretch(ctx, imgA, w, h, { allowUpscale: true, fit: "cover", offsetX: ax, offsetY: ay, userScale: aScale });
 
         // IMPORTANT: clip in DESTINATION space, then draw B scaled to output.
         // This avoids "empty slice" when B's dimensions differ from A.
         const cut = combo.cut;
-
+        
         if (combo.dir === "v") {
           const x = Math.floor(w * cut);
           ctx.save();
           ctx.beginPath();
           ctx.rect(x, 0, w - x, h);
           ctx.clip();
-          ctx.drawImage(
-            imgB,
-            0, 0, (imgB.naturalWidth || imgB.width), (imgB.naturalHeight || imgB.height),
-            0, 0, w, h
-          );
+
+          // apply B offsets (in destination pixels)
+          const bx = Math.round(combo.bx || 0);
+          const by = Math.round(combo.by || 0);
+          const bScale = typeof combo.bxScale === "number" ? combo.bxScale : 1;
+          drawImageNoStretch(ctx, imgB, w, h, { allowUpscale: true, fit: "cover", offsetX: bx, offsetY: by, userScale: bScale });
+
           ctx.restore();
         } else {
           const y = Math.floor(h * cut);
@@ -292,11 +342,12 @@
           ctx.beginPath();
           ctx.rect(0, y, w, h - y);
           ctx.clip();
-          ctx.drawImage(
-            imgB,
-            0, 0, (imgB.naturalWidth || imgB.width), (imgB.naturalHeight || imgB.height),
-            0, 0, w, h
-          );
+
+          const bx = Math.round(combo.bx || 0);
+          const by = Math.round(combo.by || 0);
+          const bScale = typeof combo.bxScale === "number" ? combo.bxScale : 1;
+          drawImageNoStretch(ctx, imgB, w, h, { allowUpscale: true, fit: "cover", offsetX: bx, offsetY: by, userScale: bScale });
+
           ctx.restore();
         }
 
@@ -317,9 +368,36 @@
       const [a, b] = pickTwoDistinct(state.allImages);
       const dir = Math.random() < 0.5 ? "v" : "h";
       const cut = (1 / 3) + Math.random() * (1 / 3); // between 1/3 and 2/3
-      return { a, b, dir, cut };
+      // initialize offsets and scales to defaults
+      return { a, b, dir, cut, ax: 0, ay: 0, bx: 0, by: 0, axScale: 1, bxScale: 1 };
     }
 
+    // Zoom one of the images by multiplying its scale and re-render.
+    async function zoomImage(which, factor) {
+      if (state.index < 0) return;
+      const combo = Object.assign({}, state.history[state.index]);
+      if (which === "a") {
+        combo.axScale = (combo.axScale || 1) * factor;
+      } else {
+        combo.bxScale = (combo.bxScale || 1) * factor;
+      }
+      state.history[state.index] = combo;
+      await renderCombo(combo);
+    }
+  
+    // Clamp utility
+    function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+    // Adjust current combo cut by a fraction (positive -> move right/down, negative -> left/up)
+    async function adjustCut(delta) {
+      if (state.index < 0) return;
+      const combo = Object.assign({}, state.history[state.index]);
+      combo.cut = clamp((combo.cut || 0.5) + delta, 0.02, 0.98);
+      state.history[state.index] = combo;
+      await renderCombo(combo);
+    }
+  
+    // Restore missing navigation functions
     async function newImage() {
       if (state.allImages.length < 2) return;
 
@@ -341,6 +419,112 @@
       if (state.index <= 0) return;
       state.index -= 1;
       await renderCombo(state.history[state.index]);
+    }
+
+    // Move one of the images by dx/dy pixels (updates history + re-renders)
+    async function moveImage(which, dx, dy) {
+      if (state.index < 0) return;
+      const combo = Object.assign({}, state.history[state.index]);
+      if (which === "a") {
+        combo.ax = (combo.ax || 0) + dx;
+        combo.ay = (combo.ay || 0) + dy;
+      } else {
+        combo.bx = (combo.bx || 0) + dx;
+        combo.by = (combo.by || 0) + dy;
+      }
+      state.history[state.index] = combo;
+      // render updated combo
+      await renderCombo(combo);
+    }
+
+    // Keyboard controls: WASD -> image A, Arrow keys -> image B
+    function handleKeyDown(e) {
+      if (!state.lastRender || state.busy) return;
+      const step = MOVE_STEP;
+      switch (e.key) {
+        // Move cut: 'y' decrease cut (left/top), 'x' increase cut (right/bottom)
+        case "y":
+        case "Y":
+          e.preventDefault();
+          adjustCut(-CUT_STEP).catch(showError);
+          break;
+        case "x":
+        case "X":
+          e.preventDefault();
+          adjustCut(CUT_STEP).catch(showError);
+          break;
+        case "w":
+        case "W":
+          e.preventDefault();
+          moveImage("a", 0, -step).catch(showError);
+          break;
+        case "a":
+        case "A":
+          e.preventDefault();
+          moveImage("a", -step, 0).catch(showError);
+          break;
+        case "s":
+        case "S":
+          e.preventDefault();
+          moveImage("a", 0, step).catch(showError);
+          break;
+        case "d":
+        case "D":
+          e.preventDefault();
+          moveImage("a", step, 0).catch(showError);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          moveImage("b", 0, -step).catch(showError);
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          moveImage("b", -step, 0).catch(showError);
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          moveImage("b", 0, step).catch(showError);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          moveImage("b", step, 0).catch(showError);
+          break;
+      }
+    }
+
+    function updateButtons() {
+      btnPrev.disabled = state.index <= 0 || state.busy;
+      btnNew.disabled = state.allImages.length < 2 || state.busy;
+      btnSave.disabled = !state.lastRender || state.busy;
+      btnSaveBoth.disabled = !state.lastRender || state.busy;
+     // arrow buttons enabled when we have a rendered combo and not busy
+     const arrowsDisabled = !state.lastRender || state.busy;
+     btnAUp.disabled = arrowsDisabled;
+     btnADown.disabled = arrowsDisabled;
+     btnALeft.disabled = arrowsDisabled;
+     btnARight.disabled = arrowsDisabled;
+     // zoom A
+     btnAZoomIn.disabled = arrowsDisabled;
+     btnAZoomOut.disabled = arrowsDisabled;
+     btnBUp.disabled = arrowsDisabled;
+     btnBDown.disabled = arrowsDisabled;
+     btnBLeft.disabled = arrowsDisabled;
+     btnBRight.disabled = arrowsDisabled;
+     // zoom B
+     btnBZoomIn.disabled = arrowsDisabled;
+     btnBZoomOut.disabled = arrowsDisabled;
+    
+      const hasNext = state.index >= 0 && state.index < state.history.length - 1;
+      btnNew.textContent = hasNext ? "Next image" : "New image";
+    }
+
+    function showError(err) {
+      console.error(err);
+      setStatus("Error (see console)");
+      metaEl.textContent = String(err?.message || err);
+      metaEl.title = metaEl.textContent;
+      state.busy = false;
+      updateButtons();
     }
 
     async function saveImage() {
@@ -380,6 +564,43 @@
       URL.revokeObjectURL(url);
     }
 
+    // Fetch an image and trigger download preserving the original file extension.
+    async function saveSingleImage(url) {
+      const normalized = normalizeImagePath(url);
+      const base = sanitizeFilenamePart(normalized);
+      const extMatch = String(normalized).match(/\.([a-z0-9]+)(?:[?#].*)?$/i);
+      const ext = extMatch ? extMatch[1] : "bin";
+      const filename = `${base}.${ext}`;
+
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText} @ ${url}`);
+      const blob = await res.blob();
+
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    }
+
+    // Save both images (A then B) as separate downloads.
+    async function saveBothImages() {
+      if (!state.lastRender) return;
+      state.busy = true;
+      updateButtons();
+      try {
+        // save A then B sequentially (less likely to be blocked by popup policies)
+        await saveSingleImage(state.lastRender.a);
+        await saveSingleImage(state.lastRender.b);
+      } finally {
+        state.busy = false;
+        updateButtons();
+      }
+    }
+
     async function fetchJSON(url) {
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`${res.status} ${res.statusText} @ ${url}`);
@@ -407,6 +628,24 @@
       btnNew.onclick = () => newImage().catch(showError);
       btnPrev.onclick = () => prevImage().catch(showError);
       btnSave.onclick = () => saveImage().catch(showError);
+      btnSaveBoth.onclick = () => saveBothImages().catch(showError);
+     // A controls
+     btnAUp.onclick = () => moveImage("a", 0, -MOVE_STEP).catch(showError);
+     btnADown.onclick = () => moveImage("a", 0, MOVE_STEP).catch(showError);
+     btnALeft.onclick = () => moveImage("a", -MOVE_STEP, 0).catch(showError);
+     btnARight.onclick = () => moveImage("a", MOVE_STEP, 0).catch(showError);
+     btnAZoomIn.onclick = () => zoomImage("a", ZOOM_STEP).catch(showError);
+     btnAZoomOut.onclick = () => zoomImage("a", 1 / ZOOM_STEP).catch(showError);
+     // B controls
+     btnBUp.onclick = () => moveImage("b", 0, -MOVE_STEP).catch(showError);
+     btnBDown.onclick = () => moveImage("b", 0, MOVE_STEP).catch(showError);
+     btnBLeft.onclick = () => moveImage("b", -MOVE_STEP, 0).catch(showError);
+     btnBRight.onclick = () => moveImage("b", MOVE_STEP, 0).catch(showError);
+     btnBZoomIn.onclick = () => zoomImage("b", ZOOM_STEP).catch(showError);
+     btnBZoomOut.onclick = () => zoomImage("b", 1 / ZOOM_STEP).catch(showError);
+
+     // attach keyboard handler
+     window.addEventListener("keydown", handleKeyDown, { passive: false });
 
       window.addEventListener("resize", () => fitCanvasCSS(), { passive: true });
 
