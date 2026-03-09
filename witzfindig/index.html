@@ -51,6 +51,7 @@
       /* critical for CSS Grid: allow the 1fr row to actually shrink */
       min-height: 0;
       min-width: 0;
+      position: relative;
     }
 
     canvas {
@@ -108,6 +109,45 @@
     a {
       color: inherit;
     }
+
+    .batch-grid {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-template-rows: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 8px;
+      box-sizing: border-box;
+      overflow: auto;
+    }
+
+    .batch-grid[hidden] {
+      display: none;
+    }
+
+    .batch-tile {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, .16);
+      background: #17171b;
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden;
+      cursor: pointer;
+      min-width: 0;
+      min-height: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .batch-tile canvas {
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      background: #111;
+    }
   </style>
 </head>
 
@@ -123,6 +163,7 @@
 
     <div class="stage" id="stage">
       <canvas id="c" aria-label="combined image canvas"></canvas>
+      <div id="batchGrid" class="batch-grid" hidden aria-label="batch preview grid"></div>
     </div>
 
     <div class="controls">
@@ -131,6 +172,8 @@
         <button id="btnPrev" disabled>Previous image</button>
         <button id="btnSave" disabled>Save image</button>
         <button id="btnSaveBoth" disabled>Save both images</button>
+        <button id="btnBatch" disabled>Generate batch</button>
+        <button id="btnBackBatch" disabled>Back to batch</button>
 
         <!-- Arrow controls for A -->
         <button id="btnAUp" title="Move A up" aria-label="Move A up">A ▲</button>
@@ -174,6 +217,9 @@
     const btnPrev = $("btnPrev");
     const btnSave = $("btnSave");
     const btnSaveBoth = $("btnSaveBoth");
+    const btnBatch = $("btnBatch");
+    const btnBackBatch = $("btnBackBatch");
+    const batchGrid = $("batchGrid");
     const btnAUp = $("btnAUp");
     const btnADown = $("btnADown");
     const btnALeft = $("btnALeft");
@@ -194,6 +240,8 @@
       index: -1,
       lastRender: null,
       busy: false,
+      batchMode: false,
+      hasBatch: false,
     };
 
     function setStatus(msg) { statusEl.textContent = msg; }
@@ -297,11 +345,142 @@
       canvas.style.height = cssH + "px";
     }
 
+    function showSingleView() {
+      state.batchMode = false;
+      batchGrid.hidden = true;
+      canvas.style.display = "block";
+    }
+
+    function showBatchView() {
+      state.batchMode = true;
+      canvas.style.display = "none";
+      batchGrid.hidden = false;
+    }
+
+    function backToBatch() {
+      if (!state.hasBatch || !batchGrid.children.length) return;
+      showBatchView();
+      setStatus("Batch view");
+      updateButtons();
+    }
+
+    async function renderComboPreviewToCanvas(combo, outCanvas) {
+      const [imgA, imgB] = await Promise.all([loadImage(combo.a), loadImage(combo.b)]);
+
+      // Render exactly like main canvas first (full-size combo)
+      const baseW = imgA.naturalWidth || imgA.width || 1;
+      const baseH = imgA.naturalHeight || imgA.height || 1;
+
+      const full = document.createElement("canvas");
+      full.width = baseW;
+      full.height = baseH;
+      const fctx = full.getContext("2d", { alpha: false });
+      fctx.imageSmoothingEnabled = true;
+      fctx.imageSmoothingQuality = "high";
+
+      fctx.fillStyle = "#111";
+      fctx.fillRect(0, 0, baseW, baseH);
+
+      const ax = Math.round(combo.ax || 0);
+      const ay = Math.round(combo.ay || 0);
+      const aScale = typeof combo.axScale === "number" ? combo.axScale : 1;
+      drawImageNoStretch(fctx, imgA, baseW, baseH, { allowUpscale: true, fit: "cover", offsetX: ax, offsetY: ay, userScale: aScale });
+
+      const bx = Math.round(combo.bx || 0);
+      const by = Math.round(combo.by || 0);
+      const bScale = typeof combo.bxScale === "number" ? combo.bxScale : 1;
+
+      if (combo.dir === "v") {
+        const x = Math.floor(baseW * combo.cut);
+        fctx.save();
+        fctx.beginPath();
+        fctx.rect(x, 0, baseW - x, baseH);
+        fctx.clip();
+        drawImageNoStretch(fctx, imgB, baseW, baseH, { allowUpscale: true, fit: "cover", offsetX: bx, offsetY: by, userScale: bScale });
+        fctx.restore();
+      } else {
+        const y = Math.floor(baseH * combo.cut);
+        fctx.save();
+        fctx.beginPath();
+        fctx.rect(0, y, baseW, baseH - y);
+        fctx.clip();
+        drawImageNoStretch(fctx, imgB, baseW, baseH, { allowUpscale: true, fit: "cover", offsetX: bx, offsetY: by, userScale: bScale });
+        fctx.restore();
+      }
+
+      // Scale down to preview size while preserving aspect ratio.
+      const PREVIEW_MAX_W = 320;
+      const PREVIEW_MAX_H = 180;
+      const s = Math.min(PREVIEW_MAX_W / baseW, PREVIEW_MAX_H / baseH, 1);
+      const displayW = Math.max(1, Math.round(baseW * s));
+      const displayH = Math.max(1, Math.round(baseH * s));
+
+      // Render at higher internal resolution for less pixelation.
+      const renderScale = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      const renderW = Math.max(1, Math.round(displayW * renderScale));
+      const renderH = Math.max(1, Math.round(displayH * renderScale));
+
+      outCanvas.width = renderW;
+      outCanvas.height = renderH;
+      outCanvas.style.width = displayW + "px";
+      outCanvas.style.height = displayH + "px";
+
+      const outCtx = outCanvas.getContext("2d", { alpha: false });
+      outCtx.imageSmoothingEnabled = true;
+      outCtx.imageSmoothingQuality = "high";
+      outCtx.fillStyle = "#111";
+      outCtx.fillRect(0, 0, renderW, renderH);
+      outCtx.drawImage(full, 0, 0, renderW, renderH);
+    }
+
+    async function generateBatch() {
+      if (state.allImages.length < 2) return;
+
+      state.busy = true;
+      updateButtons();
+      try {
+        setStatus("Generating batch…");
+        batchGrid.innerHTML = "";
+
+        const combos = Array.from({ length: 18 }, () => makeRandomCombo());
+
+        for (let i = 0; i < combos.length; i++) {
+          const combo = combos[i];
+          const tile = document.createElement("button");
+          tile.type = "button";
+          tile.className = "batch-tile";
+          tile.title = `Open #${i + 1}`;
+
+          const tileCanvas = document.createElement("canvas");
+          tile.appendChild(tileCanvas);
+
+          tile.onclick = () => {
+            const chosen = Object.assign({}, combo);
+            state.history = state.history.slice(0, state.index + 1);
+            state.history.push(chosen);
+            state.index = state.history.length - 1;
+            renderCombo(chosen).catch(showError);
+          };
+
+          batchGrid.appendChild(tile);
+          await renderComboPreviewToCanvas(combo, tileCanvas);
+        }
+
+        state.hasBatch = true;
+        showBatchView();
+        setStatus("Generated 18 combinations (6×3)");
+      } finally {
+        state.busy = false;
+        updateButtons();
+      }
+    }
+
     async function renderCombo(combo) {
       state.busy = true;
       updateButtons();
 
       try {
+        showSingleView();
         const [imgA, imgB] = await Promise.all([loadImage(combo.a), loadImage(combo.b)]);
 
         const w = imgA.naturalWidth || imgA.width;
@@ -321,7 +500,7 @@
         // IMPORTANT: clip in DESTINATION space, then draw B scaled to output.
         // This avoids "empty slice" when B's dimensions differ from A.
         const cut = combo.cut;
-        
+
         if (combo.dir === "v") {
           const x = Math.floor(w * cut);
           ctx.save();
@@ -384,7 +563,7 @@
       state.history[state.index] = combo;
       await renderCombo(combo);
     }
-  
+
     // Clamp utility
     function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
@@ -396,7 +575,7 @@
       state.history[state.index] = combo;
       await renderCombo(combo);
     }
-  
+
     // Restore missing navigation functions
     async function newImage() {
       if (state.allImages.length < 2) return;
@@ -439,9 +618,15 @@
 
     // Keyboard controls: WASD -> image A, Arrow keys -> image B
     function handleKeyDown(e) {
-      if (!state.lastRender || state.busy) return;
+      if (!state.lastRender || state.busy || state.batchMode) return;
       const step = MOVE_STEP;
       switch (e.key) {
+      // Space -> new/next image
+      case " ":
+      case "Spacebar": // legacy
+        e.preventDefault();
+        newImage().catch(showError);
+        break;
         // Move cut: 'y' decrease cut (left/top), 'x' increase cut (right/bottom)
         case "y":
         case "Y":
@@ -495,25 +680,28 @@
     function updateButtons() {
       btnPrev.disabled = state.index <= 0 || state.busy;
       btnNew.disabled = state.allImages.length < 2 || state.busy;
-      btnSave.disabled = !state.lastRender || state.busy;
-      btnSaveBoth.disabled = !state.lastRender || state.busy;
-     // arrow buttons enabled when we have a rendered combo and not busy
-     const arrowsDisabled = !state.lastRender || state.busy;
-     btnAUp.disabled = arrowsDisabled;
-     btnADown.disabled = arrowsDisabled;
-     btnALeft.disabled = arrowsDisabled;
-     btnARight.disabled = arrowsDisabled;
-     // zoom A
-     btnAZoomIn.disabled = arrowsDisabled;
-     btnAZoomOut.disabled = arrowsDisabled;
-     btnBUp.disabled = arrowsDisabled;
-     btnBDown.disabled = arrowsDisabled;
-     btnBLeft.disabled = arrowsDisabled;
-     btnBRight.disabled = arrowsDisabled;
-     // zoom B
-     btnBZoomIn.disabled = arrowsDisabled;
-     btnBZoomOut.disabled = arrowsDisabled;
-    
+      btnSave.disabled = !state.lastRender || state.busy || state.batchMode;
+      btnSaveBoth.disabled = !state.lastRender || state.busy || state.batchMode;
+      btnBatch.disabled = state.allImages.length < 2 || state.busy;
+      btnBackBatch.disabled = state.busy || state.batchMode || !state.hasBatch || !batchGrid.children.length;
+
+      const arrowsDisabled = !state.lastRender || state.busy || state.batchMode;
+      btnAUp.disabled = arrowsDisabled;
+      btnADown.disabled = arrowsDisabled;
+      btnALeft.disabled = arrowsDisabled;
+      btnARight.disabled = arrowsDisabled;
+      // zoom A
+      btnAZoomIn.disabled = arrowsDisabled;
+      btnAZoomOut.disabled = arrowsDisabled;
+      // zoom B
+      btnBUp.disabled = arrowsDisabled;
+      btnBDown.disabled = arrowsDisabled;
+      btnBLeft.disabled = arrowsDisabled;
+      btnBRight.disabled = arrowsDisabled;
+      // zoom B
+      btnBZoomIn.disabled = arrowsDisabled;
+      btnBZoomOut.disabled = arrowsDisabled;
+
       const hasNext = state.index >= 0 && state.index < state.history.length - 1;
       btnNew.textContent = hasNext ? "Next image" : "New image";
     }
@@ -629,23 +817,26 @@
       btnPrev.onclick = () => prevImage().catch(showError);
       btnSave.onclick = () => saveImage().catch(showError);
       btnSaveBoth.onclick = () => saveBothImages().catch(showError);
-     // A controls
-     btnAUp.onclick = () => moveImage("a", 0, -MOVE_STEP).catch(showError);
-     btnADown.onclick = () => moveImage("a", 0, MOVE_STEP).catch(showError);
-     btnALeft.onclick = () => moveImage("a", -MOVE_STEP, 0).catch(showError);
-     btnARight.onclick = () => moveImage("a", MOVE_STEP, 0).catch(showError);
-     btnAZoomIn.onclick = () => zoomImage("a", ZOOM_STEP).catch(showError);
-     btnAZoomOut.onclick = () => zoomImage("a", 1 / ZOOM_STEP).catch(showError);
-     // B controls
-     btnBUp.onclick = () => moveImage("b", 0, -MOVE_STEP).catch(showError);
-     btnBDown.onclick = () => moveImage("b", 0, MOVE_STEP).catch(showError);
-     btnBLeft.onclick = () => moveImage("b", -MOVE_STEP, 0).catch(showError);
-     btnBRight.onclick = () => moveImage("b", MOVE_STEP, 0).catch(showError);
-     btnBZoomIn.onclick = () => zoomImage("b", ZOOM_STEP).catch(showError);
-     btnBZoomOut.onclick = () => zoomImage("b", 1 / ZOOM_STEP).catch(showError);
+      btnBatch.onclick = () => generateBatch().catch(showError);
+      btnBackBatch.onclick = () => backToBatch();
 
-     // attach keyboard handler
-     window.addEventListener("keydown", handleKeyDown, { passive: false });
+      // A controls
+      btnAUp.onclick = () => moveImage("a", 0, -MOVE_STEP).catch(showError);
+      btnADown.onclick = () => moveImage("a", 0, MOVE_STEP).catch(showError);
+      btnALeft.onclick = () => moveImage("a", -MOVE_STEP, 0).catch(showError);
+      btnARight.onclick = () => moveImage("a", MOVE_STEP, 0).catch(showError);
+      btnAZoomIn.onclick = () => zoomImage("a", ZOOM_STEP).catch(showError);
+      btnAZoomOut.onclick = () => zoomImage("a", 1 / ZOOM_STEP).catch(showError);
+      // B controls
+      btnBUp.onclick = () => moveImage("b", 0, -MOVE_STEP).catch(showError);
+      btnBDown.onclick = () => moveImage("b", 0, MOVE_STEP).catch(showError);
+      btnBLeft.onclick = () => moveImage("b", -MOVE_STEP, 0).catch(showError);
+      btnBRight.onclick = () => moveImage("b", MOVE_STEP, 0).catch(showError);
+      btnBZoomIn.onclick = () => zoomImage("b", ZOOM_STEP).catch(showError);
+      btnBZoomOut.onclick = () => zoomImage("b", 1 / ZOOM_STEP).catch(showError);
+
+      // attach keyboard handler
+      window.addEventListener("keydown", handleKeyDown, { passive: false });
 
       window.addEventListener("resize", () => fitCanvasCSS(), { passive: true });
 
@@ -658,3 +849,5 @@
 </body>
 
 </html>
+
+
