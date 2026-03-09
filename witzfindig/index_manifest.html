@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Camera Rolling</title>
+  <title>Witzfindig – Random Image Combiner</title>
   <style>
     :root {
       color-scheme: dark;
@@ -148,39 +148,6 @@
       display: block;
       background: #111;
     }
-
-    .drop-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      opacity: .9;
-      user-select: none;
-    }
-
-    .drop-hint {
-      position: absolute;
-      inset: 12px;
-      border: 2px dashed rgba(255, 255, 255, .28);
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 16px;
-      background: rgba(0, 0, 0, .28);
-      color: #d7d7db;
-      pointer-events: none;
-      z-index: 4;
-    }
-
-    .drop-hint[hidden] {
-      display: none;
-    }
-
-    .stage.drag-over {
-      border-color: rgba(120, 180, 255, .7);
-      box-shadow: 0 0 0 2px rgba(120, 180, 255, .25) inset;
-    }
   </style>
 </head>
 
@@ -188,8 +155,8 @@
   <div class="wrap">
     <header>
       <div>
-        <div style="font-weight:600;">Camera Rolling</div>
-        <small>Randomly combine images</small>
+        <div style="font-weight:600;">Witzfindig V1</div>
+        <small>Loads all images from <code>/bilder_v1/**</code></small>
       </div>
       <small id="status">Loading…</small>
     </header>
@@ -197,10 +164,6 @@
     <div class="stage" id="stage">
       <canvas id="c" aria-label="combined image canvas"></canvas>
       <div id="batchGrid" class="batch-grid" hidden aria-label="batch preview grid"></div>
-      <div id="dropHint" class="drop-hint" hidden>
-        Drop a folder here to load images<br />
-        <small>(png / jpg / jpeg / webp)</small>
-      </div>
     </div>
 
     <div class="controls">
@@ -230,18 +193,19 @@
         <button id="btnBZoomIn" title="Zoom B in" aria-label="Zoom B in">B +</button>
         <button id="btnBZoomOut" title="Zoom B out" aria-label="Zoom B out">B −</button>
       </div>
-
       <div class="meta" id="meta" title=""></div>
     </div>
   </div>
 
   <script>
     // --- Config ---
+    const ROOT_DIR = "bilder_v1"; // (kept only if you want to validate paths; otherwise safe to remove)
     const IMAGE_EXT_RE = /\.(png|jpe?g|webp)$/i;
-    const MAX_SAVE_LONG_SIDE = 2000;
-    const MOVE_STEP = 10;
-    const ZOOM_STEP = 1.15;
-    const CUT_STEP = 0.01;
+    const MANIFEST_URL = "./manifest.json"; // generated + committed
+    const MAX_SAVE_LONG_SIDE = 2000; // px: limit downloaded image long edge
+    const MOVE_STEP = 10; // pixels per arrow click
+    const ZOOM_STEP = 1.15; // multiply scale by this for zoom in, divide for zoom out
+    const CUT_STEP = 0.01; // fraction to move cut per key press
 
     const $ = (id) => document.getElementById(id);
     const canvas = $("c");
@@ -269,20 +233,15 @@
     const btnBZoomIn = $("btnBZoomIn");
     const btnBZoomOut = $("btnBZoomOut");
 
-    const stageEl = $("stage");
-    const dropHint = $("dropHint");
-
     const state = {
-      allImages: /** @type {string[]} */ ([]),
+      allImages: /** @type {string[]} */ ([]),   // same-origin URLs like "/bilder_v1/sub/a.jpg"
+      // history entries now also keep pixel offsets for each image
       history: /** @type {Array<{a:string,b:string,dir:"v"|"h",cut:number,ax?:number,ay?:number,bx?:number,by?:number}>} */ ([]),
       index: -1,
       lastRender: null,
       busy: false,
       batchMode: false,
       hasBatch: false,
-      sourceMode: "drop", // drop-only
-      droppedUrls: /** @type {string[]} */ ([]),
-      imageLabels: new Map(),
     };
 
     function setStatus(msg) { statusEl.textContent = msg; }
@@ -573,7 +532,7 @@
 
         state.lastRender = combo;
 
-        const meta = `${combo.dir === "v" ? "vertical" : "horizontal"} cut @ ${(combo.cut * 100).toFixed(1)}%  |  A: ${getImageLabel(combo.a)}  +  B: ${getImageLabel(combo.b)}`;
+        const meta = `${combo.dir === "v" ? "vertical" : "horizontal"} cut @ ${(combo.cut * 100).toFixed(1)}%  |  A: ${combo.a}  +  B: ${combo.b}`;
         metaEl.textContent = meta;
         metaEl.title = meta;
 
@@ -662,12 +621,12 @@
       if (!state.lastRender || state.busy || state.batchMode) return;
       const step = MOVE_STEP;
       switch (e.key) {
-        // Space -> new/next image
-        case " ":
-        case "Spacebar": // legacy
-          e.preventDefault();
-          newImage().catch(showError);
-          break;
+      // Space -> new/next image
+      case " ":
+      case "Spacebar": // legacy
+        e.preventDefault();
+        newImage().catch(showError);
+        break;
         // Move cut: 'y' decrease cut (left/top), 'x' increase cut (right/bottom)
         case "y":
         case "Y":
@@ -759,8 +718,8 @@
     async function saveImage() {
       if (!state.lastRender) return;
 
-      const aPart = sanitizeFilenamePart(getImageLabel(state.lastRender.a));
-      const bPart = sanitizeFilenamePart(getImageLabel(state.lastRender.b));
+      const aPart = sanitizeFilenamePart(state.lastRender.a);
+      const bPart = sanitizeFilenamePart(state.lastRender.b);
       const filename = `${aPart}__PLUS__${bPart}.png`;
 
       const srcW = canvas.width || 1;
@@ -795,9 +754,9 @@
 
     // Fetch an image and trigger download preserving the original file extension.
     async function saveSingleImage(url) {
-      const label = getImageLabel(url);
-      const base = sanitizeFilenamePart(label);
-      const extMatch = String(label).match(/\.([a-z0-9]+)(?:[?#].*)?$/i);
+      const normalized = normalizeImagePath(url);
+      const base = sanitizeFilenamePart(normalized);
+      const extMatch = String(normalized).match(/\.([a-z0-9]+)(?:[?#].*)?$/i);
       const ext = extMatch ? extMatch[1] : "bin";
       const filename = `${base}.${ext}`;
 
@@ -830,115 +789,30 @@
       }
     }
 
-    function getImageLabel(u) {
-      return state.imageLabels.get(u) || String(u || "");
-    }
-
-    function resetSession() {
-      state.history = [];
-      state.index = -1;
-      state.lastRender = null;
-      state.hasBatch = false;
-      state.batchMode = false;
-      batchGrid.innerHTML = "";
-      canvas.style.display = "block";
-      batchGrid.hidden = true;
-      metaEl.textContent = "";
-      metaEl.title = "";
-    }
-
-    function clearDroppedUrls() {
-      for (const u of state.droppedUrls) URL.revokeObjectURL(u);
-      state.droppedUrls = [];
-    }
-
-    function setDropHintVisible(visible) {
-      dropHint.hidden = !visible;
-    }
-
-    function setDragOver(on) {
-      stageEl.classList.toggle("drag-over", !!on);
-    }
-
-    async function traverseEntry(entry, prefix = "") {
-      if (!entry) return [];
-      if (entry.isFile) {
-        const file = await new Promise((resolve, reject) => entry.file(resolve, reject));
-        return [{ file, path: `${prefix}${file.name}` }];
-      }
-      if (!entry.isDirectory) return [];
-
-      const reader = entry.createReader();
-      const children = [];
-      while (true) {
-        const chunk = await new Promise((resolve, reject) => reader.readEntries(resolve, reject));
-        if (!chunk.length) break;
-        children.push(...chunk);
-      }
-
-      const out = [];
-      for (const child of children) {
-        out.push(...await traverseEntry(child, `${prefix}${entry.name}/`));
-      }
-      return out;
-    }
-
-    async function collectDroppedFiles(evt) {
-      const dt = evt.dataTransfer;
-      const out = [];
-
-      if (dt?.items?.length) {
-        const tasks = [];
-        for (const item of dt.items) {
-          if (item.kind !== "file") continue;
-          const entry = item.webkitGetAsEntry?.();
-          if (entry) {
-            tasks.push(traverseEntry(entry, ""));
-          } else {
-            const f = item.getAsFile?.();
-            if (f) out.push({ file: f, path: f.webkitRelativePath || f.name });
-          }
-        }
-        const nested = await Promise.all(tasks);
-        for (const group of nested) out.push(...group);
-      } else if (dt?.files?.length) {
-        for (const f of dt.files) out.push({ file: f, path: f.webkitRelativePath || f.name });
-      }
-
-      return out
-        .map(({ file, path }) => ({ file, path: String(path || "").replace(/^\/+/, "") }))
-        .filter(({ path }) => IMAGE_EXT_RE.test(path));
-    }
-
-    async function loadDroppedFolderFromEvent(evt) {
-      evt.preventDefault();
-      evt.stopPropagation();
-
-      setDragOver(false);
-
-      const files = await collectDroppedFiles(evt);
-      if (files.length < 2) throw new Error("Dropped folder must contain at least 2 supported images.");
-
-      clearDroppedUrls();
-      resetSession();
-      state.imageLabels.clear();
-
-      const mapped = files
-        .map(({ file, path }) => ({ url: URL.createObjectURL(file), label: path }))
-        .sort((a, b) => a.label.localeCompare(b.label));
-
-      state.allImages = mapped.map((x) => x.url);
-      state.droppedUrls = [...state.allImages];
-      for (const x of mapped) state.imageLabels.set(x.url, x.label);
-
-      setDropHintVisible(false);
-      setStatus(`Loaded ${state.allImages.length} images from dropped folder`);
-      updateButtons();
-      await newImage();
+    async function fetchJSON(url) {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText} @ ${url}`);
+      return res.json();
     }
 
     async function init() {
-      // Ensure async handler errors are visible
+      setStatus("Loading manifest…");
+
+      const manifest = await fetchJSON(MANIFEST_URL);
+      if (!Array.isArray(manifest)) throw new Error("manifest.json must be a JSON array of image paths");
+
+      state.allImages = manifest
+        .filter((u) => typeof u === "string" && IMAGE_EXT_RE.test(u))
+        .map(normalizeImagePath)
+        .sort();
+
+      if (state.allImages.length < 2) {
+        throw new Error("Not enough images found in manifest.json (need at least 2)");
+      }
+
+      setStatus(`Found ${state.allImages.length} images`);
+
+      // Ensure async handler errors are visible (prevents "silent fails")
       btnNew.onclick = () => newImage().catch(showError);
       btnPrev.onclick = () => prevImage().catch(showError);
       btnSave.onclick = () => saveImage().catch(showError);
@@ -946,14 +820,14 @@
       btnBatch.onclick = () => generateBatch().catch(showError);
       btnBackBatch.onclick = () => backToBatch();
 
-      // Re-enable manipulation controls
+      // A controls
       btnAUp.onclick = () => moveImage("a", 0, -MOVE_STEP).catch(showError);
       btnADown.onclick = () => moveImage("a", 0, MOVE_STEP).catch(showError);
       btnALeft.onclick = () => moveImage("a", -MOVE_STEP, 0).catch(showError);
       btnARight.onclick = () => moveImage("a", MOVE_STEP, 0).catch(showError);
       btnAZoomIn.onclick = () => zoomImage("a", ZOOM_STEP).catch(showError);
       btnAZoomOut.onclick = () => zoomImage("a", 1 / ZOOM_STEP).catch(showError);
-
+      // B controls
       btnBUp.onclick = () => moveImage("b", 0, -MOVE_STEP).catch(showError);
       btnBDown.onclick = () => moveImage("b", 0, MOVE_STEP).catch(showError);
       btnBLeft.onclick = () => moveImage("b", -MOVE_STEP, 0).catch(showError);
@@ -961,36 +835,13 @@
       btnBZoomIn.onclick = () => zoomImage("b", ZOOM_STEP).catch(showError);
       btnBZoomOut.onclick = () => zoomImage("b", 1 / ZOOM_STEP).catch(showError);
 
-      stageEl.addEventListener("dragenter", (e) => {
-        e.preventDefault();
-        setDragOver(true);
-      });
-
-      stageEl.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        setDragOver(true);
-      });
-
-      stageEl.addEventListener("dragleave", (e) => {
-        if (!stageEl.contains(e.relatedTarget)) setDragOver(false);
-      });
-
-      stageEl.addEventListener("drop", (e) => {
-        loadDroppedFolderFromEvent(e).catch(showError);
-      });
-
+      // attach keyboard handler
       window.addEventListener("keydown", handleKeyDown, { passive: false });
+
       window.addEventListener("resize", () => fitCanvasCSS(), { passive: true });
 
-      // Drop-only startup state
-      clearDroppedUrls();
-      resetSession();
-      state.imageLabels.clear();
-      state.allImages = [];
-      setDropHintVisible(true);
-      setStatus("Drop a folder into the stage");
-
       updateButtons();
+      await newImage();
     }
 
     init().catch(showError);
@@ -998,3 +849,5 @@
 </body>
 
 </html>
+
+
