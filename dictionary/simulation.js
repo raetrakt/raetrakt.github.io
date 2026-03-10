@@ -77,9 +77,7 @@ export function bindSimulationTick(simulation, { state, getSelections, collision
       .attr('x2', (d) => d.target.x)
       .attr('y2', (d) => d.target.y);
 
-    node
-      .attr('x', (d) => d.x - (d.w ?? 80) / 2)
-      .attr('y', (d) => d.y - (d.h ?? 40) / 2);
+    node.attr('x', (d) => d.x - (d.w ?? 80) / 2).attr('y', (d) => d.y - (d.h ?? 40) / 2);
   });
 }
 
