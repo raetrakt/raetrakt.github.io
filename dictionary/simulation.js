@@ -111,7 +111,7 @@ function syncSimulationLinks(simulation, state) {
 export function bindSimulationTick(simulation, { state, getSelections, collisionPadding = 30 }) {
   simulation.on('tick', () => {
     syncSimulationLinks(simulation, state);
-    applyBoxCollision(state.nodes, collisionPadding);
+    // applyBoxCollision(state.nodes, collisionPadding);
 
     const { link, linkHit, node } = getSelections();
 
