@@ -538,6 +538,14 @@
       }
     })
 
+    function hasConceptRelation(from_concept, to_concept) {
+      return relations.some(r => String(r.from_concept) === String(from_concept) && String(r.to_concept) === String(to_concept))
+    }
+
+    function hasWorkConceptRelation(work, concept) {
+      return workConcepts.some(r => String(r.work) === String(work) && String(r.concept) === String(concept))
+    }
+
     async function addConnection(a, b) {
       const A = parseNodeId(a.id)
       const B = parseNodeId(b.id)
@@ -546,17 +554,21 @@
       let dstId = null
       let insert = null
       let localApply = null
+      let alreadyExists = false
 
       if (A.kind === 'c' && B.kind === 'c') {
         srcId = `c-${A.raw}`; dstId = `c-${B.raw}`
+        alreadyExists = hasConceptRelation(A.raw, B.raw)
         insert = () => supabase.from('concept_relations').insert({ from_concept: A.raw, to_concept: B.raw })
         localApply = () => relations.push({ from_concept: A.raw, to_concept: B.raw })
       } else if (A.kind === 'w' && B.kind === 'c') {
         srcId = `w-${A.raw}`; dstId = `c-${B.raw}`
+        alreadyExists = hasWorkConceptRelation(A.raw, B.raw)
         insert = () => supabase.from('work_concept_relations').insert({ work: A.raw, concept: B.raw })
         localApply = () => workConcepts.push({ work: A.raw, concept: B.raw })
       } else if (A.kind === 'c' && B.kind === 'w') {
         srcId = `w-${B.raw}`; dstId = `c-${A.raw}`
+        alreadyExists = hasWorkConceptRelation(B.raw, A.raw)
         insert = () => supabase.from('work_concept_relations').insert({ work: B.raw, concept: A.raw })
         localApply = () => workConcepts.push({ work: B.raw, concept: A.raw })
       } else {
@@ -564,15 +576,22 @@
         return
       }
 
+      const k = `${srcId}->${dstId}`
+      const isPreviouslyRemoved = editorState.removedLinkKeys.has(k)
+
+      // prevent true duplicates; allow re-adding a previously removed dashed connection
+      if (alreadyExists && !isPreviouslyRemoved) return
+
       const { error } = await insert()
       if (error) return alert(error.message)
 
-      const k = `${srcId}->${dstId}`
       editorState.removedLinkKeys.delete(k)
       editorState.addedLinkKeys.add(k)
 
+      // only append locally if this wasn't already present in local arrays
+      if (!alreadyExists) localApply()
+
       // update client view without refetch/reload
-      localApply()
       renderGraph()
       await waitForImages()
       measureNodes()
