@@ -515,27 +515,6 @@
 
     await document.fonts.ready
     await refreshDataAndRender({ force: true })
-
-    // keep tick logic, now works with dynamic `link`/`node`
-    simulation.on('tick', () => {
-      applyBoxCollision()
-      link
-        .attr('x1', d => d.source.x)
-        .attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x)
-        .attr('y2', d => d.target.y)
-
-      // keep hitboxes in sync with visible lines
-      linkHit
-        .attr('x1', d => d.source.x)
-        .attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x)
-        .attr('y2', d => d.target.y)
-
-      node
-        .attr('x', d => d.x - (d.w / 2))
-        .attr('y', d => d.y - (d.h / 2))
-    })
   </script>
 </body>
 
