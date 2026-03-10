@@ -18,6 +18,47 @@ export function createRenderer({
   let node = nodeLayer.selectAll('foreignObject');
   let nodeDiv = node.selectAll('div');
 
+  function readCssPxVar(name, fallback) {
+    const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    const n = Number.parseFloat(raw);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function getWorkStyleConfig() {
+    const imgMax = readCssPxVar('--work-img-max', 140);
+    const pad = readCssPxVar('--work-node-padding', 6);
+    return { imgMax, padTotal: pad * 2 };
+  }
+
+  function fitWorkImageSize(img, { imgMax, padTotal }) {
+    const nw = img?.naturalWidth || 0;
+    const nh = img?.naturalHeight || 0;
+    if (!nw || !nh) return { w: imgMax + padTotal, h: imgMax + padTotal };
+    const scale = Math.min(1, imgMax / nw, imgMax / nh);
+    return {
+      w: Math.ceil(nw * scale) + padTotal,
+      h: Math.ceil(nh * scale) + padTotal,
+    };
+  }
+
+  function waitForImageReady(img) {
+    if (!img) return Promise.resolve();
+    if (img.complete) return Promise.resolve();
+
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = () => {
+        if (done) return;
+        done = true;
+        resolve();
+      };
+
+      img.addEventListener('load', finish, { once: true });
+      img.addEventListener('error', finish, { once: true });
+      img.decode?.().then(finish).catch(() => {});
+    });
+  }
+
   function buildDerivedData() {
     const desired = [
       ...state.concepts.map((c) => ({ id: `c-${c.id}`, name: c.name, type: c.type })),
@@ -141,6 +182,8 @@ export function createRenderer({
       .data((d) => [d])
       .join('xhtml:div')
       .attr('class', (d) => `node ${d.type}`)
+      .classed('media-pending', (d) => d.type === 'work')
+      .classed('media-ready', (d) => d.type !== 'work')
       .html((d) =>
         d.type === 'work'
           ? `<img src="${d.media_path}" alt="${d.name}">`
@@ -154,19 +197,31 @@ export function createRenderer({
   }
 
   function measureNodes() {
+    const workStyle = getWorkStyleConfig();
+
     node.each(function (d) {
       const div = d3.select(this).select('div').node();
       if (!div) return;
 
-      // Use layout sizes (not viewport-transformed sizes) so foreignObject matches content.
-      let w = Math.ceil(div.offsetWidth);
-      let h = Math.ceil(div.offsetHeight);
+      let w = 0;
+      let h = 0;
 
-      // Fallback for edge cases where offset sizes are 0.
-      if (!w || !h) {
-        const rect = div.getBoundingClientRect();
-        w = Math.ceil(rect.width);
-        h = Math.ceil(rect.height);
+      if (d.type === 'work') {
+        const img = div.querySelector('img');
+        if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
+          ({ w, h } = fitWorkImageSize(img, workStyle));
+        } else {
+          w = Math.max(d.w || 0, workStyle.imgMax + workStyle.padTotal);
+          h = Math.max(d.h || 0, workStyle.imgMax + workStyle.padTotal);
+        }
+      } else {
+        w = Math.ceil(div.offsetWidth);
+        h = Math.ceil(div.offsetHeight);
+        if (!w || !h) {
+          const rect = div.getBoundingClientRect();
+          w = Math.ceil(rect.width);
+          h = Math.ceil(rect.height);
+        }
       }
 
       d.w = w;
@@ -180,21 +235,40 @@ export function createRenderer({
     );
   }
 
-  async function waitForImages() {
-    const imgs = Array.from(document.querySelectorAll('.node.work img'));
-    await Promise.all(
-      imgs.map(
-        (img) =>
-          img.decode?.().catch(
-            () =>
-              new Promise((res) => {
-                img.onload = img.onerror = res;
-              }),
-          ) ?? Promise.resolve(),
-      ),
-    );
+  async function waitForImages({ staggerMs = 60 } = {}) {
+    const workDivs = nodeDiv.filter((d) => d.type === 'work').nodes();
+    if (!workDivs.length) {
+      await new Promise((res) => requestAnimationFrame(() => res()));
+      return;
+    }
 
-    // Let browser commit final layout after image decode/load.
+    let revealCount = 0;
+    let revealChain = Promise.resolve();
+
+    const enqueueReveal = (div) => {
+      const delay = revealCount === 0 ? 0 : staggerMs;
+      revealCount += 1;
+
+      revealChain = revealChain
+        .then(() => new Promise((res) => setTimeout(res, delay)))
+        .then(() => {
+          div.classList.remove('media-pending');
+          div.classList.add('media-ready');
+          measureNodes();
+          simulation.alpha(0.12).restart();
+        });
+
+      return revealChain;
+    };
+
+    const jobs = workDivs.map(async (div) => {
+      const img = div.querySelector('img');
+      await waitForImageReady(img);
+      await enqueueReveal(div);
+    });
+
+    await Promise.allSettled(jobs);
+    await revealChain;
     await new Promise((res) => requestAnimationFrame(() => res()));
   }
 

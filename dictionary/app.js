@@ -74,7 +74,7 @@ async function refreshDataAndRender({ force = false } = {}) {
     lastSnapshot = next;
 
     renderer.renderGraph();
-    await renderer.waitForImages();
+    await renderer.waitForImages({ staggerMs: 60 });
     renderer.measureNodes();
     simulation.alpha(1).restart();
   } finally {
@@ -132,7 +132,7 @@ async function addConnection(a, b) {
   if (!alreadyExists) localApply();
 
   renderer.renderGraph();
-  await renderer.waitForImages();
+  await renderer.waitForImages({ staggerMs: 60 });
   renderer.measureNodes();
   simulation.alpha(0.6).restart();
 }

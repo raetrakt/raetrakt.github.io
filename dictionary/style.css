@@ -67,13 +67,23 @@ foreignObject {
 .node.work {
   background: transparent;
   /* border: 1px solid #555; */
-  padding: 6px;
+  padding: var(--work-node-padding);
+}
+
+.node.work.media-pending {
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+.node.work.media-ready {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .node.work img {
   display: block;
-  max-width: 140px;
-  max-height: 140px;
+  max-width: var(--work-img-max);
+  max-height: var(--work-img-max);
   height: auto;
   width: auto;
 }
@@ -121,4 +131,9 @@ body.editing-mode {
 .node.selected {
   outline: 2px solid #c40000;
   outline-offset: 2px;
+}
+
+:root {
+  --work-img-max: 140px;
+  --work-node-padding: 6px;
 }
