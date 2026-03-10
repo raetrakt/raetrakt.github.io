@@ -1,6 +1,12 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 import { state, editorState } from './state.js';
-import { linkKey, parseNodeId, makeSnapshot, hasConceptRelation, hasWorkConceptRelation } from './utils.js';
+import {
+  linkKey,
+  parseNodeId,
+  makeSnapshot,
+  hasConceptRelation,
+  hasWorkConceptRelation,
+} from './utils.js';
 import { loadData } from './data.js';
 import { createRenderer } from './render.js';
 import { createGraphSimulation, bindSimulationTick, createDrag } from './simulation.js';
