@@ -10,6 +10,10 @@ export function parseNodeId(nodeId) {
   return { kind, raw: rest.join('-') };
 }
 
+export function getNodeId(ref) {
+  return typeof ref === 'object' && ref !== null ? ref.id : ref;
+}
+
 export function makeSnapshot(state) {
   return JSON.stringify({
     concepts: (state.concepts ?? []).map((c) => [c.id, c.name, c.type]).sort(),

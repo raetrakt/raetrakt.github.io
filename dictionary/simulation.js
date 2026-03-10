@@ -1,3 +1,5 @@
+import { getNodeId } from './utils.js';
+
 export function createGraphSimulation({ width, height }) {
   return d3
     .forceSimulation([])
@@ -59,8 +61,56 @@ function applyBoxCollision(nodes, padding = 30) {
   });
 }
 
+function buildInvisibleMainLinks(state) {
+  const nodes = state.nodes ?? [];
+  const links = state.links ?? [];
+  const root = nodes.find((n) => n?.type === 'main');
+  if (!root?.id) return [];
+
+  const connected = new Set();
+  links.forEach((l) => {
+    const s = getNodeId(l.source);
+    const t = getNodeId(l.target);
+    if (s != null) connected.add(s);
+    if (t != null) connected.add(t);
+  });
+
+  const prev = new Map((state.__autoMainLinks ?? []).map((l) => [getNodeId(l.target), l]));
+
+  return nodes
+    .filter((n) => n?.id != null && n.id !== root.id && !connected.has(n.id))
+    .map((n) => {
+      const existing = prev.get(n.id);
+      if (existing) {
+        existing.source = root.id;
+        existing.target = n.id;
+        existing.type = 'main';
+        existing.invisible = true;
+        existing.__autoMainLink = true;
+        return existing;
+      }
+      return {
+        source: root.id,
+        target: n.id,
+        type: 'main',
+        invisible: true,
+        __autoMainLink: true,
+      };
+    });
+}
+
+function syncSimulationLinks(simulation, state) {
+  const linkForce = simulation.force('link');
+  if (!linkForce) return;
+
+  const autoMainLinks = buildInvisibleMainLinks(state);
+  state.__autoMainLinks = autoMainLinks;
+  linkForce.links([...(state.links ?? []), ...autoMainLinks]);
+}
+
 export function bindSimulationTick(simulation, { state, getSelections, collisionPadding = 30 }) {
   simulation.on('tick', () => {
+    syncSimulationLinks(simulation, state);
     applyBoxCollision(state.nodes, collisionPadding);
 
     const { link, linkHit, node } = getSelections();
