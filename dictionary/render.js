@@ -55,7 +55,10 @@ export function createRenderer({
 
       img.addEventListener('load', finish, { once: true });
       img.addEventListener('error', finish, { once: true });
-      img.decode?.().then(finish).catch(() => {});
+      img
+        .decode?.()
+        .then(finish)
+        .catch(() => {});
     });
   }
 
