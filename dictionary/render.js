@@ -157,9 +157,18 @@ export function createRenderer({
     node.each(function (d) {
       const div = d3.select(this).select('div').node();
       if (!div) return;
-      const rect = div.getBoundingClientRect();
-      const w = Math.ceil(rect.width) + 6;
-      const h = Math.ceil(rect.height) + 6;
+
+      // Use layout sizes (not viewport-transformed sizes) so foreignObject matches content.
+      let w = Math.ceil(div.offsetWidth);
+      let h = Math.ceil(div.offsetHeight);
+
+      // Fallback for edge cases where offset sizes are 0.
+      if (!w || !h) {
+        const rect = div.getBoundingClientRect();
+        w = Math.ceil(rect.width);
+        h = Math.ceil(rect.height);
+      }
+
       d.w = w;
       d.h = h;
       d3.select(this).attr('width', w).attr('height', h);
@@ -184,6 +193,9 @@ export function createRenderer({
           ) ?? Promise.resolve(),
       ),
     );
+
+    // Let browser commit final layout after image decode/load.
+    await new Promise((res) => requestAnimationFrame(() => res()));
   }
 
   function getSelections() {
