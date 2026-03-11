@@ -29,8 +29,8 @@ foreignObject {
   cursor: grab;
   width: max-content;
   height: max-content;
-  border-radius: 3px;
-  box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.1);
+  /* border-radius: 3px; */
+  /* box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.1); */
 }
 
 .node-text {
@@ -38,16 +38,16 @@ foreignObject {
 }
 
 .node.main {
-  background: #ffd014;
+  background: #fff;
   color: #000;
 }
 
 .node.theory {
-  background: #66c2ff;
+  background:  #fa5656;
 }
 
 .node.tool {
-  background: #f76587;
+  background: #66c2ff;
 }
 
 .node.sub {
