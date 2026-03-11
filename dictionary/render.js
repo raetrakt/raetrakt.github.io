@@ -25,19 +25,28 @@ export function createRenderer({
   }
 
   function getWorkStyleConfig() {
-    const imgMax = readCssPxVar('--work-img-max', 140);
+    const targetArea = readCssPxVar('--work-img-target-area', 8000);
     const pad = readCssPxVar('--work-node-padding', 6);
-    return { imgMax, padTotal: pad * 2 };
+    return { targetArea, padTotal: pad * 2 };
   }
 
-  function fitWorkImageSize(img, { imgMax, padTotal }) {
+  function fitWorkImageSize(img, { targetArea, padTotal }) {
     const nw = img?.naturalWidth || 0;
     const nh = img?.naturalHeight || 0;
-    if (!nw || !nh) return { w: imgMax + padTotal, h: imgMax + padTotal };
-    const scale = Math.min(1, imgMax / nw, imgMax / nh);
+    if (!nw || !nh) {
+      const side = Math.ceil(Math.sqrt(targetArea));
+      return { imgW: side, imgH: side, w: side + padTotal, h: side + padTotal };
+    }
+
+    const scale = Math.sqrt(targetArea / (nw * nh));
+    const imgW = Math.ceil(nw * scale);
+    const imgH = Math.ceil(nh * scale);
+
     return {
-      w: Math.ceil(nw * scale) + padTotal,
-      h: Math.ceil(nh * scale) + padTotal,
+      imgW,
+      imgH,
+      w: imgW + padTotal,
+      h: imgH + padTotal,
     };
   }
 
@@ -189,7 +198,7 @@ export function createRenderer({
       .classed('media-ready', (d) => d.type !== 'work')
       .html((d) =>
         d.type === 'work'
-          ? `<img src="${d.media_path}" alt="${d.name}">`
+          ? `<img class="node-img" src="${d.media_path}" alt="${d.name}">`
           : `<span class="node-text">${d.name.split(' ').join('<br>')}</span>`,
       );
 
@@ -212,10 +221,15 @@ export function createRenderer({
       if (d.type === 'work') {
         const img = div.querySelector('img');
         if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
-          ({ w, h } = fitWorkImageSize(img, workStyle));
+          const size = fitWorkImageSize(img, workStyle);
+          img.style.width = `${size.imgW}px`;
+          img.style.height = `${size.imgH}px`;
+          w = size.w;
+          h = size.h;
         } else {
-          w = Math.max(d.w || 0, workStyle.imgMax + workStyle.padTotal);
-          h = Math.max(d.h || 0, workStyle.imgMax + workStyle.padTotal);
+          const side = Math.ceil(Math.sqrt(workStyle.targetArea));
+          w = Math.max(d.w || 0, side + workStyle.padTotal);
+          h = Math.max(d.h || 0, side + workStyle.padTotal);
         }
       } else {
         w = Math.ceil(div.offsetWidth);

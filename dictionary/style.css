@@ -82,10 +82,10 @@ foreignObject {
 
 .node.work img {
   display: block;
-  max-width: var(--work-img-max);
-  max-height: var(--work-img-max);
-  height: auto;
   width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
 }
 
 .link {
@@ -134,6 +134,6 @@ body.editing-mode {
 }
 
 :root {
-  --work-img-max: 140px;
+  --work-img-target-area: 8000;
   --work-node-padding: 6px;
 }
