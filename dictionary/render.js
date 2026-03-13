@@ -211,6 +211,17 @@ export function createRenderer({
   function measureNodes() {
     const workStyle = getWorkStyleConfig();
 
+    function measureRenderedContent(el) {
+      const rect = el.getBoundingClientRect();
+      const width = Math.max(el.offsetWidth || 0, el.clientWidth || 0, el.scrollWidth || 0, rect.width || 0);
+      const height = Math.max(el.offsetHeight || 0, el.clientHeight || 0, el.scrollHeight || 0, rect.height || 0);
+
+      return {
+        w: Math.ceil(width),
+        h: Math.ceil(height),
+      };
+    }
+
     node.each(function (d) {
       const div = d3.select(this).select('div').node();
       if (!div) return;
@@ -232,13 +243,9 @@ export function createRenderer({
           h = Math.max(d.h || 0, side + workStyle.padTotal);
         }
       } else {
-        w = Math.ceil(div.offsetWidth);
-        h = Math.ceil(div.offsetHeight);
-        if (!w || !h) {
-          const rect = div.getBoundingClientRect();
-          w = Math.ceil(rect.width);
-          h = Math.ceil(rect.height);
-        }
+        const size = measureRenderedContent(div);
+        w = size.w;
+        h = size.h;
       }
 
       d.w = w;
