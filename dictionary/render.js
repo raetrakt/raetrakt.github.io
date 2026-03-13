@@ -289,7 +289,7 @@ export function createRenderer({
     bindEditHandlers();
   }
 
-  function measureNodes() {
+  function measureNodes({ enableCollision = true } = {}) {
     const workStyle = getWorkStyleConfig();
 
     function measureRenderedContent(el) {
@@ -344,15 +344,26 @@ export function createRenderer({
       d3.select(this).attr('width', w).attr('height', h);
     });
 
+    if (!enableCollision) {
+      simulation.force('collision', null);
+      return;
+    }
+
+    const nodePadding = 10;
     simulation.force(
       'collision',
-      d3.forceCollide().radius((d) => Math.max(d.w || 0, d.h || 0) / 2 + 8),
+      d3.forceCollide().radius((d) => Math.max(d.w || 0, d.h || 0) / 2 + nodePadding),
     );
   }
 
-  async function waitForImages({ staggerMs = 60 } = {}) {
+  async function waitForImages({ staggerMs = 0 } = {}) {
+    // Keep collisions disabled while nodes are still being sized/revealed,
+    // so link forces can untangle the graph first.
+    measureNodes({ enableCollision: false });
+
     const workDivs = nodeDiv.filter((d) => d.type === 'work').nodes();
     if (!workDivs.length) {
+      measureNodes({ enableCollision: true });
       await new Promise((res) => requestAnimationFrame(() => res()));
       return;
     }
@@ -369,7 +380,7 @@ export function createRenderer({
         .then(() => {
           div.classList.remove('media-pending');
           div.classList.add('media-ready');
-          measureNodes();
+          measureNodes({ enableCollision: false });
           simulation.alpha(0.12).restart();
         });
 
@@ -384,6 +395,7 @@ export function createRenderer({
 
     await Promise.allSettled(jobs);
     await revealChain;
+    measureNodes({ enableCollision: true });
     await new Promise((res) => requestAnimationFrame(() => res()));
   }
 

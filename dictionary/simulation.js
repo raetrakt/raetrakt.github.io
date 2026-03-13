@@ -10,9 +10,8 @@ export function createGraphSimulation({ width, height }) {
         .id((d) => d.id)
         .distance(120),
     )
-    .force('charge', d3.forceManyBody().strength(-200))
+    .force('charge', d3.forceManyBody().strength(-250))
     .force('center', d3.forceCenter(width / 2, height / 2))
-    .force('collision', d3.forceCollide().radius(60))
     .alphaDecay(0.02)
     .velocityDecay(0.3);
 }
@@ -64,10 +63,9 @@ function syncSimulationLinks(simulation, state) {
   linkForce.links([...(state.links ?? []), ...autoMainLinks]);
 }
 
-export function bindSimulationTick(simulation, { state, getSelections, collisionPadding = 30 }) {
+export function bindSimulationTick(simulation, { state, getSelections}) {
   simulation.on('tick', () => {
     syncSimulationLinks(simulation, state);
-    // applyBoxCollision(state.nodes, collisionPadding);
 
     const { link, linkHit, node } = getSelections();
 
