@@ -5,7 +5,7 @@ export async function loadData(supabase, state) {
     .select('from_concept, to_concept');
   const { data: w, error: workError } = await supabase
     .from('works')
-    .select('id, media_path, title');
+    .select('id, media_path, title, author, year, source_url');
   const { data: wc, error: workConceptError } = await supabase
     .from('work_concept_relations')
     .select('work, concept');

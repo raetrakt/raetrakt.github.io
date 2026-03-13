@@ -106,11 +106,94 @@ foreignObject {
   height: auto;
   max-width: none;
   max-height: none;
+  cursor: pointer;
+}
+
+.work-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  font-size: 32px;
+}
+
+.work-modal.is-open {
+  display: flex;
+}
+
+.work-modal-panel {
+  width: min(1060px, 70vw);
+  height: 80dvh;
+  display: flex;
+  gap: 24px;
+}
+
+.work-modal-image-container {
+  height: 100%;
+  width: 50%;
+  flex: 0 0 50%;
+}
+
+.work-modal-image-wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.work-modal-image {
+  width: 100%;
+  object-fit: contain;
+  object-position: top;
+}
+
+.work-modal-meta {
+  color: #000;
+}
+
+.work-modal-meta p,
+.work-modal-meta span,
+.work-modal-meta a {
+  background: #fff;
+  width: fit-content;
+  height: fit-content;
+}
+
+.work-modal-title {
+  margin: 0 0 12px;
+}
+
+.work-modal-row {
+  margin: 0 0 12px;
+  display: grid;
+  grid-template-columns: 95px 1fr;
+  gap: 24px;
+}
+
+.work-modal-row a {
+  color: #000;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+/* click to close where there is no content */
+.work-modal-panel,
+.work-modal-image-container img,
+.work-modal-meta {
+  pointer-events: none;
+}
+
+.work-modal-image,
+.work-modal-meta p,
+.work-modal-meta a,
+.work-modal-meta span {
+  pointer-events: auto;
 }
 
 .link {
   stroke: #000;
-  stroke-width: 1px;
+  stroke-width: 2px;
 }
 
 .link.selected {

@@ -18,6 +18,74 @@ export function createRenderer({
   let node = nodeLayer.selectAll('foreignObject');
   let nodeDiv = node.selectAll('div');
 
+  const workModal = document.getElementById('work-modal');
+  const workModalPanel = document.getElementById('work-modal-panel');
+  const workModalImage = document.getElementById('work-modal-image');
+  const workModalTitle = document.getElementById('work-modal-title');
+  const workModalAuthor = document.getElementById('work-modal-author');
+  const workModalYear = document.getElementById('work-modal-year');
+  const workModalSource = document.getElementById('work-modal-source');
+
+  function closeWorkModal() {
+    if (!workModal) return;
+    workModal.classList.remove('is-open');
+    workModal.setAttribute('aria-hidden', 'true');
+  }
+
+  function openWorkModal(workNode) {
+    if (
+      !workModal ||
+      !workModalImage ||
+      !workModalTitle ||
+      !workModalAuthor ||
+      !workModalYear ||
+      !workModalSource
+    ) {
+      return;
+    }
+
+    const title = workNode?.name?.trim() || 'Untitled';
+    const author = workNode?.author?.trim() || 'Unknown author';
+    const year =
+      workNode?.year != null && String(workNode.year).trim() !== ''
+        ? String(workNode.year)
+        : 'Unknown year';
+    const sourceUrl = workNode?.source_url?.trim() || '';
+
+    workModalImage.src = workNode?.media_path || '';
+    workModalImage.alt = title;
+    workModalTitle.textContent = title;
+    workModalAuthor.textContent = author;
+    workModalYear.textContent = year;
+
+    if (sourceUrl) {
+      workModalSource.href = sourceUrl;
+      workModalSource.textContent = sourceUrl;
+      workModalSource.classList.remove('is-disabled');
+      workModalSource.removeAttribute('aria-disabled');
+      workModalSource.tabIndex = 0;
+    } else {
+      workModalSource.removeAttribute('href');
+      workModalSource.textContent = 'No source available';
+      workModalSource.classList.add('is-disabled');
+      workModalSource.setAttribute('aria-disabled', 'true');
+      workModalSource.tabIndex = -1;
+    }
+
+    workModal.classList.add('is-open');
+    workModal.setAttribute('aria-hidden', 'false');
+  }
+
+  if (workModal && workModalPanel) {
+    workModal.addEventListener('click', closeWorkModal);
+    workModalPanel.addEventListener('click', (event) => {
+      event.stopPropagation();
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeWorkModal();
+    });
+  }
+
   function readCssPxVar(name, fallback) {
     const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
     const n = Number.parseFloat(raw);
@@ -79,6 +147,9 @@ export function createRenderer({
         name: w.title ?? '',
         type: 'work',
         media_path: w.media_path,
+        author: w.author,
+        year: w.year,
+        source_url: w.source_url,
       })),
     ];
 
@@ -89,6 +160,9 @@ export function createRenderer({
       prev.name = n.name;
       prev.type = n.type;
       prev.media_path = n.media_path;
+      prev.author = n.author;
+      prev.year = n.year;
+      prev.source_url = n.source_url;
       return prev;
     });
 
@@ -116,7 +190,14 @@ export function createRenderer({
 
   function bindEditHandlers() {
     node.on('click', async (event, d) => {
-      if (!editorState.enabled) return;
+      if (!editorState.enabled) {
+        if (d.type !== 'work') return;
+        event.preventDefault();
+        event.stopPropagation();
+        openWorkModal(d);
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -213,8 +294,18 @@ export function createRenderer({
 
     function measureRenderedContent(el) {
       const rect = el.getBoundingClientRect();
-      const width = Math.max(el.offsetWidth || 0, el.clientWidth || 0, el.scrollWidth || 0, rect.width || 0);
-      const height = Math.max(el.offsetHeight || 0, el.clientHeight || 0, el.scrollHeight || 0, rect.height || 0);
+      const width = Math.max(
+        el.offsetWidth || 0,
+        el.clientWidth || 0,
+        el.scrollWidth || 0,
+        rect.width || 0,
+      );
+      const height = Math.max(
+        el.offsetHeight || 0,
+        el.clientHeight || 0,
+        el.scrollHeight || 0,
+        rect.height || 0,
+      );
 
       return {
         w: Math.ceil(width),
