@@ -17,50 +17,6 @@ export function createGraphSimulation({ width, height }) {
     .velocityDecay(0.3);
 }
 
-function applyBoxCollision(nodes, padding = 30) {
-  const qt = d3.quadtree(
-    nodes,
-    (d) => d.x,
-    (d) => d.y,
-  );
-
-  nodes.forEach((d) => {
-    const dw = d.w ?? 80;
-    const dh = d.h ?? 40;
-
-    const nx1 = d.x - dw / 2 - padding;
-    const nx2 = d.x + dw / 2 + padding;
-    const ny1 = d.y - dh / 2 - padding;
-    const ny2 = d.y + dh / 2 + padding;
-
-    qt.visit((q, x1, y1, x2, y2) => {
-      const o = q.data;
-      if (!o || o === d) return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
-
-      const ow = o.w ?? 80;
-      const oh = o.h ?? 40;
-      const dx = d.x - o.x || Math.random() - 0.5;
-      const dy = d.y - o.y || Math.random() - 0.5;
-      const overlapX = dw / 2 + ow / 2 + padding - Math.abs(dx);
-      const overlapY = dh / 2 + oh / 2 + padding - Math.abs(dy);
-
-      if (overlapX > 0 && overlapY > 0) {
-        if (overlapX < overlapY) {
-          const shift = overlapX * Math.sign(dx) * 0.5;
-          d.x += shift;
-          o.x -= shift;
-        } else {
-          const shift = overlapY * Math.sign(dy) * 0.5;
-          d.y += shift;
-          o.y -= shift;
-        }
-      }
-
-      return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
-    });
-  });
-}
-
 function buildInvisibleMainLinks(state) {
   const nodes = state.nodes ?? [];
   const links = state.links ?? [];
