@@ -52,16 +52,6 @@ bindSimulationTick(simulation, {
   getSelections: renderer.getSelections,
 });
 
-// REMOVE legacy inline code below (it references undefined link/linkHit/node):
-// - function measureNodes() { ... }
-// - async function waitForImages() { ... }
-// - const collisionPadding = 30;
-// - function applyBoxCollision() { ... }
-// - simulation.on('tick', () => { ... link/linkHit/node ... })
-// - function dragstarted(...) { ... }
-// - function dragged(...) { ... }
-// - function dragended(...) { ... }
-
 async function refreshDataAndRender({ force = false } = {}) {
   if (isRefreshing) return;
   isRefreshing = true;
