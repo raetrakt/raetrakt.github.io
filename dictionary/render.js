@@ -25,6 +25,103 @@ export function createRenderer({
   const workModalAuthor = document.getElementById('work-modal-author');
   const workModalYear = document.getElementById('work-modal-year');
   const workModalSource = document.getElementById('work-modal-source');
+  const workModalClassification = document.getElementById('work-modal-classification');
+
+  function getWorkClassificationText(workNode) {
+    const workId = String(workNode?.id ?? '').replace(/^w-/, '');
+    if (!workId) return 'Unclassified';
+
+    const conceptById = new Map(state.concepts.map((c) => [String(c.id), c]));
+    const mainIds = new Set(
+      state.concepts.filter((c) => c.type === 'main').map((c) => String(c.id)),
+    );
+
+    const neighborsById = new Map();
+    const addNeighbor = (a, b) => {
+      if (!neighborsById.has(a)) neighborsById.set(a, []);
+      neighborsById.get(a).push(b);
+    };
+
+    // Treat concept relations as an undirected graph for classification lookup,
+    // then choose the shortest path from a linked concept to any main node.
+    state.relations.forEach((rel) => {
+      const a = String(rel.from_concept);
+      const b = String(rel.to_concept);
+      addNeighbor(a, b);
+      addNeighbor(b, a);
+    });
+
+    function shortestPathToMain(startId) {
+      if (mainIds.has(startId)) return [startId];
+
+      const visited = new Set([startId]);
+      const prev = new Map();
+      const queue = [startId];
+      let foundMain = null;
+
+      while (queue.length && !foundMain) {
+        const current = queue.shift();
+        const neighbors = [...new Set(neighborsById.get(current) ?? [])].sort((a, b) => {
+          const nameA = conceptById.get(a)?.name ?? '';
+          const nameB = conceptById.get(b)?.name ?? '';
+          return nameA.localeCompare(nameB);
+        });
+
+        for (const nextId of neighbors) {
+          if (visited.has(nextId)) continue;
+          visited.add(nextId);
+          prev.set(nextId, current);
+
+          if (mainIds.has(nextId)) {
+            foundMain = nextId;
+            break;
+          }
+
+          queue.push(nextId);
+        }
+      }
+
+      if (!foundMain) return [];
+
+      const pathMainToStart = [foundMain];
+      let cursor = foundMain;
+
+      while (prev.has(cursor)) {
+        cursor = prev.get(cursor);
+        pathMainToStart.push(cursor);
+      }
+
+      if (pathMainToStart[pathMainToStart.length - 1] !== startId) return [];
+      return pathMainToStart;
+    }
+
+    const linkedConceptIds = state.workConcepts
+      .filter((rel) => String(rel.work) === workId)
+      .map((rel) => String(rel.concept));
+
+    if (!linkedConceptIds.length) return 'Unclassified';
+
+    const classifications = [];
+
+    linkedConceptIds.forEach((conceptId) => {
+      const path = shortestPathToMain(conceptId);
+
+      if (!path.length) {
+        const fallbackName = conceptById.get(conceptId)?.name;
+        if (fallbackName) classifications.push(fallbackName);
+        return;
+      }
+
+      const displayPath = mainIds.has(path[0]) ? path.slice(1) : path;
+      const names = displayPath.map((id) => conceptById.get(id)?.name).filter(Boolean);
+      if (names.length) classifications.push(names.join(' > '));
+    });
+
+    const uniqueClassifications = [...new Set(classifications)];
+    if (!uniqueClassifications.length) return 'Unclassified';
+
+    return uniqueClassifications.join(' and ');
+  }
 
   function closeWorkModal() {
     if (!workModal) return;
@@ -39,7 +136,8 @@ export function createRenderer({
       !workModalTitle ||
       !workModalAuthor ||
       !workModalYear ||
-      !workModalSource
+      !workModalSource ||
+      !workModalClassification
     ) {
       return;
     }
@@ -57,6 +155,7 @@ export function createRenderer({
     workModalTitle.textContent = title;
     workModalAuthor.textContent = author;
     workModalYear.textContent = year;
+    workModalClassification.textContent = getWorkClassificationText(workNode);
 
     if (sourceUrl) {
       workModalSource.href = sourceUrl;

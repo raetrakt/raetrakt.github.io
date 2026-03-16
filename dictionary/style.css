@@ -27,6 +27,8 @@ table {
   border-spacing: 0;
 }
 
+/* Document style */
+
 @font-face {
   font-family: 'Times New Arial';
   src: url('assets/fonts/TimesNewArialVF.woff2') format('woff2');
@@ -75,8 +77,6 @@ foreignObject {
   cursor: grab;
   width: max-content;
   height: max-content;
-  /* border-radius: 3px; */
-  /* box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.1); */
 }
 
 .node-text {
@@ -182,7 +182,6 @@ foreignObject {
   color: #000;
 }
 
-.work-modal-meta p,
 .work-modal-meta span,
 .work-modal-meta a {
   background: #fff;
@@ -190,15 +189,14 @@ foreignObject {
   height: fit-content;
 }
 
-.work-modal-title {
-  margin: 0 0 12px;
-}
-
 .work-modal-row {
-  margin: 0 0 12px;
   display: grid;
   grid-template-columns: 95px 1fr;
   gap: 24px;
+}
+
+.work-modal-line {
+    margin: 0 0 12px;
 }
 
 .work-modal-row a {
