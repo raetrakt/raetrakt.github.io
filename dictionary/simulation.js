@@ -8,7 +8,9 @@ export function createGraphSimulation({ width, height }) {
       d3
         .forceLink([])
         .id((d) => d.id)
-        .distance(120),
+        .distance(120)
+        .strength(.5)
+        .iterations(2),
     )
     .force('charge', d3.forceManyBody().strength(-250))
     .force('center', d3.forceCenter(width / 2, height / 2))
