@@ -42,7 +42,8 @@
     const light = 82;
 
     const state = {
-      startY: null,
+      isTouchDown: false,
+      lastTouchY: null,
       isMouseDown: false,
       lastMouseY: null,
       lastTapMs: 0,
@@ -101,7 +102,8 @@
 
     document.addEventListener("touchstart", (event) => {
       if (event.touches.length > 0) {
-        state.startY = event.touches[0].clientY;
+        state.isTouchDown = true;
+        state.lastTouchY = event.touches[0].clientY;
       }
 
       const now = Date.now();
@@ -111,22 +113,27 @@
       state.lastTapMs = now;
     }, { passive: true });
 
-    document.addEventListener("touchend", (event) => {
-      if (state.startY == null || event.changedTouches.length === 0) {
+    document.addEventListener("touchmove", (event) => {
+      if (!state.isTouchDown || state.lastTouchY == null || event.touches.length === 0) {
         return;
       }
 
-      const endY = event.changedTouches[0].clientY;
-      const deltaY = endY - state.startY;
-      state.startY = null;
+      const currentY = event.touches[0].clientY;
+      const deltaY = currentY - state.lastTouchY;
+      state.lastTouchY = currentY;
 
-      if (Math.abs(deltaY) < 24) {
-        return;
-      }
+      // Drag up increases hue, drag down decreases hue.
+      shiftHue(-deltaY * 0.25);
+    }, { passive: true });
 
-      // Swipe up increases hue, swipe down decreases hue.
-      const step = 16;
-      shiftHue(deltaY < 0 ? step : -step);
+    document.addEventListener("touchend", () => {
+      state.isTouchDown = false;
+      state.lastTouchY = null;
+    }, { passive: true });
+
+    document.addEventListener("touchcancel", () => {
+      state.isTouchDown = false;
+      state.lastTouchY = null;
     }, { passive: true });
 
 
