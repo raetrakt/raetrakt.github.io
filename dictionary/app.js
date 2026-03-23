@@ -47,9 +47,6 @@ if (!isSafari) {
 svg.on('dblclick.zoom', null); // allow dblclick on links for delete in edit mode
 
 const simulation = createGraphSimulation({ width, height });
-if (isSafari) {
-  simulation.alphaDecay(0.03).velocityDecay(0.4);
-}
 const dragBehavior = createDrag(simulation);
 
 const renderer = createRenderer({
