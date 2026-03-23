@@ -234,10 +234,7 @@ export function createRenderer({
       img.addEventListener('load', finish, { once: true });
       img.addEventListener('error', finish, { once: true });
       timer = setTimeout(finish, timeoutMs);
-      img
-        .decode?.()
-        .then(finish)
-        .catch(finish);
+      img.decode?.().then(finish).catch(finish);
     });
   }
 

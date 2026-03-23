@@ -24,7 +24,8 @@ const height = window.innerHeight;
 
 const isSafari =
   /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
-  (/AppleWebKit/i.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR/i.test(navigator.userAgent));
+  (/AppleWebKit/i.test(navigator.userAgent) &&
+    !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR/i.test(navigator.userAgent));
 
 if (isSafari) {
   document.body.classList.add('is-safari');
