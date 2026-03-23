@@ -129,6 +129,22 @@ foreignObject {
   transform: scale(1);
 }
 
+/* Safari foreignObject fallback: avoid transform/opacity layer bugs inside FO content */
+body.is-safari .node.work.media-pending,
+body.is-safari .node.work.media-ready {
+  opacity: 1;
+  transform: none;
+}
+
+/* Keep pending Safari images hidden until measured/revealed to avoid giant flash. */
+body.is-safari .node.work.media-pending img {
+  visibility: hidden;
+}
+
+body.is-safari .node.work.media-ready img {
+  visibility: visible;
+}
+
 .node.work img {
   display: block;
   width: auto;

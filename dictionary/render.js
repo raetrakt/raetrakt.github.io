@@ -217,24 +217,27 @@ export function createRenderer({
     };
   }
 
-  function waitForImageReady(img) {
+  function waitForImageReady(img, { timeoutMs = 3000 } = {}) {
     if (!img) return Promise.resolve();
     if (img.complete) return Promise.resolve();
 
     return new Promise((resolve) => {
       let done = false;
+      let timer = null;
       const finish = () => {
         if (done) return;
         done = true;
+        if (timer) clearTimeout(timer);
         resolve();
       };
 
       img.addEventListener('load', finish, { once: true });
       img.addEventListener('error', finish, { once: true });
+      timer = setTimeout(finish, timeoutMs);
       img
         .decode?.()
         .then(finish)
-        .catch(() => {});
+        .catch(finish);
     });
   }
 
@@ -420,6 +423,15 @@ export function createRenderer({
       let h = 0;
 
       if (d.type === 'work') {
+        if (!d.media_path || !String(d.media_path).trim()) {
+          w = 1;
+          h = 1;
+          d.w = w;
+          d.h = h;
+          d3.select(this).attr('width', w).attr('height', h);
+          return;
+        }
+
         const img = div.querySelector('img');
         if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
           const size = fitWorkImageSize(img, workStyle);
@@ -456,6 +468,8 @@ export function createRenderer({
   }
 
   async function waitForImages({ staggerMs = 0 } = {}) {
+    const isSafari = document.body.classList.contains('is-safari');
+
     // Keep collisions disabled while nodes are still being sized/revealed,
     // so link forces can untangle the graph first.
     measureNodes({ enableCollision: false });
@@ -463,6 +477,25 @@ export function createRenderer({
     const workDivs = nodeDiv.filter((d) => d.type === 'work').nodes();
     if (!workDivs.length) {
       measureNodes({ enableCollision: true });
+      await new Promise((res) => requestAnimationFrame(() => res()));
+      return;
+    }
+
+    if (isSafari) {
+      const jobs = workDivs.map(async (div) => {
+        const img = div.querySelector('img');
+        await waitForImageReady(img, { timeoutMs: 3000 });
+      });
+
+      await Promise.allSettled(jobs);
+
+      workDivs.forEach((div) => {
+        div.classList.remove('media-pending');
+        div.classList.add('media-ready');
+      });
+
+      measureNodes({ enableCollision: true });
+      simulation.alpha(0.12).restart();
       await new Promise((res) => requestAnimationFrame(() => res()));
       return;
     }
@@ -479,8 +512,10 @@ export function createRenderer({
         .then(() => {
           div.classList.remove('media-pending');
           div.classList.add('media-ready');
-          measureNodes({ enableCollision: false });
-          simulation.alpha(0.12).restart();
+          if (!isSafari) {
+            measureNodes({ enableCollision: false });
+            simulation.alpha(0.12).restart();
+          }
         });
 
       return revealChain;
@@ -488,7 +523,7 @@ export function createRenderer({
 
     const jobs = workDivs.map(async (div) => {
       const img = div.querySelector('img');
-      await waitForImageReady(img);
+      await waitForImageReady(img, { timeoutMs: 3000 });
       await enqueueReveal(div);
     });
 

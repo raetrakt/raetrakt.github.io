@@ -22,6 +22,14 @@ const svg = d3.select('svg');
 const width = window.innerWidth;
 const height = window.innerHeight;
 
+const isSafari =
+  /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
+  (/AppleWebKit/i.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|FxiOS|Edg|OPR/i.test(navigator.userAgent));
+
+if (isSafari) {
+  document.body.classList.add('is-safari');
+}
+
 const container = svg.append('g');
 
 const zoom = d3
@@ -31,10 +39,16 @@ const zoom = d3
     container.attr('transform', event.transform);
   });
 
-svg.call(zoom).call(zoom.transform, d3.zoomIdentity.scale(0.8));
+svg.call(zoom);
+if (!isSafari) {
+  svg.call(zoom.transform, d3.zoomIdentity.scale(0.8));
+}
 svg.on('dblclick.zoom', null); // allow dblclick on links for delete in edit mode
 
 const simulation = createGraphSimulation({ width, height });
+if (isSafari) {
+  simulation.alphaDecay(0.03).velocityDecay(0.4);
+}
 const dragBehavior = createDrag(simulation);
 
 const renderer = createRenderer({
