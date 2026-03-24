@@ -67,6 +67,10 @@
       render();
     }
 
+    function degreesPerPixel() {
+      return 360 / Math.max(window.innerHeight, 1);
+    }
+
     function animate(ms) {
       if (!state.autoShift) {
         state.rafId = null;
@@ -123,7 +127,7 @@
       state.lastTouchY = currentY;
 
       // Drag up increases hue, drag down decreases hue.
-      shiftHue(-deltaY * 0.25);
+      shiftHue(-deltaY * degreesPerPixel());
     }, { passive: true });
 
     document.addEventListener("touchend", () => {
@@ -151,7 +155,7 @@
       state.lastMouseY = event.clientY;
 
       // Drag up increases hue, drag down decreases hue.
-      shiftHue(-deltaY * .25);
+      shiftHue(-deltaY * degreesPerPixel());
     });
 
     document.addEventListener("mouseup", () => {
