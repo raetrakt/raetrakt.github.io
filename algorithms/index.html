@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What You Say Is What You Get?</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100dvh;
+      padding: 2rem;
+    }
+
+    .text {
+      font-size: calc(10dvh + 12dvw);
+      line-height: .9;
+      text-align: center;
+      user-select: none;
+      transform: translateY(-.25rem);
+      word-spacing: .8rem;
+    }
+
+        @media (max-height: 500px) {
+      .text {
+      font-size: calc(19dvh + 6dvw);
+      }
+    }
+
+    @media (max-height: 150px) {
+      .text {
+       font-size: 6.8rem;
+      }
+    }
+
+
+
+  </style>
+</head>
+
+<body>
+  <div class="text">What You Say Is What You Get?</p>
+</body>
+
+</html>
