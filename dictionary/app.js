@@ -35,14 +35,14 @@ const container = svg.append('g');
 
 const zoom = d3
   .zoom()
-  .scaleExtent([0.5, 2])
+  .scaleExtent([0.4, 2])
   .on('zoom', (event) => {
     container.attr('transform', event.transform);
   });
 
 svg.call(zoom);
 if (!isSafari) {
-  svg.call(zoom.transform, d3.zoomIdentity.scale(0.8));
+  svg.call(zoom.transform, d3.zoomIdentity.scale(1));
 }
 svg.on('dblclick.zoom', null); // allow dblclick on links for delete in edit mode
 
