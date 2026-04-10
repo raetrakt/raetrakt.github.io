@@ -218,8 +218,9 @@ body.is-safari .node.work.media-ready img {
 
 .work-modal-row a {
   color: #000;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 2px;
+  text-decoration: none;
+  /* text-decoration-thickness: 2px;
+  text-underline-offset: 2px; */
 }
 
 /* click to close where there is no content */
@@ -265,12 +266,6 @@ body.is-safari .node.work.media-ready img {
   pointer-events: stroke;
 }
 
-text {
-  fill: #fff;
-  font-size: 12px;
-  pointer-events: none;
-}
-
 body.editing-mode {
   background: #ffdddd;
 }
@@ -278,4 +273,53 @@ body.editing-mode {
 .node.selected {
   outline: 2px solid #c40000;
   outline-offset: 2px;
+}
+
+/* Mobile breakpoint */
+@media (max-width: 768px) {
+  .work-modal {
+    font-size: 20px;
+  }
+
+  .work-modal-panel {
+    flex-direction: column;
+    width: 90vw;
+    height: auto;
+    max-height: 90dvh;
+    gap: 12px
+  }
+
+  .work-modal-image-container {
+    width: 100%;
+    height: 40dvh;
+  }
+
+  .work-modal-row {
+    gap: 0;
+  }
+
+  .work-modal-line {
+    margin: 0 0 6px;
+  }
+
+  /*
+  .work-modal-meta {
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  .work-modal-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  } */
+
+  .node {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  svg {
+    width: 100vw;
+    height: 100vh;
+  }
 }
