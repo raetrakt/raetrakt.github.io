@@ -201,6 +201,7 @@ body.is-safari .node.work.media-ready img {
 .work-modal-meta span,
 .work-modal-meta a {
   background: #fff;
+  display: inline-block;
   width: fit-content;
   height: fit-content;
 }
@@ -208,7 +209,7 @@ body.is-safari .node.work.media-ready img {
 .work-modal-row {
   display: grid;
   grid-template-columns: 95px 1fr;
-  gap: 24px;
+  gap: 44px;
 }
 
 .work-modal-line {
