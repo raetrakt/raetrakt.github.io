@@ -30,8 +30,8 @@ table {
 /* Document style */
 
 @font-face {
-  font-family: 'Times New Arial';
-  src: url('assets/fonts/TimesNewArialVF.woff2') format('woff2');
+  font-family: 'Shinka Mono';
+  src: url('assets/fonts/ShinkaMono-Regular-Trial.woff2') format('woff2');
   font-weight: 0 100;
   font-display: swap;
 }
@@ -44,7 +44,7 @@ table {
 body {
   margin: 0;
   background: #ffffff;
-  font-family: 'Times New Arial', monospace;
+  font-family: 'Shinka Mono', monospace;
   font-weight: 400; /* use this for wght */
   font-variation-settings:
     'wght' 0,
