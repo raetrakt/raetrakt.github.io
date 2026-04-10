@@ -9,7 +9,7 @@ export function createGraphSimulation({ width, height }) {
         .forceLink([])
         .id((d) => d.id)
         .distance(120)
-        .strength(.5)
+        .strength(.4)
         .iterations(2),
     )
     .force('charge', d3.forceManyBody().strength(-250))
@@ -60,9 +60,24 @@ function syncSimulationLinks(simulation, state) {
   const linkForce = simulation.force('link');
   if (!linkForce) return;
 
+  const activeNodes = simulation.nodes() ?? [];
+  const activeIds = new Set(activeNodes.map((n) => getNodeId(n)));
+
+  const visibleLinks = (state.links ?? []).filter((l) => {
+    const s = getNodeId(l.source);
+    const t = getNodeId(l.target);
+    return activeIds.has(s) && activeIds.has(t);
+  });
+
   const autoMainLinks = buildInvisibleMainLinks(state);
-  state.__autoMainLinks = autoMainLinks;
-  linkForce.links([...(state.links ?? []), ...autoMainLinks]);
+  const visibleAutoMainLinks = autoMainLinks.filter((l) => {
+    const s = getNodeId(l.source);
+    const t = getNodeId(l.target);
+    return activeIds.has(s) && activeIds.has(t);
+  });
+
+  state.__autoMainLinks = visibleAutoMainLinks;
+  linkForce.links([...visibleLinks, ...visibleAutoMainLinks]);
 }
 
 export function bindSimulationTick(simulation, { state, getSelections}) {

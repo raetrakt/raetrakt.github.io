@@ -1,4 +1,4 @@
-import { linkKey } from './utils.js';
+import { linkKey, getNodeId } from './utils.js';
 
 export function createRenderer({
   container,
@@ -17,6 +17,8 @@ export function createRenderer({
   let linkHit = linkHitLayer.selectAll('line');
   let node = nodeLayer.selectAll('foreignObject');
   let nodeDiv = node.selectAll('div');
+  let visibleNodeIds = null;
+  let preloadedMediaPaths = new Set();
 
   const workModal = document.getElementById('work-modal');
   const workModalPanel = document.getElementById('work-modal-panel');
@@ -287,6 +289,35 @@ export function createRenderer({
       .classed('removed', (d) => editorState.removedLinkKeys.has(linkKey(d)));
   }
 
+  function setVisibility({ nodeIds = null } = {}) {
+    visibleNodeIds = nodeIds ? new Set(nodeIds) : null;
+  }
+
+  function setPreloadedMedia({ paths = null } = {}) {
+    preloadedMediaPaths = paths instanceof Set ? paths : new Set();
+  }
+
+  function isWorkMediaReady(d) {
+    if (d.type !== 'work') return true;
+    const mediaPath = String(d.media_path ?? '').trim();
+    return !!mediaPath && preloadedMediaPaths.has(mediaPath);
+  }
+
+  function getVisibleNodes() {
+    if (!visibleNodeIds) return state.nodes;
+    return state.nodes.filter((n) => visibleNodeIds.has(n.id));
+  }
+
+  function getVisibleLinks() {
+    if (!visibleNodeIds) return state.links;
+
+    return state.links.filter((l) => {
+      const s = getNodeId(l.source);
+      const t = getNodeId(l.target);
+      return visibleNodeIds.has(s) && visibleNodeIds.has(t);
+    });
+  }
+
   function bindEditHandlers() {
     node.on('click', async (event, d) => {
       if (!editorState.enabled) {
@@ -339,12 +370,15 @@ export function createRenderer({
   function renderGraph() {
     buildDerivedData();
 
-    simulation.nodes(state.nodes);
-    simulation.force('link').links(state.links);
+    const visibleNodes = getVisibleNodes();
+    const visibleLinks = getVisibleLinks();
+
+    simulation.nodes(visibleNodes);
+    simulation.force('link').links(visibleLinks);
 
     link = linkLayer
       .selectAll('line')
-      .data(state.links, (d) => linkKey(d))
+      .data(visibleLinks, (d) => linkKey(d))
       .join(
         (enter) => enter.append('line').attr('class', 'link'),
         (update) => update,
@@ -353,7 +387,7 @@ export function createRenderer({
 
     linkHit = linkHitLayer
       .selectAll('line')
-      .data(state.links, (d) => linkKey(d))
+      .data(visibleLinks, (d) => linkKey(d))
       .join(
         (enter) => enter.append('line').attr('class', 'link-hit'),
         (update) => update,
@@ -362,7 +396,7 @@ export function createRenderer({
 
     node = nodeLayer
       .selectAll('foreignObject')
-      .data(state.nodes, (d) => d.id)
+      .data(visibleNodes, (d) => d.id)
       .join(
         (enter) => enter.append('foreignObject').call(dragBehavior),
         (update) => update,
@@ -374,8 +408,8 @@ export function createRenderer({
       .data((d) => [d])
       .join('xhtml:div')
       .attr('class', (d) => `node ${d.type}`)
-      .classed('media-pending', (d) => d.type === 'work')
-      .classed('media-ready', (d) => d.type !== 'work')
+      .classed('media-pending', (d) => d.type === 'work' && !isWorkMediaReady(d))
+      .classed('media-ready', (d) => isWorkMediaReady(d))
       .html((d) =>
         d.type === 'work'
           ? `<img class="node-img" src="${d.media_path}" alt="${d.name}">`
@@ -388,7 +422,12 @@ export function createRenderer({
     bindEditHandlers();
   }
 
-  function measureNodes({ enableCollision = true } = {}) {
+  function measureNodes({
+    enableCollision = true,
+    collisionPadding = 10,
+    collisionStrength = 1,
+    collisionIterations = 1,
+  } = {}) {
     const workStyle = getWorkStyleConfig();
 
     function measureRenderedContent(el) {
@@ -438,6 +477,10 @@ export function createRenderer({
           h = size.h;
         } else {
           const side = Math.ceil(Math.sqrt(workStyle.targetArea));
+          if (img) {
+            img.style.width = `${side}px`;
+            img.style.height = `${side}px`;
+          }
           w = Math.max(d.w || 0, side + workStyle.padTotal);
           h = Math.max(d.h || 0, side + workStyle.padTotal);
         }
@@ -457,10 +500,14 @@ export function createRenderer({
       return;
     }
 
-    const nodePadding = 10;
+    const nodePadding = collisionPadding;
     simulation.force(
       'collision',
-      d3.forceCollide().radius((d) => Math.max(d.w || 0, d.h || 0) / 2 + nodePadding),
+      d3
+        .forceCollide()
+        .radius((d) => Math.max(d.w || 0, d.h || 0) / 2 + nodePadding)
+        .strength(collisionStrength)
+        .iterations(collisionIterations),
     );
   }
 
@@ -497,35 +544,18 @@ export function createRenderer({
       return;
     }
 
-    let revealCount = 0;
-    let revealChain = Promise.resolve();
-
-    const enqueueReveal = (div) => {
-      const delay = revealCount === 0 ? 0 : staggerMs;
-      revealCount += 1;
-
-      revealChain = revealChain
-        .then(() => new Promise((res) => setTimeout(res, delay)))
-        .then(() => {
-          div.classList.remove('media-pending');
-          div.classList.add('media-ready');
-          if (!isSafari) {
-            measureNodes({ enableCollision: false });
-            simulation.alpha(0.12).restart();
-          }
-        });
-
-      return revealChain;
-    };
-
     const jobs = workDivs.map(async (div) => {
       const img = div.querySelector('img');
       await waitForImageReady(img, { timeoutMs: 3000 });
-      await enqueueReveal(div);
     });
 
     await Promise.allSettled(jobs);
-    await revealChain;
+
+    workDivs.forEach((div) => {
+      div.classList.remove('media-pending');
+      div.classList.add('media-ready');
+    });
+
     measureNodes({ enableCollision: true });
     await new Promise((res) => requestAnimationFrame(() => res()));
   }
@@ -535,6 +565,8 @@ export function createRenderer({
   }
 
   return {
+    setVisibility,
+    setPreloadedMedia,
     renderGraph,
     paintSelectedNode,
     paintSelectedLink,
