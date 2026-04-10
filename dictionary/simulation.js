@@ -12,7 +12,7 @@ export function createGraphSimulation({ width, height }) {
         .strength(0.4)
         .iterations(2),
     )
-    .force('charge', d3.forceManyBody().strength(-250))
+    .force('charge', d3.forceManyBody().strength(-300))
     .force('center', d3.forceCenter(width / 2, height / 2))
     .alphaDecay(0.02)
     .velocityDecay(0.3);
