@@ -83,7 +83,9 @@ function hash01(input) {
 }
 
 async function preloadWorkImages(works, { timeoutMs = 3500 } = {}) {
-  const paths = [...new Set((works ?? []).map((w) => String(w.media_path ?? '').trim()).filter(Boolean))];
+  const paths = [
+    ...new Set((works ?? []).map((w) => String(w.media_path ?? '').trim()).filter(Boolean)),
+  ];
   const loaded = new Set();
 
   const jobs = paths.map(
@@ -207,7 +209,10 @@ function pushBatchOutward(batch, rootId, levelIndex) {
 
     const jitter = hash01(id);
     let baseAngle = Math.atan2(py - rootY, px - rootX);
-    if (!Number.isFinite(baseAngle) || (Math.abs(px - rootX) < 0.001 && Math.abs(py - rootY) < 0.001)) {
+    if (
+      !Number.isFinite(baseAngle) ||
+      (Math.abs(px - rootX) < 0.001 && Math.abs(py - rootY) < 0.001)
+    ) {
       baseAngle = jitter * Math.PI * 2 + i * golden * 0.7;
     }
 

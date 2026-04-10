@@ -286,7 +286,7 @@ body.editing-mode {
     width: 90vw;
     height: auto;
     max-height: 90dvh;
-    gap: 12px
+    gap: 12px;
   }
 
   .work-modal-image-container {
