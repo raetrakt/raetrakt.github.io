@@ -46,7 +46,12 @@ const zoom = d3
 
 svg.call(zoom);
 if (!isSafari) {
-  svg.call(zoom.transform, d3.zoomIdentity.scale(1));
+svg.call(zoom.transform,
+  d3.zoomIdentity
+    .translate(width / 2, height / 2)
+    .scale(0.7)  // your desired scale < 1
+    .translate(-width / 2, -height / 2)
+);
 }
 svg.on('dblclick.zoom', null); // allow dblclick on links for delete in edit mode
 
