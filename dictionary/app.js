@@ -301,7 +301,7 @@ async function runOnboardingReveal({ preloadPromise = null } = {}) {
     renderer.renderGraph();
     await renderer.waitForImages({ staggerMs: 0 });
     renderer.measureNodes();
-    simulation.alpha(0.28).restart();
+    simulation.alpha(1).restart();
   } finally {
     simulation.velocityDecay(originalVelocityDecay);
   }
