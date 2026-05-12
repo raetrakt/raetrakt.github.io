@@ -9,7 +9,7 @@ export function createGraphSimulation({ width, height }) {
         .forceLink([])
         .id((d) => d.id)
         .distance(120)
-        .strength(0.4)
+        .strength(0.3)
         .iterations(2),
     )
     .force('charge', d3.forceManyBody().strength(-280))
