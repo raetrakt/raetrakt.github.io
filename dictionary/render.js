@@ -517,6 +517,31 @@ export function createRenderer({
   async function waitForImages({ staggerMs = 0 } = {}) {
     const isSafari = document.body.classList.contains('is-safari');
 
+    const finalizeWorkDivs = (divs) => {
+      divs.forEach((div) => {
+        const img = div.querySelector('img');
+        if (!img) return;
+
+        let recovered = false;
+        const recover = () => {
+          if (recovered) return;
+          if (img.naturalWidth <= 0 || img.naturalHeight <= 0) return;
+
+          recovered = true;
+          div.classList.remove('media-pending');
+          div.classList.add('media-ready');
+          measureNodes({ enableCollision: true });
+          simulation.alpha(0.12).restart();
+        };
+
+        img.addEventListener('load', recover, { once: true });
+
+        if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+          recover();
+        }
+      });
+    };
+
     // Keep collisions disabled while nodes are still being sized/revealed,
     // so link forces can untangle the graph first.
     measureNodes({ enableCollision: false });
@@ -537,9 +562,14 @@ export function createRenderer({
       await Promise.allSettled(jobs);
 
       workDivs.forEach((div) => {
-        div.classList.remove('media-pending');
-        div.classList.add('media-ready');
+        const img = div.querySelector('img');
+        if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
+          div.classList.remove('media-pending');
+          div.classList.add('media-ready');
+        }
       });
+
+      finalizeWorkDivs(workDivs);
 
       measureNodes({ enableCollision: true });
       simulation.alpha(0.12).restart();
@@ -555,9 +585,14 @@ export function createRenderer({
     await Promise.allSettled(jobs);
 
     workDivs.forEach((div) => {
-      div.classList.remove('media-pending');
-      div.classList.add('media-ready');
+      const img = div.querySelector('img');
+      if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
+        div.classList.remove('media-pending');
+        div.classList.add('media-ready');
+      }
     });
+
+    finalizeWorkDivs(workDivs);
 
     measureNodes({ enableCollision: true });
     await new Promise((res) => requestAnimationFrame(() => res()));
