@@ -39,7 +39,7 @@ const container = svg.append('g');
 
 const zoom = d3
   .zoom()
-  .scaleExtent([0.4, 2])
+  .scaleExtent([0.2, 2])
   .on('zoom', (event) => {
     container.attr('transform', event.transform);
   });
