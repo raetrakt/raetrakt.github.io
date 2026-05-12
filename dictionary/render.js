@@ -129,6 +129,9 @@ export function createRenderer({
     if (!workModal) return;
     workModal.classList.remove('is-open');
     workModal.setAttribute('aria-hidden', 'true');
+    if (workModalImage) {
+      workModalImage.src = '';
+    }
   }
 
   function openWorkModal(workNode) {
