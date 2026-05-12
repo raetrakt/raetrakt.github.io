@@ -25,7 +25,7 @@ html {
 }
 
 body {
-  --bg-color: #eee;
+  --bg-color: #fff;
   font-family: "Uncut Sans", sans-serif;
   font-size: 1.6rem;
   background-color: var(--bg-color);
