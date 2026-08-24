@@ -2,260 +2,459 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PITZER.XYZ</title>
 
-  <meta name="description" content="Fabian Pitzer – Creative Technologist">
-  <meta property="og:url" content="https://www.pitzer.xyz/">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="PITZER.XYZ">
-  <meta property="og:description" content="Fabian Pitzer – Creative Technologist">
-  <meta property="og:image" content="">
+  <!--
+  ─────────────────────────────────────────────────────────────
+  HOW TO USE THIS BOILERPLATE
+  ─────────────────────────────────────────────────────────────
+  1. Swap every /media/... path for your real assets.
+  2. Compress videos before uploading (keeps GH Pages fast):
+       ffmpeg -i in.mov -vcodec libx264 -crf 28 -preset veryslow \
+              -an -movflags +faststart -vf "scale=640:-2" out.mp4
+     - "-an" strips audio (not needed for muted autoplay, saves weight)
+     - "+faststart" lets playback begin before the file finishes downloading
+     - keep clips short (3–8s) and looped
+  3. Every <video> needs a poster (a compressed jpg/webp frame) so the
+     column never shows blank space while the clip loads.
+  4. Column 1's first video is marked as the priority load — it gets
+     preload="auto" + fetchpriority="high" and loads with no delay.
+     The other five first-videos load a few ms apart (staggered) so they
+     don't all fight for bandwidth in the same animation frame.
+  5. Each column's SECOND video/image is lazy — it only fetches once
+     that column has been scrolled far enough to bring it near view.
+     Loading is scoped to the column itself (IntersectionObserver root),
+     since columns scroll independently, not the page.
+  ─────────────────────────────────────────────────────────────
+-->
 
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    @font-face {
+      font-family: "UN-11";
+      src: url("fonts/UN_11ST_Regular.woff2") format("woff2");
+    }
+
+    :root {
+      --bg: #ffffff;
+      --fg: #000000;
+      --muted: #000000;
+      --hair: #dcdcdc;
+      --accent: #1b3bff;
+      --font-size: 18px;
+      --gap: 0px;
+      --stage-max: 2200px;
+      --col-pad: 10px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+    }
+
+    body {
+      font-family: "UN-11", Helvetica, Arial, monospace;
+      font-size: var(--font-size);
+      font-weight: 400;
+      line-height: 1.3;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ultrawide handling: the grid is capped, so on very wide viewports
+     the leftover space resolves to plain white margins automatically. */
+    .stage {
+      max-width: var(--stage-max);
+      margin: 0 auto;
+      background: var(--bg);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: var(--gap);
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .col {
+      background: var(--bg);
+      height: 100vh;
+      height: 100dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: var(--col-pad);
+      padding-top: 60vh;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      scrollbar-width: thin;
+
+      /* animate in from below the fold on load — staggered per column */
+      transform: translateY(100vh);
+      animation: col-in 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+      -ms-overflow-style: none;
+      /* hide scrollbar in IE/Edge */
+      scrollbar-width: none;
+      /* hide scrollbar in Firefox */
+    }
+
+    .col:nth-child(1) {
+      animation-delay: 0ms;
+    }
+
+    .col:nth-child(2) {
+      animation-delay: 70ms;
+    }
+
+    .col:nth-child(3) {
+      animation-delay: 140ms;
+    }
+
+    .col:nth-child(4) {
+      animation-delay: 210ms;
+    }
+
+    .col:nth-child(5) {
+      animation-delay: 280ms;
+    }
+
+    .col:nth-child(6) {
+      animation-delay: 350ms;
+    }
+
+    @keyframes col-in {
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .col {
+        animation: none;
+        transform: none;
+      }
+    }
+
+    /* hide scrollbar visually but keep scrolling */
+    .col::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    .index {
+      font-size: var(--font-size);
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    h1 {
+      font-size: var(--font-size);
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin: 0;
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: var(--font-size);
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      background: #f0f0f0;
+      flex-shrink: 0;
+    }
+
+    .media video,
+    .media img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1);
+      transition: transform 0.6s var(--ease);
+    }
+
+    /* grows the media when its column is being actively scrolled */
+    .col.is-scrolling .media video,
+    .col.is-scrolling .media img {
+      transform: scale(1.08);
+    }
+
+    a.col-link {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a.col-link:focus-visible h1 {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    a.col-link:hover .media video,
+    a.col-link:hover .media img {
+      transform: scale(1.04);
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .grid {
+        grid-template-columns: repeat(1, 1fr);
+      }
+
+      .col {
+        height: auto;
+        min-height: 100dvh;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <div class="content">
-    <div class="header">
-      <div class="home-button">
-        <div class="name-button">
-          <a href="/" class="name-text">PITZER.XYZ</a>
-          <p class="name-text-maxwidth" style="visibility: hidden; width: fit-content">FABIAN&nbsp;PITZER</p>
-        </div>
-      </div>
-      <div class="projects-button"><a href="/">PROJECTS</a></div>
-      <div class="about-button"><a href="about.html">ABOUT</a></div>
-    </div>
-    <div class="project section">
-      <div class="info">
-        <div class="title">NOT WORLD MUSIC
-          <div class="description">
-            <p>Interface for non-discriminatory music exploration</p>
-          </div>
-        </div>
-        <div class="tags">Critical Design, Web, UI/UX</div>
-        <div class="year">2022</div>
-      </div>
-      <div class="images">
-        <video class="main-image" muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1.568">
-          <source src="images/not_world_music/nwm_screenrecording_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/not_world_music/nwm_poster_web.png" alt="" srcset="" />
-        <img src="images/not_world_music/nwm_devices_web.png" alt="" />
-      </div>
-      <div class="project-text">
-        <div class="project-text-paragraph">
-          <p>World music as a term for non-Western music was established in the 1980s. As a marketing term it stands for exoticism and Eurocentric thinking. Further, the leading digital platforms today use algorithms known for biases and filter bubbles to determine what should be consumed. Discovering new music becomes a passive experience where minorities stay under the radar.</p>
-        </div>
-        <div class="project-text-paragraph">
-          <p>For Not World Music, I scraped user ratings to determine outstanding albums from every country. This diverse collection can be explored freely on a Three.js based globe. The minimalist interface was connected to a streaming API for convenient but decelerated listening, allowing users to expand their musical horizon.</p>
-        </div>
-        <div class="project-text-paragraph">
-          <p>The project received awards by the DDC for value-based design and by the ADC in the category »Creative use of code«.
 
-            ↳ <a href="https://www.notworldmusic.com" target="_blank">Website</a>
-            ↳ <a href="https://player.vimeo.com/video/856348895" target="_blank">Video Documentation</a>
-          </p>
-        </div>
-      </div>
-      <div class="fragments">
-        <img src="images/not_world_music/nwm_thesis_excerpt_web.gif" alt="" />
-        <video muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 4/3">
-          <source src="images/not_world_music/nwm_all_genres_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/not_world_music/nwm_prototype_web.jpg" alt="" />
-      </div>
-    </div>
-    <div class="project section">
-      <div class="info">
-        <div class="title">SHAPE INDEX
-          <div class="description">
-            <p>Molding code into formative DNA</p>
-          </div>
-        </div>
-        <div class="tags">Code, Print, Graphic Systems</div>
-        <div class="year">2021</div>
-      </div>
-      <div class="images">
-        <img src="images/shape_index/shape_index_sky_web.jpg" alt="" />
-        <video class="main-image" muted autoplay loop playsinline
-          style="aspect-ratio: 1434/1080;background-color: unset;">
-          <source src="images/shape_index/shape_index_shapes_landscape_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/shape_index/shape_index_warehouse_web.jpg" />
-      </div>
-      <div class="project-text">
-        <div class="project-text-paragraph">
-          <p>Shape Index is a series of foldable posters. Each showcases the variety of specimens spawned by one defining set of rules. Written in Processing, they can produce an endless amount of similar, yet distinctive shapes.</p>
-        </div>
-        <div class="project-text-paragraph">
-          <p>Each program found its origin in a different analog experiment. With the organic compositional qualities of shadow play, calligraphy and printmaking in mind, I found myself shaping the rules of the system, as I had initially shaped the forms themselves.</p>
-        </div>
-      </div>
-      <div class="fragments">
-        <img src="images/shape_index/shape_index_iterations_web.gif" alt="" />
-        <img src="images/shape_index/shape_index_lost_place_web.jpg" alt="" />
-        <img src="images/shape_index/shape_index_apfel_web.png" alt="" />
-      </div>
-    </div>
-    <div class="project section">
-      <div class="info">
-        <div class="title">TO BE CONTINUED
-          <div class="description">
-            <p>Experiencing time in a digital age</p>
-          </div>
-        </div>
-        <div class="tags">Installation, Motion Graphics, Experience Design</div>
-        <div class="year">2023</div>
-      </div>
-      <div class="images">
-        <img src="images/tbc/tbc_warehouse_web.jpg" alt="" />
-        <video class="main-image" muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 4.5/3">
-          <source src="images/tbc/tbc_clips_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/tbc/tbc_people_web.jpg" alt="" />
-      </div>
-      <div class="project-text">
-        <div class="project-text-paragraph">
-          <p>To Be Continued is a theatrical installation about the perception of time in a digital age. Even though technology accelerates the world and seemingly makes it more efficient, it appears we still spend just as much time waiting. The performance thematizes the impact of such technology, while employing a chatbot as the main actor.</p>
-        </div>
-        <div class="project-text-paragraph">
-          <p>In the days leading up to the show, the bot collects data on our relationship with time. To allow it to express its findings during the encounter on location, I worked together with visual artist Noralie. We developed immersive animations inspired by the world of interfaces, apps and preloaders, exploring what it means to be in the now.</p>
-        </div>
-        <div class="project-text-paragraph">
-          <p>To Be Continued is a project by Studio Moniker, Nineties and Noralie.
+  <div class="stage">
+    <main class="grid" id="grid">
 
-            ↳ <a href="https://player.vimeo.com/video/831513985" target="_blank">Video Documentation</a></p>
-        </div>
-      </div>
-      <div class="fragments">
-        <video muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1">
-          <source src="images/tbc/tbc_interfaces_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/tbc/tbc_chatbot_web.jpg" alt="" />
-        <video muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1">
-          <source src="images/tbc/tbc_pixels_web.mp4" type="video/mp4" />
-        </video>
-      </div>
-    </div>
-    <div class="project section">
-      <div class="info">
-        <div class="title">FABIGAN
-          <div class="description">
-            <p>Distilling my past into a .pkl file</p>
-          </div>
-        </div>
-        <div class="tags">Speculative Design, AI, Data, Wearable</div>
-        <div class="year">2021</div>
-      </div>
-      <div class="images">
-        <img src="images/fabigan/fabigan_helmet_web.jpg" alt="" srcset="" />
-        <img src="images/fabigan/fabigan_scaffolding_web.jpg" alt="" srcset="" />
-        <video class="main-image" muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1 / 1">
-          <source src="images/fabigan/fabigan_latent_web.mp4" type="video/mp4" />
-        </video>
-      </div>
-      <div class="project-text">
-        <div class="project-text-paragraph">
-          <p>Using over 1400 images from my childhood as input, a generative adversarial network was trained. The output is displayed on a helmet, which lends the wearer a face that retains some uncanny resemblance to younger versions of myself. Accelerometer data is used to map movements from the real environment to the latent space of the neural network. </p>
-        </div>
-        <div class="project-text-paragraph">
-          <p>This results in dynamic morphing between portraits that range in style from realistic to generative cubism. The juxtaposition of the fictional past and the futuristic present gives a glimpse of impending changes to digital avatars, the reversibility of aging in virtual realms and the changing role of the human body in society.</p>
-        </div>
-      </div>
-      <div class="fragments">
-        <video muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1 / 1">
-          <source src="images/fabigan/fabigan_training_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/fabigan/fabigan_prototype_web.jpg" alt="" />
-        <img src="images/fabigan/fabigan_data_web.gif" alt="" />
+      <!-- ============ COLUMN TEMPLATE (x6) ============
+         Order per spec: h1 → video → p → img → p → video
+         First video in column 1 is the priority asset.
+    -->
 
-      </div>
-    </div>
-    <div class="project section">
-      <div class="info">
-        <div class="title">ECCE.AI
-          <div class="description">
-            <p>Turning dutch masterpieces into collective image creation playgrounds</p>
-          </div>
+      <section class="col" data-col="1">
+        <a class="col-link" href="/projects/project-01.html">
+          <h1>Project title one</h1>
+        </a>
+        <div class="media">
+          <video class="primary-video" data-src="/media/01/hero.mp4" poster="/media/01/hero-poster.jpg" muted loop
+            playsinline autoplay preload="auto" fetchpriority="high"></video>
         </div>
-        <div class="tags">Collaborative, Web, AI, UX/UI</div>
-        <div class="year">2023</div>
-      </div>
-      <div class="images">
-        <video class="main-image" muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1 / 1">
-          <source src="images/ecce_ai/ecce_garden_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/ecce_ai/ecce_ui_web.jpg" alt="" srcset="" />
-        <img src="images/ecce_ai/ecce_mobile_web.jpg" alt="" srcset="" />
-      </div>
-      <div class="project-text">
-        <div class="project-text-paragraph">
-          <p>Creating images with AI is currently an isolated experience. Ecce.ai lets the ideas come together. Paintings like the Garden of Earthly Delights become a playground on which users can type everything imaginable and have it appear on the canvas. Bit by bit it is transformed, with contributions reacting or adding to each other, while the outcome after thousands of alterations is completely unpredictable.</p>
+        <p>One line of context — medium, year, role.</p>
+        <div class="media">
+          <img data-src="/media/01/still.jpg" alt="Project one still" loading="lazy">
         </div>
-        <div class="project-text-paragraph">
-          <p>The name is derived from Ecce Homo (“Behold the Human”), the name of a Christ painting that went viral after a good faith attempt at restoration. In a similar spirit Ecce.ai questions the authority of the old masters, allowing people to paint over the work and collectively create a contemporary masterpiece.
+        <p>Second short line — client, tools, or scope.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/01/detail.mp4" poster="/media/01/detail-poster.jpg" muted loop
+            playsinline preload="none"></video>
         </div>
-        <div class="project-text-paragraph">
-          <p>A prototype of the platform is the result of R&D and UI work I did during my internship at Studio Moniker.</p>
+      </section>
+
+      <section class="col" data-col="2">
+        <a class="col-link" href="/projects/project-02.html">
+          <h1>Project title two</h1>
+        </a>
+        <div class="media">
+          <video class="primary-video" data-src="/media/02/hero.mp4" poster="/media/02/hero-poster.jpg" muted loop
+            playsinline preload="metadata"></video>
         </div>
-      </div>
-      <div class="fragments">
-        <img src="images/ecce_ai/ecce_detection_web.jpg" alt="" />
-        <img src="images/ecce_ai/ecce_rorschach_web.gif" alt="" />
-        <img src="images/ecce_ai/ecce_world_web.jpg" alt="" />
-      </div>
-    </div>
-    <div class="project section">
-      <div class="info">
-        <div class="title">VERNISSAGE
-          <div class="description">
-            <p>Visual identity for student exhibition</p>
-          </div>
+        <p>One line of context — medium, year, role.</p>
+        <div class="media">
+          <img data-src="/media/02/still.jpg" alt="Project two still" loading="lazy">
         </div>
-        <div class="tags">3D, Identity, Graphics</div>
-        <div class="year">2022</div>
-      </div>
-      <div class="images">
-        <img src="images/verni/verni_bar_web.jpg" alt="" />
-        <video class="main-image" muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1">
-          <source src="images/verni/verni_insta_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/verni/verni_poster_web.jpg" alt="" />
-      </div>
-      <div class="project-text">
-        <div class="project-text-paragraph">
-          <p>The vernissage is an informal exhibition that was initiated to give all students a space to show what they are working on. As part of the student council I helped organize the event and developed a design system, which I used to create promotional content in all formats.</p>
+        <p>Second short line — client, tools, or scope.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/02/detail.mp4" poster="/media/02/detail-poster.jpg" muted loop
+            playsinline preload="none"></video>
         </div>
-        <div class="project-text-paragraph">
-          <p>Central to the identity is the Pilowlava 3D font. With various procedural materials applied to it, it can function as text for signage and as key visual. The funky V's in front of strong colours highlight the Vernissage's independent character and hint at the DJ sets taking place at later hours.</p>
+      </section>
+
+      <section class="col" data-col="3">
+        <a class="col-link" href="/projects/project-03.html">
+          <h1>Project title three</h1>
+        </a>
+        <div class="media">
+          <video class="primary-video" data-src="/media/03/hero.mp4" poster="/media/03/hero-poster.jpg" muted loop
+            playsinline preload="metadata"></video>
         </div>
-      </div>
-      <!-- <div class="fragments">
-        <video muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 4/3">
-          <source src="images/verni/verni_rave_web.mp4" type="video/mp4" />
-        </video>
-        <video muted autoplay loop playsinline style="pointer-events: none; aspect-ratio: 1 / 1">
-          <source src="images/verni/verni_teaser_web.mp4" type="video/mp4" />
-        </video>
-        <img src="images/verni/verni_glitch_web.png" alt="" />
-      </div> -->
-    </div>
+        <p>One line of context — medium, year, role.</p>
+        <div class="media">
+          <img data-src="/media/03/still.jpg" alt="Project three still" loading="lazy">
+        </div>
+        <p>Second short line — client, tools, or scope.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/03/detail.mp4" poster="/media/03/detail-poster.jpg" muted loop
+            playsinline preload="none"></video>
+        </div>
+      </section>
+
+      <section class="col" data-col="4">
+        <a class="col-link" href="/projects/project-04.html">
+          <h1>Project title four</h1>
+        </a>
+        <div class="media">
+          <video class="primary-video" data-src="/media/04/hero.mp4" poster="/media/04/hero-poster.jpg" muted loop
+            playsinline preload="metadata"></video>
+        </div>
+        <p>If you use this site regularly and would like  to help keep the site on the Internet, please consider donating a small  sum to help pay for the hosting and bandwidth bill. There is no minimum  donation, any sum is appreciated - click here to donate using PayPal. Thank you for your support. </p>
+        <div class="media">
+          <img data-src="/media/04/still.jpg" alt="Project four still" loading="lazy">
+        </div>
+        <p>Second short line — client, tools, or scope.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/04/detail.mp4" poster="/media/04/detail-poster.jpg" muted loop
+            playsinline preload="none"></video>
+        </div>
+      </section>
+
+      <section class="col" data-col="5">
+        <a class="col-link" href="/projects/project-05.html">
+          <h1>Project title five</h1>
+        </a>
+        <div class="media">
+          <video class="primary-video" data-src="/media/05/hero.mp4" poster="/media/05/hero-poster.jpg" muted loop
+            playsinline preload="metadata"></video>
+        </div>
+        <p>One line of context — medium, year, role.</p>
+        <div class="media">
+          <img data-src="/media/05/still.jpg" alt="Project five still" loading="lazy">
+        </div>
+        <p>Second short line — client, tools, or scope.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/05/detail.mp4" poster="/media/05/detail-poster.jpg" muted loop
+            playsinline preload="none"></video>
+        </div>
+      </section>
+
+      <section class="col" data-col="6">
+        <a class="col-link" href="/projects/project-06.html">
+          <h1>Project title six</h1>
+        </a>
+        <div class="media">
+          <video class="primary-video" data-src="/media/06/hero.mp4" poster="/media/06/hero-poster.jpg" muted loop
+            playsinline preload="metadata"></video>
+        </div>
+        <p>One line of context — medium, year, role.</p>
+        <div class="media">
+          <img data-src="/media/06/still.jpg" alt="Project six still" loading="lazy">
+        </div>
+        <p>Second short line — client, tools, or scope.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/06/detail.mp4" poster="/media/06/detail-poster.jpg" muted loop
+            playsinline preload="none"></video>
+        </div>
+      </section>
+
+    </main>
   </div>
+
   <script>
-    if (document.fonts) {
-      document.fonts.ready.then(() => {
-        document.documentElement.classList.add('font-loaded');
+    (function () {
+      var cols = Array.prototype.slice.call(document.querySelectorAll('.col'));
+
+      /* ---------- 1. Load the six "on load" primary videos, staggered ---------- */
+      // Column 1 is the priority asset and already has src/preload set in HTML.
+      // The rest get their real src assigned a few ms apart so they don't all
+      // start fetching in the same frame.
+      var primaries = cols
+        .map(function (c) { return c.querySelector('.primary-video'); })
+        .filter(Boolean);
+
+      primaries.forEach(function (video, i) {
+        var delay = i * 70; // ms between each video's fetch start
+        setTimeout(function () {
+          if (!video.getAttribute('src') && video.dataset.src) {
+            video.src = video.dataset.src;
+          }
+          video.setAttribute('autoplay', '');
+          var playPromise = video.play();
+          if (playPromise && playPromise.catch) {
+            playPromise.catch(function () {
+              /* autoplay blocked (rare with muted+playsinline) — fail silently */
+            });
+          }
+        }, delay);
       });
-    }
+
+      /* ---------- 2. Lazy-load each column's second video + image ---------- */
+      // Root is the column itself, since columns scroll independently of the page.
+      cols.forEach(function (col) {
+        var lazyEls = col.querySelectorAll('.secondary-video, img[data-src]');
+        if (!lazyEls.length) return;
+
+        var observer = new IntersectionObserver(function (entries, obs) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            var el = entry.target;
+
+            if (el.tagName === 'IMG') {
+              el.src = el.dataset.src;
+            } else {
+              el.src = el.dataset.src;
+              el.load();
+              el.play().catch(function () { });
+            }
+            obs.unobserve(el);
+          });
+        }, {
+          root: col,
+          rootMargin: '200px 0px',
+          threshold: 0.1
+        });
+
+        lazyEls.forEach(function (el) { observer.observe(el); });
+      });
+
+      /* ---------- 3. Linked scrolling + scroll-scale effect ---------- */
+      // Only revealing more of a target column drives the others. Scrolling the
+      // target back toward its top leaves the other columns where they are.
+      var syncingScroll = false;
+      var lastScrollTops = cols.map(function (col) { return col.scrollTop; });
+
+      cols.forEach(function (col) {
+        var index = cols.indexOf(col);
+        var timeout;
+        col.addEventListener('scroll', function () {
+          var currentScrollTop = col.scrollTop;
+          var delta = currentScrollTop - lastScrollTops[index];
+          lastScrollTops[index] = currentScrollTop;
+
+          if (!syncingScroll && delta > 0) {
+            syncingScroll = true;
+            cols.forEach(function (otherCol, otherIndex) {
+              if (otherIndex === index) return;
+
+              var maxScrollTop = otherCol.scrollHeight - otherCol.clientHeight;
+              var nextScrollTop = Math.max(0, Math.min(
+                maxScrollTop,
+                otherCol.scrollTop - delta * 1.5
+              ));
+              otherCol.scrollTop = nextScrollTop;
+              lastScrollTops[otherIndex] = nextScrollTop;
+            });
+            requestAnimationFrame(function () { syncingScroll = false; });
+          }
+
+          col.classList.add('is-scrolling');
+          clearTimeout(timeout);
+          timeout = setTimeout(function () {
+            col.classList.remove('is-scrolling');
+          }, 250);
+        }, { passive: true });
+      });
+    })();
   </script>
-  <script src="js/scroll.js"></script>
-  <script src="js/mobile_images.js"></script>
-  <script src="js/paint.js"></script>
-  <script src="js/name_change.js"></script>
+
 </body>
 
 </html>
