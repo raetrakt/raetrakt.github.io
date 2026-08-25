@@ -1,380 +1,199 @@
+@font-face {
+  font-family: 'UN-11';
+  src: url('fonts/UN_11ST_Regular.woff2') format('woff2');
+}
+
+:root {
+  --bg: #ffffff;
+  --fg: #000000;
+  --muted: #000000;
+  --hair: #dcdcdc;
+  --accent: #1b3bff;
+  --font-size: 14px;
+  --gap: 0px;
+  --stage-max: 2200px;
+  --col-pad: 10px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 * {
   box-sizing: border-box;
+}
+
+html,
+body {
   margin: 0;
-  padding: 0;
-}
-
-@font-face {
-  font-family: "Uncut Sans";
-  src: url("fonts/UncutSans-Regular.woff2") format("woff2");
-  font-display: swap;
-}
-
-::selection {
-  color: white;
-  background: black;
-}
-
-html::-webkit-scrollbar {
-  display: none;
-}
-
-html {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
 }
 
 body {
-  --bg-color: #fff;
-  font-family: "Uncut Sans", sans-serif;
-  font-size: 1.6rem;
-  background-color: var(--bg-color);
-  -webkit-user-select: none;  /* Chrome all / Safari all */
-  -moz-user-select: none;     /* Firefox all */
-  -ms-user-select: none;      /* IE 10+ */
-  user-select: none;
+  font-family: 'UN-11', Helvetica, Arial, monospace;
+  font-size: var(--font-size);
+  font-weight: 400;
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
 }
 
-.font-loaded body {
-  font-feature-settings: "ss05" on, "ss02" on; /* Alt "Y" ss02 because it activates weird caps on the sans fallback... */
+/* Ultrawide handling: the grid is capped, so on very wide viewports
+     the leftover space resolves to plain white margins automatically. */
+.stage {
+  max-width: var(--stage-max);
+  margin: 0 auto;
+  background: var(--bg);
 }
 
-a {
-  text-decoration: none;
-  color: unset;
-  -webkit-user-drag: none;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--gap);
+  background: var(--bg);
+  overflow: hidden;
 }
 
-a:not(.section):hover {
-  text-decoration: underline;
-  text-decoration-thickness: 1.6px;
-  text-decoration-skip-ink: all;
-  text-underline-offset: 0.22rem;
+.col {
+  background: var(--bg);
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--col-pad);
+  padding-top: 60vh;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  scrollbar-width: thin;
+
+  /* animate in from below the fold on load — staggered per column */
+  transform: translateY(100vh);
+  animation: col-in 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+  -ms-overflow-style: none;
+  /* hide scrollbar in IE/Edge */
+  scrollbar-width: none;
+  /* hide scrollbar in Firefox */
+}
+
+.col:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.col:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.col:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.col:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.col:nth-child(5) {
+  animation-delay: 280ms;
+}
+
+.col:nth-child(6) {
+  animation-delay: 350ms;
+}
+
+@keyframes col-in {
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .col {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* hide scrollbar visually but keep scrolling */
+.col::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.index {
+  font-size: var(--font-size);
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+h1 {
+  font-size: var(--font-size);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-transform: uppercase;
 }
 
 p {
-  white-space: pre-line;
+  font-size: var(--font-size);
+  color: var(--muted);
+  margin: 0;
 }
 
-.content {
-  padding: 50px;
-}
-
-.header {
-  --initial-height: 250px;
-  display: flex;
-  height: var(--initial-height);
-}
-
-.sticky {
-  position: fixed;
-  top: 0;
-  width: calc(100% - 2 * 50px);
-  height: 68px;
-  background-color: var(--bg-color);
-}
-
-.sticky-border {
-  border-bottom: 2px solid black;
-}
-
-.home-button {
-  min-width: 65%;
-}
-
-.name-button {
-  white-space: nowrap;
-  user-select: none;
-  width: fit-content;
-}
-
-.name-text:hover {
-  text-decoration: none !important;
-}
-
-.projects-button {
-  min-width: 28%;
-}
-
-.project {
-  display: flex;
-  flex-direction: column;
+.media {
+  position: relative;
   width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #f0f0f0;
+  flex-shrink: 0;
 }
 
-.section {
-  padding: 2rem 0;
-  border-top: 2px solid black;
-}
-
-.info {
-  display: flex;
-}
-
-.title {
-  min-width: 65%;
-}
-
-.tags {
-  min-width: 28%;
-  padding-right: 2rem;
-}
-
-.description {
-  margin-bottom: 1.8rem;
-  line-height: 1.3;
-}
-
-.images {
-  display: flex;
-  height: 20vw;
-  min-height: 0; /* weird css thing: https://stackoverflow.com/questions/36247140/why-dont-flex-items-shrink-past-content-size */
-  margin-bottom: 2rem;
-  transition: height 0.5s;
-}
-
-.fragments {
-  height: 10vw;
-  margin-top: 2rem;
-  display: none;
-}
-
-.fragments img, .fragments video {
-  height: 100%;
-}
-
-.hover .images {
-  height: 22vw;
-}
-
-img,
-video {
-  object-fit: cover;
-  max-height: 100%;
-  margin-right: 25px;
-  pointer-events: none;
-  background-color: black;
-}
-
-.mobile-image {
-  display: none;
-}
-
-.project-text {
-  display: flex;
-  width: 100%;
-}
-
-.project-text-paragraph {
-  width: 23rem;
-  font-size: 1.2rem;
-  line-height: 1.25;
-  margin-right: 2rem;
-}
-
-.about {
-  display: flex;
-  font-size: 1.2rem;
-}
-
-.about-text {
-  width: 65%;
-  padding-right: 1rem;
-}
-
-.about-text .paragraph {
-  line-height: 1.3;
-  max-width: 45ch;
-}
-
-.portrait {
-  max-width: 220px;
-  margin-bottom: 1rem;
-}
-
-/* painting */
-.transparent-canvas {
+.media video {
   position: absolute;
-  top: 0;
-  left: 0;
-  background-color: transparent;
-  pointer-events: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.pencil-toggle {
-  position: fixed;
-  bottom: 50px;
-  right: 50px;
-  background-image: url("./images/other/pencil.svg");
-  background-repeat: no-repeat;
-  cursor: pointer;
-  filter: drop-shadow(1px 2px 2px rgb(0 0 0 / 0.35));
-  transition: .06s ease-in-out;
+.media img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
-.pencil-toggle:hover {
-  transform: translate(-1px, -6px);
-  filter: drop-shadow(1px 6px 3px rgb(0 0 0 / 0.2));
+/* Videos use the default 3:4 tile; images keep their natural ratio. */
+.media:has(> img) {
+  aspect-ratio: auto;
 }
 
-@media (max-width: 1200px) {
-  .images {
-    height: 20vw;
-  }
+a.col-link {
+  color: inherit;
+  text-decoration: none;
+}
 
-  .hover .images {
-    height: 23vw;
-  }
+a.col-link:focus-visible h1 {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
 
-  .pencil-toggle {
-    display: none;
-  }
+a.col-link:hover .media video,
+a.col-link:hover .media img {
+  transform: scale(1.04);
+}
 
-  .transparent-canvas {
-    display: none;
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Styles for mobile devices */
-@media (max-width: 767px) {
-  body {
-    --mobile-margin: 1.5rem;
-    font-size: 1.35rem;
+@media (max-width: 520px) {
+  .grid {
+    grid-template-columns: repeat(1, 1fr);
   }
 
-  .content {
-    padding: 25px;
-  }
-
-  .header {
-    --initial-height: 140px;
-    justify-content: space-between;
-    height: var(--initial-height);
-    z-index: 1;
-  }
-
-  .sticky {
-    width: calc(100% - 2 * 25px);
-    height: 46px;
-  }
-
-  .projects-button {
-    display: none;
-    min-width: unset;
-  }
-
-  .about-page-header .projects-button {
-    display: block;
-  }
-
-  .about-page-header .about-button {
-    display: none;
-  }
-
-  .about {
-    display: block;
-  }
-
-  .about-text {
-    width: auto;
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-  }
-
-  .about-text p {
-    padding-right: 0;
-  }
-
-  .about-title {
-    font-size: 1.35rem;
-  }
-
-  .about-info {
-    width: auto;
-    margin-bottom: 3rem;
-  }
-
-  .about-info {
-    width: auto;
-    margin-bottom: 3rem;
-  }
-
-  .about-info .paragraph {
-    width: auto;
-  }
-
-  .portrait {
-    max-width: unset;
-  }
-
-  .section {
-    padding-top: var(--mobile-margin);
-    padding-bottom: 6rem;
-  }
-
-  .section:last-child {
-    padding-bottom: var(--mobile-margin);
-  }
-
-  .project {
+  .col {
     height: auto;
-  }
-
-  .tags {
-    display: none;
-  }
-
-  .year {
-    display: none;
-  }
-
-  .description {
-    margin-bottom: calc(var(--mobile-margin) - 0.2rem);
-  }
-
-  .images {
-    height: auto;
-    margin-bottom: var(--mobile-margin);
-  }
-
-  .images img:not(.main-image),
-  .images video:not(.main-image) {
-    display: none;
-  }
-
-  .hover .images {
-    height: unset;
-  }
-
-  .mobile-image {
-    display: block;
-  }
-
-  .mobile-image:not(:last-child) {
-    margin-bottom: var(--mobile-margin);
-  }
-
-  .fragments {
-    display: none;
-  }
-
-  img,
-  video {
-    object-fit: contain;
-    width: 100%;
-    height: auto;
-    margin-right: 0;
-  }
-
-  .project-text {
-    display: block;
-  }
-
-  .project-text-paragraph {
-    width: 100%;
-  }
-
-  .project-text-paragraph:not(:last-child) {
-    margin-bottom: var(--mobile-margin);
+    min-height: 100dvh;
   }
 }
