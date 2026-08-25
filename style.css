@@ -9,10 +9,9 @@
   --muted: #000000;
   --hair: #dcdcdc;
   --accent: #1b3bff;
-  --font-size: 14px;
-  --gap: 0px;
+  --font-size: 15px;
+  --gap: 10px;
   --stage-max: 2200px;
-  --col-pad: 10px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -42,6 +41,7 @@ body {
   max-width: var(--stage-max);
   margin: 0 auto;
   background: var(--bg);
+  padding: 0 var(--gap);
 }
 
 .grid {
@@ -52,17 +52,21 @@ body {
   overflow: hidden;
 }
 
+.col h1 {
+  margin-bottom: -10px;
+}
+
 .col {
   background: var(--bg);
   height: 100vh;
   height: 100dvh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--col-pad);
   padding-top: 60vh;
+  padding-bottom: var(--gap);
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 14px;
   scrollbar-width: thin;
 
   /* animate in from below the fold on load — staggered per column */
@@ -120,13 +124,11 @@ body {
 .index {
   font-size: var(--font-size);
   color: var(--muted);
-  letter-spacing: 0.05em;
 }
 
 h1 {
   font-size: var(--font-size);
   font-weight: 400;
-  letter-spacing: 0.01em;
   margin: 0;
   text-transform: uppercase;
 }
@@ -135,6 +137,10 @@ p {
   font-size: var(--font-size);
   color: var(--muted);
   margin: 0;
+  -ms-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  hyphenate-limit-chars: 8 4 2;
 }
 
 .media {
@@ -161,7 +167,7 @@ p {
   display: block;
 }
 
-/* Videos use the default 3:4 tile; images keep their natural ratio. */
+/* Unspecified media uses the default 3:4 tile. */
 .media:has(> img) {
   aspect-ratio: auto;
 }
