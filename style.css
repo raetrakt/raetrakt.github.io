@@ -5,8 +5,8 @@
 }
 
 @font-face {
-  font-family: "Uncut Sans";
-  src: url("fonts/UncutSans-Regular.woff2") format("woff2");
+  font-family: "UN-11";
+  src: url("fonts/UN_11ST_Regular.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -26,7 +26,7 @@ html {
 
 body {
   --bg-color: #fff;
-  font-family: "Uncut Sans", sans-serif;
+  font-family: "UN-11", sans-serif;
   font-size: 1.6rem;
   background-color: var(--bg-color);
   -webkit-user-select: none;  /* Chrome all / Safari all */
@@ -75,7 +75,7 @@ p {
 }
 
 .sticky-border {
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid black;
 }
 
 .home-button {
@@ -104,7 +104,7 @@ p {
 
 .section {
   padding: 2rem 0;
-  border-top: 2px solid black;
+  border-top: 1px solid black;
 }
 
 .info {
