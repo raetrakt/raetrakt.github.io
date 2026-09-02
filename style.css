@@ -170,6 +170,9 @@ video {
   font-size: 1.2rem;
   line-height: 1.25;
   margin-right: 2rem;
+  hyphens: auto;
+  hyphenate-limit-chars: 8 3 3;
+
 }
 
 .about {
