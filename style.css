@@ -143,6 +143,11 @@ p {
   hyphenate-limit-chars: 8 4 2;
 }
 
+a {
+  color: unset;
+  text-decoration: none;
+}
+
 .media {
   position: relative;
   width: 100%;
