@@ -36,14 +36,10 @@
 <body>
 
   <div class="stage">
+    <header><a href="/">PITZER.XYZ</a><a href="" class="about">ABOUT</a></header>
     <main class="grid" id="grid">
-
-      <!-- ============ COLUMN TEMPLATE (x6) ============
-         Order per spec: h1 → video → p → img → p → video
-         First video in column 1 is the priority asset.
-    -->
-
-      <section class="col" data-col="1">
+      <div class="col-group">
+        <section class="col" data-col="1">
         <a class="col-link" href="/projects/project-01.html">
           <h1>SHAPE INDEX</h1>
         </a>
@@ -63,8 +59,29 @@
         <div class="media">
           <img data-src="/images/shape_index/shape_index_warehouse_web.jpg" alt="Shape Index Poster" loading="lazy">
         </div>
-      </section>
+        </section>
 
+        <section class="col" data-col="3">
+        <a class="col-link" href="/projects/project-03.html">
+          <h1>WYSIWYG?</h1>
+        </a>
+        <div class="media" style="aspect-ratio: 500 / 553;">
+          <img src="images/wysiwyg/wysiwyg_preview.jpg" width="1000" height="1106" alt="">
+        </div>
+        <p>Large language models generate code from natural language. The ability to describe visual processes with specificity becomes essential for creating graphics that are difficult to realize and even conceive within the constraints of conventional tools.</p>
+        <div class="media">
+          <img data-src="/media/03/still.jpg" alt="Project three still" loading="lazy">
+        </div>
+        <p>At the same time, relying on a technology with uncertain and far-reaching implications calls for  critical evaluation of its contribution to design.</p>
+        <p>The thesis examines the role of computation in communicating ideas visually and offers a tool for graphic designers to use language-driven interfaces more deliberately.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/03/detail.mp4" poster="/media/03/detail-poster.jpg" muted loop
+            playsinline preload="none"></video>
+        </div>
+        </section>
+      </div>
+
+      <div class="col-group">
       <section class="col" data-col="2">
         <a class="col-link" href="/projects/project-02.html">
           <h1>FABIGAN</h1>
@@ -86,25 +103,27 @@
         </div>
       </section>
 
-      <section class="col" data-col="3">
-        <a class="col-link" href="/projects/project-03.html">
-          <h1>WYSIWYG?</h1>
+      <section class="col" data-col="5">
+        <a class="col-link" href="/projects/project-05.html">
+          <h1>OUR VULNERABLE WORLD</h1>
         </a>
-        <div class="media" style="aspect-ratio: 500 / 553;">
-          <img src="images/wysiwyg/wysiwyg_preview.jpg" width="1000" height="1106" alt="">
-        </div>
-        <p>Large language models generate code from natural language. The ability to describe visual processes with specificity becomes essential for creating graphics that are difficult to realize and even conceive within the constraints of conventional tools.</p>
         <div class="media">
-          <img data-src="/media/03/still.jpg" alt="Project three still" loading="lazy">
+          <img src="images/ovw/ovw_juggler.png" width="698" height="1000" alt="" srcset="">
         </div>
-        <p>At the same time, relying on a technology with uncertain and far-reaching implications calls for  critical evaluation of its contribution to design.</p>
-        <p>The thesis examines the role of computation in communicating ideas visually and offers a tool for graphic designers to use language-driven interfaces more deliberately.</p>
+        <p>Investigating Nick Bostrom's Vulnerable World Hypothesis. Bostrom likens technological progress to drawing balls from an urn. While white balls are beneficial, drawing a black ball ends civilization.</p>
         <div class="media">
-          <video class="secondary-video" data-src="/media/03/detail.mp4" poster="/media/03/detail-poster.jpg" muted loop
+          <img data-src="/media/05/still.jpg" alt="Project five still" loading="lazy">
+        </div>
+        <p>A custom built drawing tool allowed <a href="https://silvana-a.com/" target="_blank">Silvana Aponte</a> to visualize this in a game of Minesweeper, where players cautiously uncover squares, hoping to avoid the fatal bombs.</p>
+        <p>The result is a mischievous take on a future where acceleration of technology is pursued at all costs.</p>
+        <div class="media">
+          <video class="secondary-video" data-src="/media/05/detail.mp4" poster="/media/05/detail-poster.jpg" muted loop
             playsinline preload="none"></video>
         </div>
       </section>
+      </div>
 
+      <div class="col-group">
       <section class="col" data-col="4">
         <a class="col-link" href="/projects/project-04.html">
           <h1>NOTWORLDMUSIC</h1>
@@ -121,25 +140,6 @@
         <p>For Not World Music, I scraped user ratings to determine outstanding albums from every country. This diverse collection can be explored freely on a Three.js based globe. The minimalist interface was connected to a streaming API for convenient but decelerated listening, allowing users to expand their musical horizon.</p>
         <div class="media">
           <video class="secondary-video" data-src="/media/04/detail.mp4" poster="/media/04/detail-poster.jpg" muted loop
-            playsinline preload="none"></video>
-        </div>
-      </section>
-
-      <section class="col" data-col="5">
-        <a class="col-link" href="/projects/project-05.html">
-          <h1>OUR VULNERABLE WORLD</h1>
-        </a>
-        <div class="media">
-          <img src="images/ovw/ovw_juggler.png" width="698" height="1000" alt="" srcset="">
-        </div>
-        <p>Investigating Nick Bostrom's Vulnerable World Hypothesis. Bostrom likens technological progress to drawing balls from an urn. While white balls are beneficial, drawing a black ball ends civilization.</p>
-        <div class="media">
-          <img data-src="/media/05/still.jpg" alt="Project five still" loading="lazy">
-        </div>
-        <p>A custom built drawing tool allowed <a href="https://silvana-a.com/" target="_blank">Silvana Aponte</a> to visualize this in a game of Minesweeper, where players cautiously uncover squares, hoping to avoid the fatal bombs.</p>
-          <p>The result is a mischievous take on a future where acceleration of technology is pursued at all costs.</p>
-        <div class="media">
-          <video class="secondary-video" data-src="/media/05/detail.mp4" poster="/media/05/detail-poster.jpg" muted loop
             playsinline preload="none"></video>
         </div>
       </section>
@@ -163,6 +163,7 @@
             playsinline preload="none"></video>
         </div>
       </section>
+      </div>
 
     </main>
   </div>
@@ -170,6 +171,11 @@
   <script>
     (function () {
       var cols = Array.prototype.slice.call(document.querySelectorAll('.col'));
+      var groups = Array.prototype.slice.call(document.querySelectorAll('.col-group'));
+      var activeGroups = groups.filter(function (group) {
+        return getComputedStyle(group).display !== 'contents';
+      });
+      var scrollCols = activeGroups.length ? activeGroups : cols;
 
       /* ---------- 1. Load the six "on load" primary videos, staggered ---------- */
       // Column 1 is the priority asset and already has src/preload set in HTML.
@@ -216,7 +222,10 @@
             obs.unobserve(el);
           });
         }, {
-          root: col,
+          root: (function () {
+            var group = col.closest('.col-group');
+            return group && getComputedStyle(group).display !== 'contents' ? group : col;
+          })(),
           rootMargin: '200px 0px',
           threshold: 0.1
         });
@@ -228,10 +237,10 @@
       // Only revealing more of a target column drives the others. Scrolling the
       // target back toward its top leaves the other columns where they are.
       var syncingScroll = false;
-      var lastScrollTops = cols.map(function (col) { return col.scrollTop; });
+      var lastScrollTops = scrollCols.map(function (col) { return col.scrollTop; });
 
-      cols.forEach(function (col) {
-        var index = cols.indexOf(col);
+      scrollCols.forEach(function (col) {
+        var index = scrollCols.indexOf(col);
         var timeout;
         col.addEventListener('scroll', function () {
           var currentScrollTop = col.scrollTop;
@@ -240,7 +249,7 @@
 
           if (!syncingScroll && delta > 0) {
             syncingScroll = true;
-            cols.forEach(function (otherCol, otherIndex) {
+            scrollCols.forEach(function (otherCol, otherIndex) {
               if (otherIndex === index) return;
 
               var maxScrollTop = otherCol.scrollHeight - otherCol.clientHeight;
