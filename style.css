@@ -27,7 +27,7 @@ html {
 body {
   --bg-color: #fff;
   font-family: "UN-11", sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.2rem;
   background-color: var(--bg-color);
   -webkit-user-select: none;  /* Chrome all / Safari all */
   -moz-user-select: none;     /* Firefox all */
@@ -177,7 +177,6 @@ video {
 
 .about {
   display: flex;
-  font-size: 1.2rem;
 }
 
 .about-text {
@@ -242,7 +241,7 @@ video {
 @media (max-width: 767px) {
   body {
     --mobile-margin: 1.5rem;
-    font-size: 1.35rem;
+    font-size: 1.1rem;
   }
 
   .content {
@@ -286,10 +285,6 @@ video {
 
   .about-text p {
     padding-right: 0;
-  }
-
-  .about-title {
-    font-size: 1.35rem;
   }
 
   .about-info {
