@@ -81,12 +81,24 @@ header .about {
   display: contents;
 }
 
-.col[data-col="1"] { order: 1; }
-.col[data-col="2"] { order: 2; }
-.col[data-col="3"] { order: 3; }
-.col[data-col="4"] { order: 4; }
-.col[data-col="5"] { order: 5; }
-.col[data-col="6"] { order: 6; }
+.col[data-col='1'] {
+  order: 1;
+}
+.col[data-col='2'] {
+  order: 2;
+}
+.col[data-col='3'] {
+  order: 3;
+}
+.col[data-col='4'] {
+  order: 4;
+}
+.col[data-col='5'] {
+  order: 5;
+}
+.col[data-col='6'] {
+  order: 6;
+}
 
 .col h1 {
   margin-bottom: -10px;
@@ -229,7 +241,8 @@ a.col-link:hover .media img {
 }
 
 @media (min-width: 521px) and (max-width: 900px) {
-  .grid, header {
+  .grid,
+  header {
     grid-template-columns: repeat(3, 1fr);
   }
 
