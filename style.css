@@ -72,7 +72,6 @@ p {
   width: calc(100% - 2 * 50px);
   height: 68px;
   background-color: var(--bg-color);
-  z-index: 9;
 }
 
 .sticky-border {
