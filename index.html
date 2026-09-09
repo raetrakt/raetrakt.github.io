@@ -56,8 +56,8 @@
           <p>Due to their coded nature, the outputs can be static, but also animated on the fly, and allow exploring how paremeters like jaggedness or level of detail influence a family of shapes.</p>
           <p>Such systems can be applied as ever changing assets in a flexible identity or inspire a curatorial approach, choosing the best outputs to become permament marks.</p>
           <div class="media">
-            <img data-src="/images/shape_index/shape_index_warehouse_web.jpg" width="760" height="1000"
-              alt="" loading="lazy">
+            <img data-src="/images/shape_index/shape_index_warehouse_web.jpg" width="760" height="1000" alt=""
+              loading="lazy">
           </div>
         </section>
 
@@ -228,10 +228,50 @@
       });
 
       /* ---------- 3. Linked scrolling + scroll-scale effect ---------- */
-      // Only revealing more of a target column drives the others. Scrolling the
-      // target back toward its top leaves the other columns where they are.
-      var syncingScroll = false;
+      // The first column can be revealed normally. When scrolling switches to
+      // another column, animate every other column back to its starting point.
+      // This avoids relying on scroll-event frequency or proportional math.
       var lastScrollTops = scrollCols.map(function (col) { return col.scrollTop; });
+      var activeScrollIndex = -1;
+      var retractAnimation;
+
+      function retractOtherColumns(activeIndex) {
+        if (retractAnimation) cancelAnimationFrame(retractAnimation);
+
+        var startTime = null;
+        var starts = scrollCols.map(function (otherCol) {
+          return otherCol.scrollTop;
+        });
+        var longestRetraction = Math.max.apply(null, starts);
+        // Longer distances need more time, otherwise the same fixed-duration
+        // animation makes large columns appear to snap mechanically.
+        var duration = Math.min(900, Math.max(350, longestRetraction * 0.6));
+
+        function animate(timestamp) {
+          if (!startTime) startTime = timestamp;
+          var progress = Math.min(1, (timestamp - startTime) / duration);
+          var easedProgress = 1 - Math.pow(1 - progress, 3);
+
+          scrollCols.forEach(function (otherCol, otherIndex) {
+            if (otherIndex === activeIndex) return;
+            otherCol.scrollTop = starts[otherIndex] * (1 - easedProgress);
+            lastScrollTops[otherIndex] = otherCol.scrollTop;
+          });
+
+          if (progress < 1) {
+            retractAnimation = requestAnimationFrame(animate);
+          } else {
+            scrollCols.forEach(function (otherCol, otherIndex) {
+              if (otherIndex === activeIndex) return;
+              otherCol.scrollTop = 0;
+              lastScrollTops[otherIndex] = 0;
+            });
+            retractAnimation = null;
+          }
+        }
+
+        retractAnimation = requestAnimationFrame(animate);
+      }
 
       scrollCols.forEach(function (col) {
         var index = scrollCols.indexOf(col);
@@ -241,20 +281,9 @@
           var delta = currentScrollTop - lastScrollTops[index];
           lastScrollTops[index] = currentScrollTop;
 
-          if (!syncingScroll && delta > 0) {
-            syncingScroll = true;
-            scrollCols.forEach(function (otherCol, otherIndex) {
-              if (otherIndex === index) return;
-
-              var maxScrollTop = otherCol.scrollHeight - otherCol.clientHeight;
-              var nextScrollTop = Math.max(0, Math.min(
-                maxScrollTop,
-                otherCol.scrollTop - delta * 1.5
-              ));
-              otherCol.scrollTop = nextScrollTop;
-              lastScrollTops[otherIndex] = nextScrollTop;
-            });
-            requestAnimationFrame(function () { syncingScroll = false; });
+          if (delta > 0 && index !== activeScrollIndex) {
+            activeScrollIndex = index;
+            retractOtherColumns(index);
           }
 
           col.classList.add('is-scrolling');
