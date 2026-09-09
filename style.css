@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'UN-11';
   src: url('fonts/UN_11ST_Regular.woff2') format('woff2');
+  font-display: block;
 }
 
 :root {

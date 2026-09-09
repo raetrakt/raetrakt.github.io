@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PITZER.XYZ</title>
+  <link rel="preload" href="fonts/UN_11ST_Regular.woff2" as="font" type="font/woff2" crossorigin>
 
   <!--
   ─────────────────────────────────────────────────────────────
@@ -75,9 +76,10 @@
           </div>
           <p>At the same time, relying on a technology with uncertain and far-reaching implications calls for  critical evaluation of its contribution to design.</p>
           <p>The thesis examines the role of computation in communicating ideas visually and offers a tool for graphic designers to use language-driven interfaces more deliberately.</p>
-          <div class="media">
-            <video class="secondary-video" data-src="/media/03/detail.mp4" poster="/media/03/detail-poster.jpg" muted
-              loop playsinline preload="none"></video>
+
+          <div class="media" style="aspect-ratio: 1 / 1;">
+            <video class="secondary-video" data-src="images/wysiwyg/wysiwyg_emojis_web.mp4"
+              poster="images/wysiwyg/wysiwyg_emojis_web_poster.jpg" muted loop playsinline preload="none"></video>
           </div>
         </section>
       </div>
@@ -88,9 +90,9 @@
             <h1>FABIGAN</h1>
           </a>
           <div class="media" style="aspect-ratio: 1 / 1;">
-            <video class="primary-video" data-src="/images/fabigan/fabigan_latent_web_12-72.mp4"
-              poster="/images/fabigan/fabigan_latent_web_12-72_poster.jpg" muted loop playsinline
-              preload="metadata"></video>
+            <video class="primary-video" src="images/fabigan/fabigan_latent_web_12-72.mp4"
+              data-src="images/fabigan/fabigan_latent_web_12-72.mp4"
+              poster="images/fabigan/fabigan_latent_web_12-72_poster.jpg" muted loop playsinline preload="auto"></video>
           </div>
           <p>A generative adversarial network (GAN) trained to generate my own face. To create the dataset I wrote a script that extracted my face from over 1400 photos from my childhood.</p>
           <p>In the process of transfer learning, non-existent faces were altered to my likeness, distilling my past into a .pkl file.</p>
@@ -178,28 +180,22 @@
       });
       var scrollCols = activeGroups.length ? activeGroups : cols;
 
-      /* ---------- 1. Load the six "on load" primary videos, staggered ---------- */
-      // Column 1 is the priority asset and already has src/preload set in HTML.
-      // The rest get their real src assigned a few ms apart so they don't all
-      // start fetching in the same frame.
+      /* ---------- 1. Load the primary videos immediately ---------- */
       var primaries = cols
         .map(function (c) { return c.querySelector('.primary-video'); })
         .filter(Boolean);
 
-      primaries.forEach(function (video, i) {
-        var delay = i * 70; // ms between each video's fetch start
-        setTimeout(function () {
-          if (!video.getAttribute('src') && video.dataset.src) {
-            video.src = video.dataset.src;
-          }
-          video.setAttribute('autoplay', '');
-          var playPromise = video.play();
-          if (playPromise && playPromise.catch) {
-            playPromise.catch(function () {
-              /* autoplay blocked (rare with muted+playsinline) — fail silently */
-            });
-          }
-        }, delay);
+      primaries.forEach(function (video) {
+        if (!video.getAttribute('src') && video.dataset.src) {
+          video.src = video.dataset.src;
+        }
+        video.setAttribute('autoplay', '');
+        var playPromise = video.play();
+        if (playPromise && playPromise.catch) {
+          playPromise.catch(function () {
+            /* autoplay blocked (rare with muted+playsinline) — fail silently */
+          });
+        }
       });
 
       /* ---------- 2. Lazy-load each column's second video + image ---------- */
