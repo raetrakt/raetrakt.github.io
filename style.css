@@ -137,12 +137,19 @@ header .about {
    grow toward the centre and its neighbours to hop one track aside. */
 @media (min-width: 901px) {
   .grid .col {
-    cursor: pointer;
+    cursor: default;
     justify-self: start;
     transition:
       width 560ms var(--ease),
       gap 560ms var(--ease),
       translate 560ms var(--ease);
+  }
+
+  .grid .col-content {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
   .grid .col[data-col='4'],
@@ -153,7 +160,7 @@ header .about {
 
   .grid .col.focus-expanded {
     width: calc(200% + var(--gap));
-    gap: 20px;
+    /* gap: 20px; */
     position: relative;
     z-index: 2;
   }
