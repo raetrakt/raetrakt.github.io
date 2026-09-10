@@ -164,6 +164,91 @@
         return getComputedStyle(group).display !== 'contents';
       });
       var scrollCols = activeGroups.length ? activeGroups : cols;
+      var grid = document.getElementById('grid');
+
+      /* ---------- 1. Desktop focused-column mode ---------- */
+      // The selected column grows toward the centre. Columns on that side
+      // move exactly one track, leaving the outermost one clipped by .grid.
+      var desktopQuery = window.matchMedia('(min-width: 901px)');
+      var focusedCol = null;
+
+      function clearFocusedColumn() {
+        focusedCol = null;
+        grid.classList.remove('has-focused-column');
+        cols.forEach(function (col) {
+          col.classList.remove(
+            'focus-expanded',
+            'focus-expand-left',
+            'focus-expand-right',
+            'focus-shift-left',
+            'focus-shift-right'
+          );
+          col.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      function focusColumn(col) {
+        if (!desktopQuery.matches) return;
+
+        if (focusedCol === col) {
+          clearFocusedColumn();
+          return;
+        }
+
+        var colNumber = Number(col.dataset.col);
+        var expandsRight = colNumber <= 3;
+        focusedCol = col;
+        grid.classList.add('has-focused-column');
+
+        var scrollIndex = scrollCols.indexOf(col);
+        if (scrollIndex !== -1) {
+          activeScrollIndex = scrollIndex;
+          retractOtherColumns(scrollIndex);
+        }
+
+        cols.forEach(function (otherCol) {
+          var otherNumber = Number(otherCol.dataset.col);
+          otherCol.classList.remove(
+            'focus-expanded',
+            'focus-expand-left',
+            'focus-expand-right',
+            'focus-shift-left',
+            'focus-shift-right'
+          );
+          otherCol.setAttribute('aria-expanded', String(otherCol === col));
+
+          if (otherCol === col) {
+            otherCol.classList.add(
+              'focus-expanded',
+              expandsRight ? 'focus-expand-right' : 'focus-expand-left'
+            );
+          } else if (expandsRight && otherNumber > colNumber) {
+            otherCol.classList.add('focus-shift-right');
+          } else if (!expandsRight && otherNumber < colNumber) {
+            otherCol.classList.add('focus-shift-left');
+          }
+        });
+      }
+
+      cols.forEach(function (col) {
+        col.tabIndex = 0;
+        col.setAttribute('aria-expanded', 'false');
+
+        col.addEventListener('click', function (event) {
+          if (event.target.closest('a, button, input, textarea, select')) return;
+          focusColumn(col);
+        });
+
+        col.addEventListener('keydown', function (event) {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          focusColumn(col);
+        });
+      });
+
+      desktopQuery.addEventListener('change', function (event) {
+        if (!event.matches) clearFocusedColumn();
+      });
 
       /* ---------- 1. Load the primary videos immediately ---------- */
       var primaries = cols
@@ -270,6 +355,7 @@
           lastScrollTops[index] = currentScrollTop;
 
           if (delta > 0 && index !== activeScrollIndex) {
+            if (focusedCol && focusedCol !== col) clearFocusedColumn();
             activeScrollIndex = index;
             retractOtherColumns(index);
           }
