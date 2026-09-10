@@ -307,7 +307,7 @@ a.col-link:hover .media img {
     min-height: 0;
     overflow-y: auto;
     flex-direction: column;
-    gap: 6lh;
+    gap: 3lh;
     scrollbar-width: none;
     transform: translateY(100vh);
     animation: col-in 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
