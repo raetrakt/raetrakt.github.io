@@ -20,6 +20,10 @@
   box-sizing: border-box;
 }
 
+*:focus {
+  outline: none;
+}
+
 html,
 body {
   margin: 0;
@@ -145,11 +149,6 @@ header .about {
   .grid .col[data-col='5'],
   .grid .col[data-col='6'] {
     justify-self: end;
-  }
-
-  .grid .col:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: -2px;
   }
 
   .grid .col.focus-expanded {
@@ -281,11 +280,6 @@ a {
 a.col-link {
   color: inherit;
   text-decoration: none;
-}
-
-a.col-link:focus-visible h1 {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
 }
 
 a.col-link:hover .media video,
