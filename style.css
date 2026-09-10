@@ -105,10 +105,6 @@ header .about {
   order: 6;
 }
 
-.col h1 {
-  margin-bottom: -10px;
-}
-
 .col {
   background: var(--bg);
   min-height: 0;
@@ -133,6 +129,13 @@ header .about {
   /* hide scrollbar in Firefox */
 }
 
+.col-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+}
+
 /* Desktop focus mode keeps the six-track grid, while allowing one column to
    grow toward the centre and its neighbours to hop one track aside. */
 @media (min-width: 901px) {
@@ -143,13 +146,6 @@ header .about {
       width 560ms var(--ease),
       gap 560ms var(--ease),
       translate 560ms var(--ease);
-  }
-
-  .grid .col-content {
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
   }
 
   .grid .col[data-col='4'],
@@ -311,10 +307,18 @@ a.col-link:hover .media img {
     min-height: 0;
     overflow-y: auto;
     flex-direction: column;
-    gap: var(--gap);
+    gap: 6lh;
     scrollbar-width: none;
     transform: translateY(100vh);
     animation: col-in 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+  }
+
+  .col-group .col {
+    padding-top: 0;
+  }
+
+  .col-group .col:first-child {
+    padding-top: 60vh;
   }
 
   .grid > .col-group:nth-child(1) {
