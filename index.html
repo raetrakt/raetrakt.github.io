@@ -185,93 +185,7 @@
         return getComputedStyle(group).display !== 'contents';
       });
       var scrollCols = activeGroups.length ? activeGroups : cols;
-
-      /* ---------- 1. Desktop focused-column mode ---------- */
-      // The selected column grows toward the centre. Columns on that side
-      // move exactly one track, leaving the outermost one clipped by .grid.
       var desktopQuery = window.matchMedia('(min-width: 901px)');
-      var focusedCol = null;
-
-      function clearFocusedColumn() {
-        focusedCol = null;
-        grid.classList.remove('has-focused-column');
-        cols.forEach(function (col) {
-          col.classList.remove(
-            'focus-expanded',
-            'focus-expand-left',
-            'focus-expand-right',
-            'focus-shift-left',
-            'focus-shift-right'
-          );
-          col.setAttribute('aria-expanded', 'false');
-        });
-      }
-
-      function focusColumn(col) {
-        if (!desktopQuery.matches) return;
-
-        if (focusedCol === col) {
-          clearFocusedColumn();
-          return;
-        }
-
-        var colNumber = Number(col.dataset.col);
-        var expandsRight = colNumber <= 3;
-        focusedCol = col;
-        grid.classList.add('has-focused-column');
-
-        var scrollTarget = scrollCols.indexOf(col) !== -1
-          ? col
-          : col.closest('.col-group');
-        var scrollIndex = scrollCols.indexOf(scrollTarget);
-        if (scrollIndex !== -1) {
-          activeScrollIndex = scrollIndex;
-          retractOtherColumns(scrollIndex);
-        }
-
-        cols.forEach(function (otherCol) {
-          var otherNumber = Number(otherCol.dataset.col);
-          otherCol.classList.remove(
-            'focus-expanded',
-            'focus-expand-left',
-            'focus-expand-right',
-            'focus-shift-left',
-            'focus-shift-right'
-          );
-          otherCol.setAttribute('aria-expanded', String(otherCol === col));
-
-          if (otherCol === col) {
-            otherCol.classList.add(
-              'focus-expanded',
-              expandsRight ? 'focus-expand-right' : 'focus-expand-left'
-            );
-          } else if (expandsRight && otherNumber > colNumber) {
-            otherCol.classList.add('focus-shift-right');
-          } else if (!expandsRight && otherNumber < colNumber) {
-            otherCol.classList.add('focus-shift-left');
-          }
-        });
-      }
-
-      cols.forEach(function (col) {
-        col.tabIndex = 0;
-        col.setAttribute('aria-expanded', 'false');
-
-        col.addEventListener('click', function (event) {
-          if (event.target.closest('a, button, input, textarea, select')) return;
-          focusColumn(col);
-        });
-
-        col.addEventListener('keydown', function (event) {
-          if (event.key !== 'Enter' && event.key !== ' ') return;
-          event.preventDefault();
-          focusColumn(col);
-        });
-      });
-
-      desktopQuery.addEventListener('change', function (event) {
-        if (!event.matches) clearFocusedColumn();
-      });
 
       /* ---------- 1. Load the primary videos immediately ---------- */
       var primaries = cols
@@ -330,6 +244,93 @@
       var lastScrollTops = scrollCols.map(function (col) { return col.scrollTop; });
       var activeScrollIndex = -1;
       var retractAnimation;
+      var expandedMedia = cols.map(function () { return null; });
+
+      function getHorizontalNeighbor(col) {
+        var colNumber = Number(col.dataset.col);
+        // Expand toward the centre: left-half columns use the heading on
+        // their right, and right-half columns use the heading on their left.
+        var neighborNumber = colNumber <= 3 ? colNumber + 1 : colNumber - 1;
+        return cols.filter(function (otherCol) {
+          return Number(otherCol.dataset.col) === neighborNumber;
+        })[0] || null;
+      }
+
+      function updateMediaExpansion() {
+        if (!desktopQuery.matches) return;
+        var scaleDistance = 50;
+        var maxExtraScale = 0.5;
+
+        function liftPrecedingContent(media, amount) {
+          var siblings = Array.prototype.slice.call(media.parentElement.children);
+          siblings.forEach(function (sibling) {
+            if (siblings.indexOf(sibling) >= siblings.indexOf(media)) return;
+            sibling.style.transform = amount ? 'translateY(-' + amount + 'px)' : '';
+          });
+        }
+
+        cols.forEach(function (col, colIndex) {
+          var neighbor = getHorizontalNeighbor(col);
+          var heading = neighbor && neighbor.querySelector('h1');
+          var headingTop = heading &&
+            neighbor.getBoundingClientRect().top + heading.offsetTop - neighbor.scrollTop;
+          if (!heading) return;
+          var current = expandedMedia[colIndex];
+
+          var candidate = null;
+
+          col.querySelectorAll('.media').forEach(function (media) {
+            var mediaRect = media.getBoundingClientRect();
+            if (mediaRect.bottom <= headingTop && mediaRect.bottom > 0 &&
+              mediaRect.top < window.innerHeight) {
+              candidate = media;
+            }
+          });
+
+          // Retained media stays large only while it is above the viewport.
+          // As it returns down into view, restore it before its bottom can
+          // pass the neighboring heading and overlap it.
+          col.querySelectorAll('.media').forEach(function (media) {
+            if (media === candidate) return;
+            var mediaRect = media.getBoundingClientRect();
+            if (mediaRect.bottom > 0 && mediaRect.bottom > headingTop) {
+              media.classList.remove('is-scale-target');
+              media.style.width = '';
+              media.style.marginTop = '';
+              liftPrecedingContent(media, 0);
+              if (media === current) {
+                current = null;
+                expandedMedia[colIndex] = null;
+              }
+            }
+          });
+
+          // Keep an offscreen active medium large until another medium is
+          // ready to take its place. Without this latch it shrinks in the
+          // final pixels before leaving through the top edge.
+          if (!candidate && current && current.getBoundingClientRect().top <= 0) return;
+
+          if (!candidate) {
+            col.classList.remove('has-media-expanded');
+            expandedMedia[colIndex] = null;
+            return;
+          }
+
+          // The media bottom is held in place by the negative top margin.
+          // Its distance above the neighboring heading controls its width:
+          // 0% at the heading and 100% after `scaleDistance` pixels.
+          var bottomDistance = headingTop - candidate.getBoundingClientRect().bottom;
+          var progress = Math.max(0, Math.min(1, bottomDistance / scaleDistance));
+          var baseHeight = candidate._baseHeight || candidate.getBoundingClientRect().height;
+          candidate._baseHeight = baseHeight;
+          candidate.style.width = (100 + progress * maxExtraScale * 100) + '%';
+          candidate.style.marginTop = -(baseHeight * progress * maxExtraScale) + 'px';
+          candidate.classList.toggle('is-scale-target', progress > 0);
+          liftPrecedingContent(candidate, baseHeight * progress * maxExtraScale);
+          col.classList.toggle('has-media-expanded', progress > 0);
+          expandedMedia[colIndex] = progress > 0 ? candidate : null;
+        });
+      }
 
       function retractOtherColumns(activeIndex) {
         if (retractAnimation) cancelAnimationFrame(retractAnimation);
@@ -378,7 +379,6 @@
           lastScrollTops[index] = currentScrollTop;
 
           if (delta > 0 && index !== activeScrollIndex) {
-            if (focusedCol && focusedCol !== col) clearFocusedColumn();
             activeScrollIndex = index;
             retractOtherColumns(index);
           }
@@ -388,8 +388,59 @@
           timeout = setTimeout(function () {
             col.classList.remove('is-scrolling');
           }, 250);
+          updateMediaExpansion();
         }, { passive: true });
       });
+
+      // Each desktop `.col` has a two-track scrollport, but only one track
+      // contains its normal text. Native hit testing would otherwise choose
+      // the overlapping scrollport rather than the content being hovered.
+      grid.addEventListener('wheel', function (event) {
+        if (!desktopQuery.matches || !event.deltaY) return;
+
+        var media = event.target.closest('.media.is-scale-target');
+        var hoveredCol = media && media.closest('.col');
+
+        if (!hoveredCol) {
+          cols.some(function (col) {
+            var contentRect = col.querySelector('.col-content').getBoundingClientRect();
+            if (event.clientX >= contentRect.left && event.clientX <= contentRect.right) {
+              hoveredCol = col;
+              return true;
+            }
+            return false;
+          });
+        }
+
+        if (!hoveredCol) return;
+        var multiplier = event.deltaMode === 1 ? 16 :
+          (event.deltaMode === 2 ? hoveredCol.clientHeight : 1);
+        hoveredCol.scrollTop += event.deltaY * multiplier;
+        event.preventDefault();
+      }, { passive: false });
+
+      desktopQuery.addEventListener('change', function (event) {
+        if (!event.matches) {
+          cols.forEach(function (col) {
+            col.querySelectorAll('.media').forEach(function (media) {
+              media.classList.remove('is-scale-target');
+              media.style.width = '';
+              media.style.marginTop = '';
+            });
+            col.querySelectorAll('.col-content > *').forEach(function (child) {
+              child.style.transform = '';
+            });
+          });
+          cols.forEach(function (col) {
+            col.classList.remove('has-media-expanded');
+          });
+          expandedMedia = cols.map(function () { return null; });
+        }
+        updateMediaExpansion();
+      });
+
+      window.addEventListener('resize', updateMediaExpansion, { passive: true });
+      updateMediaExpansion();
     })();
   </script>
 

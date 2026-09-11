@@ -113,7 +113,7 @@ header .about {
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: 60vh;
+  padding-top: 65vh;
   padding-bottom: var(--gap);
   display: flex;
   flex-direction: column;
@@ -129,23 +129,19 @@ header .about {
   /* hide scrollbar in Firefox */
 }
 
+.col-content:last-child {
+  padding-bottom: 40vh;
+}
+
 .col-content {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  cursor: pointer;
 }
 
-/* Desktop focus mode keeps the six-track grid, while allowing one column to
-   grow toward the centre and its neighbours to hop one track aside. */
 @media (min-width: 901px) {
   .grid .col {
-    cursor: default;
     justify-self: start;
-    transition:
-      width 560ms var(--ease),
-      gap 560ms var(--ease),
-      translate 560ms var(--ease);
   }
 
   .grid .col[data-col='4'],
@@ -154,29 +150,45 @@ header .about {
     justify-self: end;
   }
 
-  .grid .col.focus-expanded {
+  /* The column owns two visual tracks, while text remains one track wide.
+     Media can therefore expand into the neighboring track without leaving
+     the native scroll container. */
+  .grid .col {
     width: calc(200% + var(--gap));
-    /* gap: 20px; */
     position: relative;
+    z-index: 0;
+    background: transparent;
+  }
+
+  .grid .col.has-media-expanded {
+    z-index: 5;
+  }
+
+  .grid .col > .col-content {
+    width: 50%;
+    min-width: 0;
+  }
+
+  .grid .col > .col-content > .media {
+    transition: none;
+  }
+
+  .grid .col > .col-content > .media.is-scale-target {
+    width: 150%;
+    align-self: flex-start;
     z-index: 2;
   }
 
-  .grid .col.focus-expanded.focus-expand-left {
-    justify-self: end;
+  .grid .col[data-col='4'] > .col-content,
+  .grid .col[data-col='5'] > .col-content,
+  .grid .col[data-col='6'] > .col-content {
+    margin-left: auto;
   }
 
-  .grid .col.focus-shift-right {
-    translate: calc(100% + var(--gap)) 0;
-  }
-
-  .grid .col.focus-shift-left {
-    translate: calc(-100% - var(--gap)) 0;
-  }
-}
-
-@media (min-width: 901px) and (prefers-reduced-motion: reduce) {
-  .grid .col {
-    transition: none;
+  .grid .col[data-col='4'] > .col-content > .media.is-scale-target,
+  .grid .col[data-col='5'] > .col-content > .media.is-scale-target,
+  .grid .col[data-col='6'] > .col-content > .media.is-scale-target {
+    align-self: flex-end;
   }
 }
 
@@ -318,7 +330,7 @@ a.col-link:hover .media img {
   }
 
   .col-group .col:first-child {
-    padding-top: 60vh;
+    padding-top: 90vh;
   }
 
   .grid > .col-group:nth-child(1) {
