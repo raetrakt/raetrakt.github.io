@@ -143,10 +143,12 @@ header .about {
   .grid .col {
     cursor: default;
     justify-self: start;
+    position: relative;
+    left: 0;
     transition:
       width 560ms var(--ease),
       gap 560ms var(--ease),
-      translate 560ms var(--ease);
+      left 560ms var(--ease);
   }
 
   .grid .col[data-col='4'],
@@ -158,7 +160,6 @@ header .about {
   .grid .col.focus-expanded {
     width: calc(200% + var(--gap));
     /* gap: 20px; */
-    position: relative;
     z-index: 2;
   }
 
@@ -167,11 +168,11 @@ header .about {
   }
 
   .grid .col.focus-shift-right {
-    translate: calc(100% + var(--gap)) 0;
+    left: calc(100% + var(--gap));
   }
 
   .grid .col.focus-shift-left {
-    translate: calc(-100% - var(--gap)) 0;
+    left: calc(-100% - var(--gap));
   }
 }
 
