@@ -9,7 +9,7 @@
   --fg: #000000;
   --muted: #000000;
   --hair: #dcdcdc;
-  --accent: #1b3bff;
+  --accent: #ff8040;
   --font-size: 15px;
   --gap: 10px;
   --stage-max: 2200px;
@@ -256,6 +256,11 @@ p {
 a {
   color: unset;
   text-decoration: none;
+  transition: letter-spacing 560ms var(--ease);
+}
+
+a:hover {
+  color: var(--accent);
 }
 
 .media {
@@ -285,16 +290,6 @@ a {
 /* Unspecified media uses the default 3:4 tile. */
 .media:has(> img) {
   aspect-ratio: auto;
-}
-
-a.col-link {
-  color: inherit;
-  text-decoration: none;
-}
-
-a.col-link:hover .media video,
-a.col-link:hover .media img {
-  transform: scale(1.04);
 }
 
 @media (min-width: 521px) and (max-width: 900px) {
