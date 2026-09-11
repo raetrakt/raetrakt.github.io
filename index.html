@@ -221,10 +221,20 @@
       // media heights and text wrapping, changes during the focus transition.
       // Note: the anchor element's bottom edge is re-measured every frame
       // (not cached), since its height itself changes as the column resizes.
+      function cancelVisiblePointAnchor() {
+        if (visiblePointAnimation) {
+          cancelAnimationFrame(visiblePointAnimation);
+          visiblePointAnimation = null;
+        }
+        if (visiblePointTimer) {
+          clearTimeout(visiblePointTimer);
+          visiblePointTimer = null;
+        }
+      }
+
       function anchorVisibleBottomPoint(anchor) {
         if (!anchor) return;
-        if (visiblePointAnimation) cancelAnimationFrame(visiblePointAnimation);
-        if (visiblePointTimer) clearTimeout(visiblePointTimer);
+        cancelVisiblePointAnchor();
 
         var col = anchor.element.closest('.col');
 
@@ -246,9 +256,7 @@
 
         visiblePointAnimation = requestAnimationFrame(update);
         visiblePointTimer = setTimeout(function () {
-          cancelAnimationFrame(visiblePointAnimation);
-          visiblePointAnimation = null;
-          visiblePointTimer = null;
+          cancelVisiblePointAnchor();
           apply();
         }, 620);
       }
@@ -334,7 +342,21 @@
           focusColumn(col);
         });
 
+        col.addEventListener('wheel', cancelVisiblePointAnchor, { passive: true });
+        col.addEventListener('touchmove', cancelVisiblePointAnchor, { passive: true });
+
         col.addEventListener('keydown', function (event) {
+          if ([
+            'ArrowUp',
+            'ArrowDown',
+            'PageUp',
+            'PageDown',
+            'Home',
+            'End'
+          ].indexOf(event.key) !== -1) {
+            cancelVisiblePointAnchor();
+          }
+
           if (event.key !== 'Enter' && event.key !== ' ') return;
           event.preventDefault();
           focusColumn(col);
