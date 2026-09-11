@@ -191,6 +191,87 @@
       // move exactly one track, leaving the outermost one clipped by .grid.
       var desktopQuery = window.matchMedia('(min-width: 901px)');
       var focusedCol = null;
+      var titleAnchorAnimation;
+      var titleAnchorTimer;
+
+      // Keep the headline at 10vh while the column width, and therefore its
+      // media heights, changes during the focus transition.
+      function anchorTitle(col) {
+        if (titleAnchorAnimation) cancelAnimationFrame(titleAnchorAnimation);
+        if (titleAnchorTimer) clearTimeout(titleAnchorTimer);
+
+        var title = col.querySelector('h1');
+        var titleDocumentTop = title.getBoundingClientRect().top + col.scrollTop;
+        var targetTop = window.innerHeight * 0.1;
+        var initialScrollTop = col.scrollTop;
+        var startTime = null;
+        var duration = 560;
+
+        function update(timestamp) {
+          if (!startTime) startTime = timestamp;
+          var progress = Math.min(1, (timestamp - startTime) / duration);
+          var easedProgress = 1 - Math.pow(1 - progress, 3);
+          var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
+          var targetScroll = Math.min(
+            maxScroll,
+            Math.max(0, titleDocumentTop - targetTop)
+          );
+
+          col.scrollTop = initialScrollTop +
+            (targetScroll - initialScrollTop) * easedProgress;
+
+          if (progress < 1) {
+            titleAnchorAnimation = requestAnimationFrame(update);
+          }
+        }
+
+        titleAnchorAnimation = requestAnimationFrame(update);
+        titleAnchorTimer = setTimeout(function () {
+          cancelAnimationFrame(titleAnchorAnimation);
+          titleAnchorAnimation = null;
+          titleAnchorTimer = null;
+
+          var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
+          col.scrollTop = Math.min(
+            maxScroll,
+            Math.max(0, titleDocumentTop - targetTop)
+          );
+        }, 620);
+      }
+
+      function restoreColumnScroll(col, targetScrollTop) {
+        if (titleAnchorAnimation) cancelAnimationFrame(titleAnchorAnimation);
+        if (titleAnchorTimer) clearTimeout(titleAnchorTimer);
+
+        var initialScrollTop = col.scrollTop;
+        var startTime = null;
+        var duration = 560;
+
+        function update(timestamp) {
+          if (!startTime) startTime = timestamp;
+          var progress = Math.min(1, (timestamp - startTime) / duration);
+          var easedProgress = 1 - Math.pow(1 - progress, 3);
+          var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
+          var target = Math.min(maxScroll, Math.max(0, targetScrollTop));
+
+          col.scrollTop = initialScrollTop +
+            (target - initialScrollTop) * easedProgress;
+
+          if (progress < 1) {
+            titleAnchorAnimation = requestAnimationFrame(update);
+          }
+        }
+
+        titleAnchorAnimation = requestAnimationFrame(update);
+        titleAnchorTimer = setTimeout(function () {
+          cancelAnimationFrame(titleAnchorAnimation);
+          titleAnchorAnimation = null;
+          titleAnchorTimer = null;
+
+          var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
+          col.scrollTop = Math.min(maxScroll, Math.max(0, targetScrollTop));
+        }, 620);
+      }
 
       function clearFocusedColumn() {
         focusedCol = null;
@@ -212,6 +293,7 @@
 
         if (focusedCol === col) {
           clearFocusedColumn();
+          restoreColumnScroll(col, 0);
           return;
         }
 
@@ -250,6 +332,14 @@
           } else if (!expandsRight && otherNumber < colNumber) {
             otherCol.classList.add('focus-shift-left');
           }
+        });
+
+        anchorTitle(col);
+        // A column that was already being scrolled can receive a stale scroll
+        // event in the same frame as the click. Re-apply the selected column's
+        // headline target after that event so it retracts as well.
+        requestAnimationFrame(function () {
+          if (focusedCol === col) anchorTitle(col);
         });
       }
 
