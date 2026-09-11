@@ -191,85 +191,65 @@
       // move exactly one track, leaving the outermost one clipped by .grid.
       var desktopQuery = window.matchMedia('(min-width: 901px)');
       var focusedCol = null;
-      var titleAnchorAnimation;
-      var titleAnchorTimer;
+      var visiblePointAnimation;
+      var visiblePointTimer;
 
-      // Keep the headline at 10vh while the column width, and therefore its
-      // media heights, changes during the focus transition.
-      function anchorTitle(col) {
-        if (titleAnchorAnimation) cancelAnimationFrame(titleAnchorAnimation);
-        if (titleAnchorTimer) clearTimeout(titleAnchorTimer);
+      // Anchor the lowest image reached by the current scroll position. Its
+      // bottom edge stays fixed while the column widens. This prevents an
+      // image above the fold from scaling away from its lower edge, while the
+      // first image still expands upward when the column is at its start.
+      function getVisibleBottomPoint(col) {
+        var colRect = col.getBoundingClientRect();
+        var media = Array.prototype.slice.call(col.querySelectorAll('.media'));
+        var reachedMedia = media.filter(function (item) {
+          return item.getBoundingClientRect().top < colRect.bottom;
+        });
+        var anchor = reachedMedia.length
+          ? reachedMedia[reachedMedia.length - 1]
+          : media[0];
+        if (!anchor) return null;
 
-        var title = col.querySelector('h1');
-        var titleDocumentTop = title.getBoundingClientRect().top + col.scrollTop;
-        var targetTop = window.innerHeight * 0.1;
-        var initialScrollTop = col.scrollTop;
-        var startTime = null;
-        var duration = 560;
+        var anchorRect = anchor.getBoundingClientRect();
 
-        function update(timestamp) {
-          if (!startTime) startTime = timestamp;
-          var progress = Math.min(1, (timestamp - startTime) / duration);
-          var easedProgress = 1 - Math.pow(1 - progress, 3);
-          var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
-          var targetScroll = Math.min(
-            maxScroll,
-            Math.max(0, titleDocumentTop - targetTop)
-          );
-
-          col.scrollTop = initialScrollTop +
-            (targetScroll - initialScrollTop) * easedProgress;
-
-          if (progress < 1) {
-            titleAnchorAnimation = requestAnimationFrame(update);
-          }
-        }
-
-        titleAnchorAnimation = requestAnimationFrame(update);
-        titleAnchorTimer = setTimeout(function () {
-          cancelAnimationFrame(titleAnchorAnimation);
-          titleAnchorAnimation = null;
-          titleAnchorTimer = null;
-
-          var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
-          col.scrollTop = Math.min(
-            maxScroll,
-            Math.max(0, titleDocumentTop - targetTop)
-          );
-        }, 620);
+        return {
+          element: anchor,
+          pointY: anchorRect.bottom
+        };
       }
 
-      function restoreColumnScroll(col, targetScrollTop) {
-        if (titleAnchorAnimation) cancelAnimationFrame(titleAnchorAnimation);
-        if (titleAnchorTimer) clearTimeout(titleAnchorTimer);
+      // Keep that exact point fixed while the column width, and therefore its
+      // media heights and text wrapping, changes during the focus transition.
+      // Note: the anchor element's bottom edge is re-measured every frame
+      // (not cached), since its height itself changes as the column resizes.
+      function anchorVisibleBottomPoint(anchor) {
+        if (!anchor) return;
+        if (visiblePointAnimation) cancelAnimationFrame(visiblePointAnimation);
+        if (visiblePointTimer) clearTimeout(visiblePointTimer);
 
-        var initialScrollTop = col.scrollTop;
-        var startTime = null;
-        var duration = 560;
+        var col = anchor.element.closest('.col');
 
-        function update(timestamp) {
-          if (!startTime) startTime = timestamp;
-          var progress = Math.min(1, (timestamp - startTime) / duration);
-          var easedProgress = 1 - Math.pow(1 - progress, 3);
+        function apply() {
+          var currentBottom = anchor.element.getBoundingClientRect().bottom;
           var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
-          var target = Math.min(maxScroll, Math.max(0, targetScrollTop));
-
-          col.scrollTop = initialScrollTop +
-            (target - initialScrollTop) * easedProgress;
-
-          if (progress < 1) {
-            titleAnchorAnimation = requestAnimationFrame(update);
-          }
+          var targetScrollTop = col.scrollTop + (currentBottom - anchor.pointY);
+          col.scrollTop = Math.min(
+            maxScroll,
+            Math.max(0, targetScrollTop)
+          );
         }
 
-        titleAnchorAnimation = requestAnimationFrame(update);
-        titleAnchorTimer = setTimeout(function () {
-          cancelAnimationFrame(titleAnchorAnimation);
-          titleAnchorAnimation = null;
-          titleAnchorTimer = null;
+        function update() {
+          apply();
 
-          var maxScroll = Math.max(0, col.scrollHeight - col.clientHeight);
-          col.scrollTop = Math.min(maxScroll, Math.max(0, targetScrollTop));
+          visiblePointAnimation = requestAnimationFrame(update);
+        }
+
+        visiblePointAnimation = requestAnimationFrame(update);
+        visiblePointTimer = setTimeout(function () {
+          cancelAnimationFrame(visiblePointAnimation);
+          visiblePointAnimation = null;
+          visiblePointTimer = null;
+          apply();
         }, 620);
       }
 
@@ -291,9 +271,11 @@
       function focusColumn(col) {
         if (!desktopQuery.matches) return;
 
+        var visibleBottomPoint = getVisibleBottomPoint(col);
+
         if (focusedCol === col) {
           clearFocusedColumn();
-          restoreColumnScroll(col, 0);
+          anchorVisibleBottomPoint(visibleBottomPoint);
           return;
         }
 
@@ -334,12 +316,12 @@
           }
         });
 
-        anchorTitle(col);
-        // A column that was already being scrolled can receive a stale scroll
-        // event in the same frame as the click. Re-apply the selected column's
-        // headline target after that event so it retracts as well.
+        anchorVisibleBottomPoint(visibleBottomPoint);
+        // Re-apply after any stale scroll event from the click frame.
         requestAnimationFrame(function () {
-          if (focusedCol === col) anchorTitle(col);
+          if (focusedCol === col) {
+            anchorVisibleBottomPoint(visibleBottomPoint);
+          }
         });
       }
 
