@@ -16,12 +16,25 @@
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Ultrawide handling: the grid is capped, so on very wide viewports
+   the leftover space resolves to plain white margins automatically. */
+
 * {
   box-sizing: border-box;
 }
 
 *:focus {
   outline: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--fg);
+}
+
+::-moz-selection {
+  background: var(--accent);
+  color: var(--fg);
 }
 
 html,
@@ -40,8 +53,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ultrawide handling: the grid is capped, so on very wide viewports
-     the leftover space resolves to plain white margins automatically. */
 .stage {
   max-width: var(--stage-max);
   height: 100vh;
@@ -68,7 +79,7 @@ header a {
   text-box-trim: trim-both;
 }
 
-header .about {
+header .about-link {
   grid-column-start: -2;
 }
 
@@ -80,6 +91,185 @@ header .about {
   background: var(--bg);
   min-height: 0;
   overflow: hidden;
+  transition: transform 700ms var(--ease);
+}
+
+.stage.is-returning .grid .col[data-col='2'] {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 70ms;
+}
+
+.stage.is-returning .grid .col[data-col='1'] {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 0ms;
+}
+
+.stage.is-returning .grid .col[data-col='3'] {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 140ms;
+}
+
+.stage.is-returning .grid .col[data-col='4'] {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 210ms;
+}
+
+.stage.is-returning .grid .col[data-col='5'] {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 280ms;
+}
+
+.stage.is-returning .grid .col[data-col='6'] {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 350ms;
+}
+
+.stage.is-returning .grid > .col-group:nth-child(2) {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 70ms;
+}
+
+.stage.is-returning .grid > .col-group:nth-child(1) {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 0ms;
+}
+
+.stage.is-returning .grid > .col-group:nth-child(3) {
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition-delay: 140ms;
+}
+
+.about-page {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--gap);
+  padding: 30vh var(--gap) var(--gap);
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(100%);
+  transition:
+    transform 700ms var(--ease),
+    opacity 300ms ease;
+}
+
+.about-page > * {
+  min-width: 0;
+  --about-offset: 0px;
+  opacity: 0;
+  transform: translateY(calc(100vh + var(--about-offset)));
+  transition:
+    transform 700ms cubic-bezier(0.2, 0.9, 0.25, 1),
+    opacity 300ms ease;
+}
+
+.about-intro {
+  grid-column: 2;
+}
+
+.about-education {
+  grid-column: 3;
+  --about-offset: 35vh;
+}
+
+.about-work,
+.about-portrait,
+.about-contact {
+  --about-offset: 25vh;
+}
+
+.about-work {
+  grid-column: 4;
+}
+
+.about-portrait {
+  grid-column: 5;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.about-contact {
+  grid-column: 6;
+  font-style: normal;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.about-address {
+  margin-top: 1.3em;
+}
+
+.stage.show-about .grid {
+  transform: none;
+}
+
+.stage.show-about .grid .col {
+  translate: 0 100vh;
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.stage.show-about .grid .col[data-col='1'] {
+  transition-delay: 0ms;
+}
+
+.stage.show-about .grid .col[data-col='2'] {
+  transition-delay: 0ms;
+}
+
+.stage.show-about .grid .col[data-col='3'] {
+  transition-delay: 0ms;
+}
+
+.stage.show-about .grid .col[data-col='4'] {
+  transition-delay: 0ms;
+}
+
+.stage.show-about .grid .col[data-col='5'] {
+  transition-delay: 0ms;
+}
+
+.stage.show-about .grid .col[data-col='6'] {
+  transition-delay: 0ms;
+}
+
+.stage.show-about .grid > .col-group {
+  translate: 0 100%;
+  transition: translate 700ms cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.stage.show-about .about-page {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stage.show-about .about-page > * {
+  opacity: 1;
+  transform: translateY(var(--about-offset));
+}
+
+.about-page > :nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.about-page > :nth-child(2) {
+  transition-delay: 70ms;
+}
+
+.about-page > :nth-child(3) {
+  transition-delay: 140ms;
+}
+
+.about-page > :nth-child(4) {
+  transition-delay: 210ms;
+}
+
+.about-page > :nth-child(5) {
+  transition-delay: 280ms;
 }
 
 .col-group {
@@ -122,11 +312,18 @@ header .about {
 
   /* animate in from below the fold on load — staggered per column */
   transform: translateY(100vh);
-  animation: col-in 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+  animation: none;
   -ms-overflow-style: none;
   /* hide scrollbar in IE/Edge */
   scrollbar-width: none;
   /* hide scrollbar in Firefox */
+}
+
+.grid.is-ready .col {
+  animation-name: col-in;
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(0.2, 0.9, 0.25, 1);
+  animation-fill-mode: forwards;
 }
 
 .col-content {
@@ -162,10 +359,6 @@ header .about {
   .grid .col.focus-expanded {
     width: calc(200% + var(--gap));
     z-index: 2;
-  }
-
-  .focus-expanded .col-content {
-    /* gap: 30px; */
   }
 
   .grid .col.focus-expanded.focus-expand-left {
@@ -293,6 +486,12 @@ a:hover {
 }
 
 @media (min-width: 521px) and (max-width: 900px) {
+  .stage.show-about .grid .col {
+    transform: none;
+    translate: none;
+    transition: none;
+  }
+
   .grid,
   header {
     grid-template-columns: repeat(3, 1fr);
@@ -312,7 +511,14 @@ a:hover {
     gap: 3lh;
     scrollbar-width: none;
     transform: translateY(100vh);
-    animation: col-in 0.7s cubic-bezier(0.2, 0.9, 0.25, 1) forwards;
+    animation: none;
+  }
+
+  .grid.is-ready > .col-group {
+    animation-name: col-in;
+    animation-duration: 0.7s;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.25, 1);
+    animation-fill-mode: forwards;
   }
 
   .col-group .col {
@@ -378,5 +584,24 @@ a:hover {
   .col {
     height: 100%;
     min-height: 0;
+  }
+
+  .about-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    padding: 15vh var(--gap) var(--gap);
+  }
+
+  .about-education,
+  .about-work,
+  .about-portrait,
+  .about-contact {
+    --about-offset: 0px;
+    transform: none;
+  }
+
+  .about-portrait {
+    width: 50%;
   }
 }

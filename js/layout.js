@@ -17,6 +17,8 @@ export function initializeLayout() {
     if (columns[i + 1]) group.appendChild(columns[i + 1]);
   }
 
+  grid.classList.add('is-ready');
+
   const cols = Array.prototype.slice.call(document.querySelectorAll('.col'));
   const groups = Array.prototype.slice.call(document.querySelectorAll('.col-group'));
   const activeGroups = groups.filter(function (group) {
