@@ -2,24 +2,24 @@
 const cellSize = 6;
 
 // Choose color for drawing
-let color = "#ff8040";
+let color = '#ff8040';
 
 // Use a unique prefix for each page's storage
-const indexPrefix = "index_";
-const aboutPrefix = "about_";
+const indexPrefix = 'index_';
+const aboutPrefix = 'about_';
 
 // Create the canvas element
-const canvas = document.createElement("canvas");
-canvas.classList.add("transparent-canvas");
+const canvas = document.createElement('canvas');
+canvas.classList.add('transparent-canvas');
 document.body.appendChild(canvas);
 
 // Create a floating div for the pencil icon
-const pencilToggle = document.createElement("div");
-pencilToggle.classList.add("pencil-toggle");
+const pencilToggle = document.createElement('div');
+pencilToggle.classList.add('pencil-toggle');
 document.body.appendChild(pencilToggle);
 
 // Get the canvas context and disable anti-aliasing
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
 // Variables to track the last drawn position
@@ -40,9 +40,7 @@ function setCanvasSize() {
   numCols = Math.ceil(canvas.width / cellSize);
 
   // Create a new grid with the updated size
-  grid = Array.from({ length: numRows }, () =>
-    Array.from({ length: numCols }, () => false)
-  );
+  grid = Array.from({ length: numRows }, () => Array.from({ length: numCols }, () => false));
 }
 
 // Function to draw on the canvas using Bresenham's line algorithm
@@ -73,12 +71,7 @@ function draw(e) {
         while (true) {
           // Draw a dot at the current position and update the grid
           ctx.fillStyle = color;
-          ctx.fillRect(
-            lastCellX * cellSize,
-            lastCellY * cellSize,
-            cellSize,
-            cellSize
-          );
+          ctx.fillRect(lastCellX * cellSize, lastCellY * cellSize, cellSize, cellSize);
           grid[lastCellY][lastCellX] = true;
 
           if (lastCellX === cellX && lastCellY === cellY) break;
@@ -103,15 +96,15 @@ function draw(e) {
 }
 
 // Event listeners for drawing
-window.addEventListener("mousedown", (e) => {
+window.addEventListener('mousedown', (e) => {
   if (isPencilActive) {
     isDrawing = true;
   }
 });
 
-window.addEventListener("mousemove", draw);
+window.addEventListener('mousemove', draw);
 
-window.addEventListener("mouseup", () => {
+window.addEventListener('mouseup', () => {
   isDrawing = false;
 
   // Reset the last cell coordinates
@@ -138,12 +131,12 @@ function togglePencilMode() {
     document.body.style.cursor = `url("./images/other/pencil_32px.png") 8 30, crosshair`;
   } else {
     pencilToggle.style.backgroundImage = 'url("./images/other/pencil.svg")';
-    document.body.style.cursor = "auto";
+    document.body.style.cursor = 'auto';
   }
 }
 
 // Event listener for clicking the floating div to toggle pencil mode
-pencilToggle.addEventListener("click", togglePencilMode);
+pencilToggle.addEventListener('click', togglePencilMode);
 
 // Function to redraw the entire grid
 function redrawGrid() {
@@ -162,16 +155,14 @@ function redrawGrid() {
 // Save drawing data to localStorage
 function saveDrawingData() {
   // Use a unique prefix for each page's storage
-  const prefix =
-    window.location.pathname === "/about.html" ? aboutPrefix : indexPrefix;
+  const prefix = window.location.pathname === '/about.html' ? aboutPrefix : indexPrefix;
   localStorage.setItem(`${prefix}drawingData`, JSON.stringify(grid));
 }
 
 // Load drawing data from localStorage when the page is loaded
 function loadDrawingData() {
   // Use a unique prefix for each page's storage
-  const prefix =
-    window.location.pathname === "/about.html" ? aboutPrefix : indexPrefix;
+  const prefix = window.location.pathname === '/about.html' ? aboutPrefix : indexPrefix;
   const savedData = localStorage.getItem(`${prefix}drawingData`);
   if (savedData) {
     grid = JSON.parse(savedData);
@@ -188,7 +179,7 @@ function clearDrawingData() {
 }
 
 // Prepare canvas after page load
-window.addEventListener("load", () => {
+window.addEventListener('load', () => {
   // Set initial canvas size and grid
   setCanvasSize();
   // Call the loadDrawingData function when the page is loaded
@@ -196,9 +187,9 @@ window.addEventListener("load", () => {
 });
 
 // Update canvas size and grid when the window is resized
-window.addEventListener("resize", () => {
-    //Update size
-    setCanvasSize();
-    // Clear drawing data when the window is resized
-    clearDrawingData();
-  });
+window.addEventListener('resize', () => {
+  //Update size
+  setCanvasSize();
+  // Clear drawing data when the window is resized
+  clearDrawingData();
+});
