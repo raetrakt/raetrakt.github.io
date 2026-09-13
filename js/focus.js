@@ -127,7 +127,7 @@ export function setupFocus({ grid, cols, scrollCols, desktopQuery, scrollControl
     col.tabIndex = 0;
     col.setAttribute('aria-expanded', 'false');
 
-    col.addEventListener('click', function (event) {
+    col.querySelector('.col-content').addEventListener('click', function (event) {
       if (event.target.closest('a, button, input, textarea, select')) return;
       focusColumn(col);
     });
