@@ -15,11 +15,12 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
 
   function scrollActiveColumnToTop(done) {
     const activeIndex = scrollController.getActiveScrollIndex();
-    const activeCol = activeIndex >= 0
-      ? scrollCols[activeIndex]
-      : scrollCols.find(function (col) {
-        return col.scrollTop > 0;
-      });
+    const activeCol =
+      activeIndex >= 0
+        ? scrollCols[activeIndex]
+        : scrollCols.find(function (col) {
+            return col.scrollTop > 0;
+          });
 
     if (!activeCol) {
       done();
