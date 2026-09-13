@@ -55,6 +55,10 @@ body {
   text-wrap: pretty;
 }
 
+body.about-is-open {
+  overflow: hidden;
+}
+
 .stage {
   max-width: var(--stage-max);
   height: 100vh;
@@ -207,6 +211,7 @@ header .about-link {
 
 .stage.show-about .grid {
   transform: none;
+  pointer-events: none;
 }
 
 .stage.show-about .grid .col {

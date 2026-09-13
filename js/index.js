@@ -55,6 +55,7 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
     }
 
     stage.classList.toggle('show-about', visible);
+    document.body.classList.toggle('about-is-open', visible);
     aboutPage.setAttribute('aria-hidden', String(!visible));
     aboutLink.textContent = visible ? 'PROJECTS' : 'ABOUT';
     aboutLink.removeAttribute('data-letters-initialized');
