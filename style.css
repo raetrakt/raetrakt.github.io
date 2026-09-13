@@ -629,31 +629,80 @@ a.is-link-leaving .link-letter {
 }
 
 @media (max-width: 520px) {
-  .grid {
-    grid-template-columns: repeat(1, 1fr);
+  :root {
+    --font-size: 1.1rem;
   }
 
-  .col {
-    height: 100%;
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: var(--gap);
+    background: var(--bg);
+  }
+
+  .stage {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .grid {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1lh;
+    overflow: visible;
+  }
+
+  .col-content {
+    gap: 1lh;
+  }
+
+  .grid.is-ready .col {
+    height: auto;
     min-height: 0;
+    overflow: visible;
+    padding-top: 0;
+    transform: none;
+    animation: none;
+    margin-top: 5lh;
   }
 
   .about-page {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap);
+    position: fixed;
+    z-index: 5;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: end;
+    row-gap: 1lh;
+    column-gap: var(--gap);
     padding: 15vh var(--gap) var(--gap);
   }
 
+  .stage.show-about .about-page > * {
+    transform: none;
+    transition: none;
+  }
+
+  .about-intro,
   .about-education,
-  .about-work,
-  .about-portrait,
-  .about-contact {
+  .about-work {
+    grid-column: 1 / -1;
     --about-offset: 0px;
     transform: none;
   }
 
   .about-portrait {
-    width: 50%;
+    grid-column: 1;
+    width: 100%;
+    align-self: end;
+  }
+
+  .about-contact {
+    grid-column: 2;
+    align-self: start;
   }
 }
