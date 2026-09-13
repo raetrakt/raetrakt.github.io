@@ -690,8 +690,6 @@ a.is-link-leaving .link-letter {
     min-height: 0;
     overflow: visible;
     padding-top: 0;
-    transform: none;
-    animation: none;
     margin-top: 5lh;
   }
 
