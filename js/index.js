@@ -39,30 +39,9 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
 
   if (!stage || !aboutPage || !aboutLink || !homeLink) return;
 
-  function scrollActiveColumnToTop(done) {
-    const activeIndex = scrollController.getActiveScrollIndex();
-    const activeCol =
-      activeIndex >= 0
-        ? scrollCols[activeIndex]
-        : scrollCols.find(function (col) {
-            return col.scrollTop > 0;
-          });
-
-    if (!activeCol) {
-      done();
-      return;
-    }
-
-    const target = 0;
-    if (activeCol.scrollTop <= 1) {
-      done();
-      return;
-    }
-
-    // Reset before the next paint. This prevents the column's overflow clip
-    // from carrying a cut-off image into the downward transition.
-    activeCol.scrollTop = target;
-    done();
+  function scrollProjectsToTop() {
+    scrollController.resetScrollPositions();
+    window.scrollTo(0, 0);
   }
 
   function setAboutVisible(visible) {
@@ -92,11 +71,11 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
       return;
     }
 
-    // Start both movements together so the active column resets while all
-    // columns translate out of view.
+    // Start both movements together so the projects reset while all columns
+    // translate out of view.
+    scrollProjectsToTop();
     setAboutVisible(true);
     history.replaceState(null, '', '#about');
-    scrollActiveColumnToTop(function () {});
   });
 
   homeLink.addEventListener('click', function (event) {

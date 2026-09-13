@@ -45,6 +45,18 @@ export function setupScrolling(scrollCols, onSwitchColumn) {
     activeScrollIndex = index;
   }
 
+  function resetScrollPositions() {
+    if (retractAnimation) cancelAnimationFrame(retractAnimation);
+    retractAnimation = null;
+    activeScrollIndex = -1;
+
+    scrollCols.forEach(function (col, index) {
+      col.scrollTop = 0;
+      lastScrollTops[index] = 0;
+      col.classList.remove('is-scrolling');
+    });
+  }
+
   scrollCols.forEach(function (col) {
     const index = scrollCols.indexOf(col);
     let timeout;
@@ -77,6 +89,7 @@ export function setupScrolling(scrollCols, onSwitchColumn) {
       return activeScrollIndex;
     },
     setActiveScrollIndex,
+    resetScrollPositions,
     retractOtherColumns,
   };
 }

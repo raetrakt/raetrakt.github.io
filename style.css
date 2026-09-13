@@ -21,6 +21,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 *:focus {
@@ -448,8 +449,13 @@ p {
 }
 
 a {
-  color: unset;
+  color: inherit;
   text-decoration: none;
+}
+
+a:visited,
+a:active {
+  color: inherit;
 }
 
 .link-letter {
@@ -457,8 +463,10 @@ a {
   transition-delay: calc(var(--letter-index) * 20ms);
 }
 
-a:hover .link-letter {
-  color: #aaa;
+@media (hover: hover) {
+  a:hover .link-letter {
+    color: #aaa;
+  }
 }
 
 a.is-link-leaving .link-letter {
@@ -654,6 +662,10 @@ a.is-link-leaving .link-letter {
     flex-direction: column;
     gap: 1lh;
     overflow: visible;
+  }
+
+  .grid .col[data-col='3'] {
+    order: 0;
   }
 
   .col-content {
