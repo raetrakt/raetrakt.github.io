@@ -5,6 +5,32 @@ import { setupScrolling } from './scrolling.js';
 
 const layout = initializeLayout();
 
+function setupLinkAnimations() {
+  document.querySelectorAll('a').forEach(function (link) {
+    if (link.dataset.lettersInitialized === 'true') return;
+
+    const text = link.textContent;
+    link.replaceChildren(
+      ...Array.from(text).map(function (character, index) {
+        const letter = document.createElement('span');
+        letter.className = 'link-letter';
+        letter.style.setProperty('--letter-index', index);
+        letter.textContent = character;
+        return letter;
+      }),
+    );
+    link.dataset.lettersInitialized = 'true';
+    link.addEventListener('mouseenter', function () {
+      link.classList.remove('is-link-leaving');
+    });
+    link.addEventListener('mouseleave', function () {
+      link.classList.add('is-link-leaving');
+    });
+  });
+}
+
+setupLinkAnimations();
+
 function setupAbout({ scrollCols, scrollController, focusController }) {
   const stage = document.querySelector('.stage');
   const aboutPage = document.querySelector('.about-page');
@@ -52,6 +78,8 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
     stage.classList.toggle('show-about', visible);
     aboutPage.setAttribute('aria-hidden', String(!visible));
     aboutLink.textContent = visible ? 'PROJECTS' : 'ABOUT';
+    aboutLink.removeAttribute('data-letters-initialized');
+    setupLinkAnimations();
   }
 
   aboutLink.addEventListener('click', function (event) {

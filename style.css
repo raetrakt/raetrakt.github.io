@@ -450,11 +450,25 @@ p {
 a {
   color: unset;
   text-decoration: none;
-  /* transition: letter-spacing 560ms var(--ease); */
 }
 
-a:hover {
-  color: var(--accent);
+.link-letter {
+  transition: color 0s;
+  transition-delay: calc(var(--letter-index) * 20ms);
+}
+
+a:hover .link-letter {
+  color: #aaa;
+}
+
+a.is-link-leaving .link-letter {
+  color: var(--fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-letter {
+    transition-delay: 0s;
+  }
 }
 
 .media {
