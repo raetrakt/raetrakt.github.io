@@ -172,7 +172,7 @@ header .about-link {
 
 .about-education {
   grid-column: 3;
-  --about-offset: calc(25vh + 3lh);
+  --about-offset: calc(25vh + 4lh);
 }
 
 .about-work,
@@ -450,7 +450,7 @@ p {
 a {
   color: unset;
   text-decoration: none;
-  transition: letter-spacing 560ms var(--ease);
+  /* transition: letter-spacing 560ms var(--ease); */
 }
 
 a:hover {
