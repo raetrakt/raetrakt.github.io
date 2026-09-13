@@ -487,6 +487,43 @@ a:hover {
 }
 
 @media (min-width: 521px) and (max-width: 900px) {
+  .about-page {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 15vh var(--gap) var(--gap);
+  }
+
+  .about-intro {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .about-education {
+    grid-column: 2;
+    grid-row: 1;
+    --about-offset: 26vh;
+  }
+
+  .about-work {
+    grid-column: 3;
+    grid-row: 1;
+    --about-offset: 17.5vh;
+  }
+
+  .about-portrait {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    --about-offset: 0px;
+  }
+
+  .about-contact {
+    grid-column: 2;
+    grid-row: 2;
+    --about-offset: 0px;
+    align-self: start;
+  }
+
   .stage.show-about .grid .col {
     transform: none;
     translate: none;
