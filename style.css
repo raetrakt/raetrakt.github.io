@@ -172,7 +172,7 @@ header .about-link {
 
 .about-education {
   grid-column: 3;
-  --about-offset: 35vh;
+  --about-offset: calc(25vh + 3lh);
 }
 
 .about-work,
