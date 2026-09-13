@@ -668,6 +668,14 @@ a.is-link-leaving .link-letter {
     order: 0;
   }
 
+  .grid .col[data-col='5'] {
+    order: 6;
+  }
+
+  .grid .col[data-col='6'] {
+    order: 5;
+  }
+
   .col-content {
     gap: 1lh;
   }
