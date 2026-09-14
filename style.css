@@ -743,10 +743,11 @@ a:active {
     background: var(--bg);
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-content: end;
+    align-content: start;
     row-gap: 1lh;
     column-gap: var(--gap);
-    padding: 15vh var(--gap) var(--gap);
+    padding: 5lh var(--gap) var(--gap);
+    overflow-y: auto;
   }
 
   .stage.show-about .about-page > * {
