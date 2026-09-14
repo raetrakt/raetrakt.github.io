@@ -704,10 +704,10 @@ a:active {
 
   .grid .col h1 {
     position: sticky;
-    top: calc(2 * var(--gap) + 1lh);
+    top: calc(2 * var(--gap) + 1lh - 1px);
     z-index: 1;
     background: var(--bg);
-    box-shadow: 0 0 0 var(--gap) var(--bg);
+    box-shadow: 0 0 0 calc(var(--gap) + 1px) var(--bg);
   }
 
   .title-short {
