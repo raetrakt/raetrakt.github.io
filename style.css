@@ -698,6 +698,14 @@ a:active {
     gap: 1lh;
   }
 
+  .grid .col h1 {
+    position: sticky;
+    top: calc(2 * var(--gap) + 1lh);
+    z-index: 1;
+    background: var(--bg);
+    box-shadow: 0 0 0 var(--gap) var(--bg);
+  }
+
   .grid.is-ready .col {
     height: auto;
     min-height: 0;
