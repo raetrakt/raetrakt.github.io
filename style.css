@@ -443,6 +443,10 @@ h1 {
   text-transform: uppercase;
 }
 
+.title-mobile {
+  display: none;
+}
+
 p {
   font-size: var(--font-size);
   color: var(--muted);
@@ -704,6 +708,14 @@ a:active {
     z-index: 1;
     background: var(--bg);
     box-shadow: 0 0 0 var(--gap) var(--bg);
+  }
+
+  .title-short {
+    display: none;
+  }
+
+  .title-mobile {
+    display: inline;
   }
 
   .grid.is-ready .col {
