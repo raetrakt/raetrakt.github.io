@@ -463,23 +463,36 @@ a:active {
   color: inherit;
 }
 
+.link-word {
+  white-space: nowrap;
+}
+
 .link-letter {
-  transition: color 0s;
+  position: relative;
+  left: 0;
+  letter-spacing: 0;
+  transition:
+    letter-spacing 120ms ease,
+    left 120ms ease;
   transition-delay: calc(var(--letter-index) * 20ms);
 }
 
 @media (hover: hover) {
   a:hover .link-letter {
-    color: #aaa;
+    letter-spacing: 1px;
   }
 }
 
-a.is-link-leaving .link-letter {
-  color: var(--fg);
+@media (hover: hover) {
+  a:hover .link-word.no-expand .link-letter {
+    letter-spacing: 0;
+    left: calc(var(--word-letter-index) * 1px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .link-letter {
+    transition: none;
     transition-delay: 0s;
   }
 }

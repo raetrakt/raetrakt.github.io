@@ -10,21 +10,40 @@ function setupLinkAnimations() {
     if (link.dataset.lettersInitialized === 'true') return;
 
     const text = link.textContent;
+    let letterIndex = 0;
     link.replaceChildren(
-      ...Array.from(text).map(function (character, index) {
-        const letter = document.createElement('span');
-        letter.className = 'link-letter';
-        letter.style.setProperty('--letter-index', index);
-        letter.textContent = character;
-        return letter;
+      ...(text.match(/\s+|\S+/g) || []).map(function (part) {
+        if (/^\s+$/.test(part)) return document.createTextNode(part);
+
+        const word = document.createElement('span');
+        word.className = 'link-word';
+        let wordLetterIndex = 0;
+        word.append(
+          ...Array.from(part).map(function (character) {
+            const letter = document.createElement('span');
+            letter.className = 'link-letter';
+            letter.style.setProperty('--letter-index', letterIndex++);
+            letter.style.setProperty('--word-letter-index', wordLetterIndex++);
+            letter.textContent = character;
+            return letter;
+          }),
+        );
+        return word;
       }),
     );
     link.dataset.lettersInitialized = 'true';
     link.addEventListener('mouseenter', function () {
-      link.classList.remove('is-link-leaving');
+      const lineRight = link.parentElement.getBoundingClientRect().right;
+      link.querySelectorAll('.link-word').forEach(function (word) {
+        const expansion = Array.from(word.textContent).length;
+        const wordRight = word.getBoundingClientRect().right;
+        word.classList.toggle('no-expand', wordRight + expansion > lineRight);
+      });
     });
     link.addEventListener('mouseleave', function () {
-      link.classList.add('is-link-leaving');
+      link.querySelectorAll('.link-word.no-expand').forEach(function (word) {
+        word.classList.remove('no-expand');
+      });
     });
   });
 }
