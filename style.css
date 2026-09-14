@@ -711,6 +711,16 @@ a:active {
     transform: translateZ(0);
   }
 
+  .grid .col h1::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: calc(-1 * var(--gap) - 2px);
+    right: calc(-1 * var(--gap) - 2px);
+    background: var(--bg);
+    pointer-events: none;
+  }
+
   .title-short {
     display: none;
   }
