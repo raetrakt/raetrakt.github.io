@@ -44,6 +44,8 @@ body {
   height: 100%;
   background: var(--bg);
   color: var(--fg);
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
 }
 
 body {
@@ -68,6 +70,7 @@ body.about-is-open {
   background: var(--bg);
   padding: 0 var(--gap);
   overflow: hidden;
+  overscroll-behavior-x: none;
 }
 
 header {
@@ -686,7 +689,9 @@ a:active {
   .stage {
     height: auto;
     min-height: 100dvh;
-    overflow: visible;
+    overflow-x: clip;
+    overflow-y: visible;
+    touch-action: pan-y;
   }
 
   .grid {
@@ -694,7 +699,8 @@ a:active {
     display: flex;
     flex-direction: column;
     gap: 1lh;
-    overflow: visible;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .grid .col[data-col='3'] {
