@@ -670,7 +670,7 @@ a:active {
     right: 2px;
     padding: var(--gap);
     isolation: isolate;
-    background: var(--bg);
+    /* background: var(--bg); */
   }
 
   .stage {
@@ -707,7 +707,7 @@ a:active {
     position: sticky;
     top: calc(2 * var(--gap) + 1lh - 2px);
     z-index: 1;
-    background: var(--bg);
+    /* background: var(--bg); */
     isolation: isolate;
   }
 
@@ -716,7 +716,7 @@ a:active {
     position: absolute;
     z-index: -1;
     inset: calc(-1 * var(--gap) - 2px);
-    background: var(--bg);
+    /* background: var(--bg); */
     pointer-events: none;
   }
 
