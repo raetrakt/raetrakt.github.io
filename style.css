@@ -667,7 +667,7 @@ a:active {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
+    right: 2px;
     padding: var(--gap);
     isolation: isolate;
     background: var(--bg);
