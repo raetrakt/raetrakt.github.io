@@ -177,24 +177,34 @@ header .about-link {
 
 .about-education {
   grid-column: 3;
-  --about-offset: calc(25vh + 4lh);
+  --about-offset: calc(23vh + 4lh);
 }
 
 .about-work,
-.about-portrait,
+.about-portrait-figure,
 .about-contact {
-  --about-offset: 25vh;
+  --about-offset: 23vh;
 }
 
 .about-work {
   grid-column: 4;
 }
 
-.about-portrait {
+.about-portrait-figure {
   grid-column: 5;
+  width: 100%;
+  margin: 0;
+}
+
+.about-portrait {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.photo-credits {
+  display: block;
+  color: #aaa;
 }
 
 .about-contact {
@@ -206,7 +216,7 @@ header .about-link {
 }
 
 .about-address {
-  margin-top: 1.3em;
+  margin-top: 1lh;
 }
 
 .stage.show-about .grid {
@@ -554,7 +564,7 @@ a:active {
     --about-offset: 17.5vh;
   }
 
-  .about-portrait {
+  .about-portrait-figure {
     grid-column: 1;
     grid-row: 2;
     align-self: end;
@@ -762,15 +772,14 @@ a:active {
     transform: none;
   }
 
-  .about-portrait {
-    grid-column: 2;
+  .about-portrait-figure {
+    grid-column: 1;
     grid-row: 4;
-    width: 100%;
     align-self: end;
   }
 
   .about-contact {
-    grid-column: 1;
+    grid-column: 2;
     grid-row: 4;
     align-self: start;
   }
