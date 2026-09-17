@@ -776,6 +776,7 @@ a:active {
     grid-column: 1;
     grid-row: 4;
     align-self: end;
+    margin-top: .25em;
   }
 
   .about-contact {
