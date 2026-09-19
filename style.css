@@ -207,7 +207,7 @@ header .about-link {
 
 .photo-credits {
   display: block;
-  color: #aaa;
+  margin-top: 1lh;
 }
 
 .about-contact {
@@ -806,12 +806,13 @@ a:active {
     grid-column: 1;
     grid-row: 4;
     align-self: end;
-    margin-top: 0.25em;
+    margin-top: calc(1lh + 0.25em);
   }
 
   .about-contact {
     grid-column: 2;
     grid-row: 4;
     align-self: start;
+    margin-top: 1lh;
   }
 }
