@@ -467,7 +467,7 @@ p {
   -ms-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
-  hyphenate-limit-chars: 8 3 2;
+  hyphenate-limit-chars: 9 3 3;
 }
 
 a {
