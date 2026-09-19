@@ -701,6 +701,7 @@ a:active {
     gap: 1lh;
     overflow-x: clip;
     overflow-y: visible;
+    transition: transform 400ms var(--ease);
   }
 
   .grid .col[data-col='3'] {
@@ -763,6 +764,29 @@ a:active {
     column-gap: var(--gap);
     padding: 5lh var(--gap) var(--gap);
     overflow-y: auto;
+    transition:
+      transform 400ms var(--ease),
+      opacity 200ms ease;
+  }
+
+  .stage.show-about .grid,
+  .stage.is-about-swapping .grid {
+    transform: translateY(var(--projects-hide-offset, 100dvh));
+    transition: transform 400ms var(--ease);
+  }
+
+  .stage.show-about .grid .col,
+  .stage.is-about-swapping .grid .col,
+  .stage.show-about .grid > .col-group,
+  .stage.is-about-swapping .grid > .col-group {
+    translate: none;
+    transition: none;
+  }
+
+  .stage.is-about-swapping .about-page {
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(100%);
   }
 
   .stage.show-about .about-page > * {
@@ -782,7 +806,7 @@ a:active {
     grid-column: 1;
     grid-row: 4;
     align-self: end;
-    margin-top: .25em;
+    margin-top: 0.25em;
   }
 
   .about-contact {

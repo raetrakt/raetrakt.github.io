@@ -55,16 +55,28 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
   const aboutPage = document.querySelector('.about-page');
   const aboutLink = document.querySelector('.about-link');
   const homeLink = document.querySelector('.home-link');
+  const projectGrid = stage && stage.querySelector('.grid');
+  let aboutSwapTimer;
 
   if (!stage || !aboutPage || !aboutLink || !homeLink) return;
 
   function scrollProjectsToTop() {
     scrollController.resetScrollPositions();
-    window.scrollTo(0, 0);
+    if (window.innerWidth > 520) window.scrollTo(0, 0);
   }
 
   function setAboutVisible(visible) {
     const wasVisible = stage.classList.contains('show-about');
+
+    clearTimeout(aboutSwapTimer);
+    if (visible && window.innerWidth <= 520 && projectGrid) {
+      const gridTop = projectGrid.getBoundingClientRect().top;
+      projectGrid.style.setProperty(
+        '--projects-hide-offset',
+        `${window.innerHeight - gridTop + 1}px`,
+      );
+    }
+    stage.classList.add('is-about-swapping');
 
     if (!visible && wasVisible) {
       stage.classList.add('is-returning');
@@ -79,6 +91,10 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
     aboutLink.textContent = visible ? 'PROJECTS' : 'ABOUT';
     aboutLink.removeAttribute('data-letters-initialized');
     setupLinkAnimations();
+
+    aboutSwapTimer = window.setTimeout(function () {
+      stage.classList.remove('is-about-swapping');
+    }, 400);
   }
 
   aboutLink.addEventListener('click', function (event) {
@@ -91,8 +107,7 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
       return;
     }
 
-    // Start both movements together so the projects reset while all columns
-    // translate out of view.
+    // Reset the projects before moving them out of view.
     scrollProjectsToTop();
     setAboutVisible(true);
     history.replaceState(null, '', '#about');
