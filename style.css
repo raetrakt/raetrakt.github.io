@@ -324,7 +324,7 @@ header .about-link {
   overflow-y: auto;
   overflow-x: hidden;
   overflow-anchor: none;
-  padding-top: 60vh;
+  padding-top: 50vh;
   padding-bottom: var(--gap);
   display: flex;
   flex-direction: column;
