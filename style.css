@@ -346,6 +346,11 @@ header .about-link {
   animation-fill-mode: forwards;
 }
 
+/* Keep the layout visible when the JavaScript module is unavailable. */
+.grid:not(.is-ready) .col {
+  transform: none;
+}
+
 .col-content {
   display: flex;
   flex-direction: column;
@@ -536,6 +541,10 @@ a:active {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.media img[data-src]:not(.is-loaded) {
+  visibility: hidden;
 }
 
 /* Unspecified media uses the default 3:4 tile. */
