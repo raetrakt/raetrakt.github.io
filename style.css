@@ -702,7 +702,7 @@ a:active {
     overflow-x: hidden;
     overflow-y: auto;
     touch-action: pan-y;
-    overscroll-behavior-y: none;
+    overscroll-behavior-y: auto;
     scrollbar-width: none;
   }
 
