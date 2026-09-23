@@ -15,6 +15,15 @@ function getColumnMedia(col) {
   return Array.from(col.querySelectorAll('.media > img, .media > video'));
 }
 
+function getDeferredMedia(col) {
+  return Array.prototype.filter.call(
+    col.querySelectorAll('.secondary-video, img[data-src]'),
+    function (element) {
+      return element !== getFirstMediaElement(col);
+    },
+  );
+}
+
 function waitForMedia(element) {
   if (element.tagName === 'IMG' && element.complete) return Promise.resolve();
   if (element.tagName === 'VIDEO' && element.readyState >= 2) {
@@ -182,6 +191,13 @@ export function initializeMedia(cols) {
   const isDesktop = window.matchMedia('(min-width: 901px)').matches;
   const mobileOnboardingMedia =
     isMobile && orderedCols[0] ? new Set(orderedCols[0].querySelectorAll('.media')) : null;
+  const mediaPromises = new WeakMap();
+  const loadOnce = function (element, onboardingMedia) {
+    if (!mediaPromises.has(element)) {
+      mediaPromises.set(element, loadMedia(element, onboardingMedia));
+    }
+    return mediaPromises.get(element);
+  };
   let initialMediaReady = Promise.resolve();
 
   if (isMobile) {
@@ -190,7 +206,7 @@ export function initializeMedia(cols) {
     initialMediaReady = (async function () {
       for (const col of orderedCols) {
         for (const element of getColumnMedia(col)) {
-          await loadMedia(element, mobileOnboardingMedia);
+          await loadOnce(element, mobileOnboardingMedia);
         }
       }
     })();
@@ -198,16 +214,33 @@ export function initializeMedia(cols) {
     // Desktop shows the top media of every project immediately.
     initialMediaReady = Promise.all(
       firstMedia.map(function (element) {
-        return loadMedia(element, null);
+        return loadOnce(element, null);
       }),
     );
 
     if (isDesktop) {
+      // Also load deferred media that is already visible, including a teaser
+      // that only partially intersects the browser viewport.
+      const visibleMediaObserver = new IntersectionObserver(
+        function (entries, observer) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            observer.unobserve(entry.target);
+            loadOnce(entry.target, null);
+          });
+        },
+        { threshold: 0 },
+      );
+
       // After the initial row, give bandwidth to the first column the user
       // actively scrolls instead of loading all columns' secondary media.
       cols.forEach(function (col) {
-        const remainingMedia = getColumnMedia(col).slice(1);
+        const remainingMedia = getDeferredMedia(col);
         if (!remainingMedia.length) return;
+
+        remainingMedia.forEach(function (element) {
+          visibleMediaObserver.observe(element);
+        });
 
         let lastScrollTop = col.scrollTop;
         let activated = false;
@@ -220,7 +253,7 @@ export function initializeMedia(cols) {
           activated = true;
           (async function () {
             for (const element of remainingMedia) {
-              await loadMedia(element, null);
+              await loadOnce(element, null);
             }
           })();
         };
@@ -230,18 +263,12 @@ export function initializeMedia(cols) {
     }
   }
 
-  /* Mobile and desktop use explicit queues instead of intersection loading. */
+  /* Mobile and desktop use explicit queues plus desktop viewport loading. */
   if (isMobile || isDesktop) return;
 
   /* Tablet keeps intersection-based loading inside its grouped scroll roots. */
   cols.forEach(function (col) {
-    const firstMediaElement = getFirstMediaElement(col);
-    const lazyEls = Array.prototype.filter.call(
-      col.querySelectorAll('.secondary-video, img[data-src]'),
-      function (element) {
-        return element !== firstMediaElement;
-      },
-    );
+    const lazyEls = getDeferredMedia(col);
     if (!lazyEls.length) return;
 
     const stage = col.closest('.stage');
@@ -251,7 +278,7 @@ export function initializeMedia(cols) {
           entries.forEach(function (entry) {
             if (!entry.isIntersecting) return;
             const el = entry.target;
-            loadMedia(el, null);
+            loadOnce(el, null);
             obs.unobserve(el);
           });
         });

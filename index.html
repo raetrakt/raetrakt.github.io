@@ -30,10 +30,10 @@
      preload="auto" + fetchpriority="high" and loads with no delay.
      The other five first-videos load a few ms apart (staggered) so they
      don't all fight for bandwidth in the same animation frame.
-  5. Each column's SECOND video/image is lazy — it only fetches once
-     that column has been scrolled far enough to bring it near view.
-     Loading is scoped to the column itself (IntersectionObserver root),
-     since columns scroll independently, not the page.
+  5. Each column's SECOND video/image is lazy — media already visible,
+     including a partially visible teaser, fetches on page load. Remaining
+     media fetches once that column has been scrolled far enough to bring it
+     near view. Loading is scoped to each column's independent scroll area.
   ─────────────────────────────────────────────────────────────
 -->
 
