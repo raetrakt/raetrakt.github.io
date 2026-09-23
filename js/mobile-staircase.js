@@ -156,6 +156,12 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     return Math.max(0, Math.min(stageRect.bottom, viewportBottom) - stageRect.top);
   }
 
+  function getUpTrigger(index) {
+    const state = states[index];
+    const triggerElement = state.heading || state.col;
+    return getDocumentTop(triggerElement) - getVisibleStageHeight();
+  }
+
   function recalculateGeometry() {
     const preservedScrollTop = stage.scrollTop;
 
@@ -205,7 +211,7 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     } else if (scrollTop < lastStageScrollTop) {
       while (
         index > 0 &&
-        scrollTop <= getDocumentTop(states[index].col) - getVisibleStageHeight()
+        scrollTop <= getUpTrigger(index)
       ) {
         index -= 1;
       }
