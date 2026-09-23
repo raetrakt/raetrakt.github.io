@@ -24,6 +24,7 @@ export function initializeMedia(cols) {
     const lazyEls = col.querySelectorAll('.secondary-video, img[data-src]');
     if (!lazyEls.length) return;
 
+    const stage = col.closest('.stage');
     const observer = new IntersectionObserver(
       function (entries, obs) {
         entries.forEach(function (entry) {
@@ -43,7 +44,8 @@ export function initializeMedia(cols) {
       {
         root: (function () {
           const group = col.closest('.col-group');
-          return group && getComputedStyle(group).display !== 'contents' ? group : col;
+          if (group && getComputedStyle(group).display !== 'contents') return group;
+          return getComputedStyle(col).overflowY === 'auto' ? col : stage;
         })(),
         rootMargin: '200px 0px',
         threshold: 0.1,

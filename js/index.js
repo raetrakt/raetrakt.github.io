@@ -1,6 +1,7 @@
 import { initializeLayout } from './layout.js';
 import { setupFocus } from './focus.js';
 import { initializeMedia } from './media.js';
+import { setupMobileScrollRail } from './mobile-staircase.js';
 import { setupScrolling } from './scrolling.js';
 
 const layout = initializeLayout();
@@ -60,11 +61,6 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
 
   if (!stage || !aboutPage || !aboutLink || !homeLink) return;
 
-  function scrollProjectsToTop() {
-    scrollController.resetScrollPositions();
-    if (window.innerWidth > 520) window.scrollTo(0, 0);
-  }
-
   function setAboutVisible(visible) {
     const wasVisible = stage.classList.contains('show-about');
 
@@ -107,8 +103,6 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
       return;
     }
 
-    // Reset the projects before moving them out of view.
-    scrollProjectsToTop();
     setAboutVisible(true);
     history.replaceState(null, '', '#about');
   });
@@ -126,13 +120,56 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
 
 if (layout) {
   const desktopQuery = window.matchMedia('(min-width: 901px)');
+  const mobileQuery = window.matchMedia('(max-width: 520px)');
+  const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   let focusController;
+  let activeScrollController;
 
-  const scrollController = setupScrolling(layout.scrollCols, function (col) {
+  function getScrollColumns() {
+    const activeGroups = layout.groups.filter(function (group) {
+      return getComputedStyle(group).display !== 'contents';
+    });
+    return activeGroups.length ? activeGroups : layout.cols;
+  }
+
+  function handleSwitchColumn(col) {
     if (focusController && focusController.isFocused(col) === false) {
       focusController.clearFocusedColumn();
     }
-  });
+  }
+
+  function createScrollController() {
+    if (activeScrollController) activeScrollController.destroy();
+
+    if (mobileQuery.matches) {
+      activeScrollController = setupMobileScrollRail({
+        grid: layout.grid,
+        cols: layout.cols,
+        enabled: !reducedMotionQuery.matches,
+      });
+    } else {
+      activeScrollController = setupScrolling(getScrollColumns(), handleSwitchColumn);
+    }
+
+    activeScrollController.resetScrollPositions();
+  }
+
+  createScrollController();
+
+  const scrollController = {
+    getActiveScrollIndex: function () {
+      return activeScrollController.getActiveScrollIndex();
+    },
+    setActiveScrollIndex: function (index) {
+      activeScrollController.setActiveScrollIndex(index);
+    },
+    resetScrollPositions: function () {
+      activeScrollController.resetScrollPositions();
+    },
+    retractOtherColumns: function (index) {
+      activeScrollController.retractOtherColumns(index);
+    },
+  };
 
   focusController = setupFocus({
     ...layout,
@@ -147,4 +184,11 @@ if (layout) {
   });
 
   initializeMedia(layout.cols);
+
+  function handleResponsiveChange() {
+    createScrollController();
+  }
+
+  mobileQuery.addEventListener('change', handleResponsiveChange);
+  reducedMotionQuery.addEventListener('change', handleResponsiveChange);
 }
