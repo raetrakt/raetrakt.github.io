@@ -793,6 +793,7 @@ a:active {
     transition:
       height 700ms var(--ease),
       margin-bottom 700ms var(--ease);
+      transition-delay: 300ms;
   }
 
   .grid .col[data-col='3'] .col-content > .media > img,
