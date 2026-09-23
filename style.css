@@ -195,8 +195,10 @@ header .about-link {
 
 .about-portrait-figure {
   grid-column: 5;
+  align-self: start;
   width: 100%;
   margin: 0;
+  position: relative;
 }
 
 .about-portrait {
@@ -206,8 +208,10 @@ header .about-link {
 }
 
 .photo-credits {
-  display: block;
-  margin-top: 1lh;
+  position: absolute;
+  left: calc(100% + var(--gap));
+  bottom: 0;
+  width: 100%;
 }
 
 .about-contact {
@@ -793,7 +797,7 @@ a:active {
     transition:
       height 700ms var(--ease),
       margin-bottom 700ms var(--ease);
-      transition-delay: 300ms;
+    transition-delay: 300ms;
   }
 
   .grid .col[data-col='3'] .col-content > .media > img,
