@@ -93,6 +93,14 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
     }, 400);
   }
 
+  function syncAboutFromHistory() {
+    const visible = window.location.hash === '#about';
+    if (visible === stage.classList.contains('show-about')) return;
+
+    if (!visible) focusController.clearFocusedColumn();
+    setAboutVisible(visible);
+  }
+
   aboutLink.addEventListener('click', function (event) {
     event.preventDefault();
     const visible = !stage.classList.contains('show-about');
@@ -104,7 +112,7 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
     }
 
     setAboutVisible(true);
-    history.replaceState(null, '', '#about');
+    history.pushState(null, '', '#about');
   });
 
   homeLink.addEventListener('click', function (event) {
@@ -114,6 +122,9 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
     setAboutVisible(false);
     history.replaceState(null, '', '/');
   });
+
+  window.addEventListener('popstate', syncAboutFromHistory);
+  window.addEventListener('hashchange', syncAboutFromHistory);
 
   if (window.location.hash === '#about') setAboutVisible(true);
 }
