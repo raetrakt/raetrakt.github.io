@@ -65,6 +65,9 @@ function setupAbout({ scrollCols, scrollController, focusController }) {
     const wasVisible = stage.classList.contains('show-about');
 
     clearTimeout(aboutSwapTimer);
+    // Leave the project grid aligned whenever it is hidden or shown again.
+    // In particular, a column may still be scrolled when ABOUT is clicked.
+    scrollController.resetScrollPositions();
     if (visible && window.innerWidth <= 520 && projectGrid) {
       const gridTop = projectGrid.getBoundingClientRect().top;
       projectGrid.style.setProperty(
