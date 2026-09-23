@@ -687,20 +687,30 @@ a:active {
   }
 
   .stage {
-    height: auto;
-    min-height: 100dvh;
-    overflow-x: clip;
-    overflow-y: visible;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
     touch-action: pan-y;
+    overscroll-behavior-y: none;
+    scrollbar-width: none;
   }
 
   .grid {
-    height: auto;
+    --mobile-grid-x: 0px;
+    --mobile-grid-y: 0px;
+    --mobile-scroll-padding: 0px;
+    height: max-content;
+    min-height: 100%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    gap: 1lh;
-    overflow-x: clip;
-    overflow-y: visible;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--gap);
+    overflow: visible;
+    translate: var(--mobile-grid-x) var(--mobile-grid-y);
+    padding-bottom: var(--mobile-scroll-padding);
     transition: transform 400ms var(--ease);
   }
 
@@ -720,23 +730,6 @@ a:active {
     gap: 1lh;
   }
 
-  .grid .col h1 {
-    position: sticky;
-    top: calc(2 * var(--gap) + 1lh - 2px);
-    z-index: 1;
-    /* background: var(--bg); */
-    isolation: isolate;
-  }
-
-  .grid .col h1::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: calc(-1 * var(--gap) - 2px);
-    /* background: var(--bg); */
-    pointer-events: none;
-  }
-
   .title-short {
     display: none;
   }
@@ -748,9 +741,19 @@ a:active {
   .grid.is-ready .col {
     height: auto;
     min-height: 0;
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
     overflow: visible;
-    padding-top: 0;
-    margin-top: 5lh;
+    padding-top: 5lh;
+    margin-top: var(--mobile-column-offset, 0px);
+    align-self: flex-start;
+    scrollbar-width: none;
+  }
+
+  .stage::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
 
   .about-page {
@@ -814,5 +817,44 @@ a:active {
     grid-row: 4;
     align-self: start;
     margin-top: 1lh;
+  }
+}
+
+@media (max-width: 520px) and (prefers-reduced-motion: reduce) {
+  .stage {
+    height: auto;
+    min-height: 100dvh;
+    overflow-x: clip;
+    overflow-y: visible;
+    touch-action: pan-y;
+  }
+
+  .grid {
+    height: auto;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1lh;
+    overflow-x: clip;
+    overflow-y: visible;
+    translate: none;
+    padding-bottom: 0;
+    transition: none;
+  }
+
+  .grid.is-ready .col {
+    height: auto;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    overflow: visible;
+    padding-top: 0;
+    margin-top: 5lh;
+    align-self: auto;
+    overscroll-behavior: auto;
+  }
+
+  .grid.is-ready .col {
+    --mobile-column-offset: 0px;
   }
 }

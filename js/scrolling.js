@@ -4,6 +4,10 @@ export function setupScrolling(scrollCols, onSwitchColumn) {
   });
   let activeScrollIndex = -1;
   let retractAnimation;
+  const scrollListeners = [];
+  const scrollTimeouts = scrollCols.map(function () {
+    return null;
+  });
 
   function retractOtherColumns(activeIndex) {
     if (retractAnimation) cancelAnimationFrame(retractAnimation);
@@ -59,30 +63,39 @@ export function setupScrolling(scrollCols, onSwitchColumn) {
 
   scrollCols.forEach(function (col) {
     const index = scrollCols.indexOf(col);
-    let timeout;
+    const onScroll = function () {
+      const currentScrollTop = col.scrollTop;
+      const delta = currentScrollTop - lastScrollTops[index];
+      lastScrollTops[index] = currentScrollTop;
 
-    col.addEventListener(
-      'scroll',
-      function () {
-        const currentScrollTop = col.scrollTop;
-        const delta = currentScrollTop - lastScrollTops[index];
-        lastScrollTops[index] = currentScrollTop;
+      if (delta > 0 && index !== activeScrollIndex) {
+        onSwitchColumn(col);
+        activeScrollIndex = index;
+        retractOtherColumns(index);
+      }
 
-        if (delta > 0 && index !== activeScrollIndex) {
-          onSwitchColumn(col);
-          activeScrollIndex = index;
-          retractOtherColumns(index);
-        }
+      col.classList.add('is-scrolling');
+      clearTimeout(scrollTimeouts[index]);
+      scrollTimeouts[index] = setTimeout(function () {
+        col.classList.remove('is-scrolling');
+      }, 250);
+    };
 
-        col.classList.add('is-scrolling');
-        clearTimeout(timeout);
-        timeout = setTimeout(function () {
-          col.classList.remove('is-scrolling');
-        }, 250);
-      },
-      { passive: true },
-    );
+    scrollListeners.push({ col, onScroll });
+    col.addEventListener('scroll', onScroll, { passive: true });
   });
+
+  function destroy() {
+    if (retractAnimation) cancelAnimationFrame(retractAnimation);
+    retractAnimation = null;
+
+    scrollListeners.forEach(function (listener) {
+      listener.col.removeEventListener('scroll', listener.onScroll);
+    });
+    scrollTimeouts.forEach(function (timeout) {
+      clearTimeout(timeout);
+    });
+  }
 
   return {
     getActiveScrollIndex: function () {
@@ -91,5 +104,6 @@ export function setupScrolling(scrollCols, onSwitchColumn) {
     setActiveScrollIndex,
     resetScrollPositions,
     retractOtherColumns,
+    destroy,
   };
 }
