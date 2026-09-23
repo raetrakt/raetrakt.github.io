@@ -82,6 +82,9 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
   });
   let activeIndex = 0;
   let lastStageScrollTop = stage.scrollTop;
+  let lastScrollSampleTop = stage.scrollTop;
+  let lastScrollSampleTime = performance.now();
+  let transitionResetTimer;
   let refreshFrame;
   let scrollFrame;
   let resizeObserver;
@@ -95,8 +98,36 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     return width + gap;
   }
 
-  function setGridPosition(index) {
+  function setGridPosition(index, transitionDuration) {
+    if (transitionDuration) {
+      grid.style.setProperty(
+        '--mobile-grid-transition-duration',
+        `${transitionDuration}ms`,
+      );
+      clearTimeout(transitionResetTimer);
+      transitionResetTimer = setTimeout(function () {
+        if (!destroyed) {
+          grid.style.removeProperty('--mobile-grid-transition-duration');
+        }
+      }, transitionDuration + 50);
+    }
+
     grid.style.setProperty('--mobile-grid-x', `${-index * getColumnStep()}px`);
+  }
+
+  function getGridTransitionDuration(scrollSpeed) {
+    const slowSpeed = 0.5;
+    const fastSpeed = 2.5;
+    const minimumDuration = 140;
+    const defaultDuration = 800;
+    const progress = Math.max(
+      0,
+      Math.min(1, (scrollSpeed - slowSpeed) / (fastSpeed - slowSpeed)),
+    );
+
+    return Math.round(
+      defaultDuration - progress * (defaultDuration - minimumDuration),
+    );
   }
 
   function updateMediaReferences() {
@@ -235,12 +266,21 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     if (destroyed) return;
 
     const currentScrollTop = stage.scrollTop;
+    const currentTime = performance.now();
+    const elapsed = Math.max(16, currentTime - lastScrollSampleTime);
+    const scrollSpeed =
+      Math.abs(currentScrollTop - lastScrollSampleTop) / elapsed;
+    lastScrollSampleTop = currentScrollTop;
+    lastScrollSampleTime = currentTime;
     const nextIndex = getIndexForScrollTop(currentScrollTop);
     lastStageScrollTop = currentScrollTop;
     markScrolling();
     if (nextIndex !== activeIndex) {
       activeIndex = nextIndex;
-      setGridPosition(activeIndex);
+      setGridPosition(
+        activeIndex,
+        getGridTransitionDuration(scrollSpeed),
+      );
     }
   }
 
@@ -301,9 +341,13 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     if (destroyed) return;
     if (scrollFrame) cancelAnimationFrame(scrollFrame);
     scrollFrame = null;
+    clearTimeout(transitionResetTimer);
+    grid.style.removeProperty('--mobile-grid-transition-duration');
 
     activeIndex = 0;
     lastStageScrollTop = 0;
+    lastScrollSampleTop = 0;
+    lastScrollSampleTime = performance.now();
     stage.scrollTop = 0;
     grid.style.setProperty('--mobile-grid-x', '0px');
     updateMediaReferences();
@@ -321,6 +365,7 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
 
     if (refreshFrame) cancelAnimationFrame(refreshFrame);
     if (scrollFrame) cancelAnimationFrame(scrollFrame);
+    clearTimeout(transitionResetTimer);
     resizeObserver?.disconnect();
     window.removeEventListener('resize', scheduleRefresh);
     window.visualViewport?.removeEventListener('resize', scheduleRefresh);
@@ -330,6 +375,7 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
       clearTimeout(timeout);
     });
     grid.style.removeProperty('--mobile-grid-x');
+    grid.style.removeProperty('--mobile-grid-transition-duration');
     states.forEach(function (state) {
       state.col.style.removeProperty('--mobile-column-offset');
       state.col.classList.remove('is-scrolling');

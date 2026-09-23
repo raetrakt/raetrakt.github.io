@@ -718,7 +718,7 @@ a:active {
     overflow: visible;
     translate: var(--mobile-grid-x) 0;
     transition:
-      translate 400ms var(--ease),
+      translate var(--mobile-grid-transition-duration, 400ms) var(--ease),
       transform 400ms var(--ease);
   }
 
