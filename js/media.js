@@ -11,6 +11,10 @@ function getFirstMediaElement(col) {
   return media ? media.querySelector('img, video') : null;
 }
 
+function getColumnMedia(col) {
+  return Array.from(col.querySelectorAll('.media > img, .media > video'));
+}
+
 function waitForMedia(element) {
   if (element.tagName === 'IMG' && element.complete) return Promise.resolve();
   if (element.tagName === 'VIDEO' && element.readyState >= 2) {
@@ -34,22 +38,123 @@ function waitForMedia(element) {
   });
 }
 
-function loadMedia(element) {
+function getMobileOnboardingHeight(element) {
+  const media = element.closest('.media');
+  if (!media) return null;
+
+  const width = media.clientWidth || element.getBoundingClientRect().width;
+  const naturalWidth = element.naturalWidth || element.videoWidth || Number(element.width);
+  const naturalHeight = element.naturalHeight || element.videoHeight || Number(element.height);
+  const inlineRatio = media.style.aspectRatio.match(/([\d.]+)\s*\/\s*([\d.]+)/);
+  const aspectRatio =
+    naturalWidth > 0 && naturalHeight > 0
+      ? naturalHeight / naturalWidth
+      : inlineRatio
+        ? Number(inlineRatio[2]) / Number(inlineRatio[1])
+        : 4 / 3;
+
+  return {
+    media,
+    height: width * aspectRatio,
+  };
+}
+
+function revealRemainingMobileMedia(onboardingMedia) {
+  const firstMedia = onboardingMedia.values().next().value;
+  onboardingMedia.forEach(function (element) {
+    if (element === firstMedia) return;
+
+    const child = element.querySelector('img, video');
+    const dimensions = child ? getMobileOnboardingHeight(child) : null;
+    if (!dimensions) return;
+
+    dimensions.media.style.setProperty(
+      '--mobile-onboarding-media-height',
+      `${dimensions.height}px`,
+    );
+    dimensions.media.classList.add('waiting-ready');
+  });
+}
+
+function revealMobileOnboardingMedia(element, onboardingMedia) {
+  const dimensions = getMobileOnboardingHeight(element);
+  if (!dimensions) return;
+
+  const firstMedia = onboardingMedia.values().next().value;
+  if (dimensions.media !== firstMedia || dimensions.media.classList.contains('reveal-ready')) {
+    return;
+  }
+
+  dimensions.media.style.setProperty(
+    '--mobile-onboarding-media-height',
+    `${dimensions.height}px`,
+  );
+  dimensions.media.classList.add('reveal-ready');
+
+  let completed = false;
+  const completeOnboarding = function () {
+    if (completed) return;
+    completed = true;
+    dimensions.media.removeEventListener('transitionend', handleTransitionEnd);
+    revealRemainingMobileMedia(onboardingMedia);
+  };
+  const handleTransitionEnd = function (event) {
+    if (event.target === dimensions.media && event.propertyName === 'height') {
+      completeOnboarding();
+    }
+  };
+
+  dimensions.media.addEventListener('transitionend', handleTransitionEnd);
+  const duration = Number.parseFloat(getComputedStyle(dimensions.media).transitionDuration);
+  window.setTimeout(
+    completeOnboarding,
+    Number.isFinite(duration) ? duration * 1000 + 50 : 750,
+  );
+}
+
+function loadMedia(element, mobileOnboardingMedia) {
   if (!element) return Promise.resolve();
+  const media = element.closest('.media');
+  const isOnboardingMedia = Boolean(media) && mobileOnboardingMedia?.has(media);
 
   if (element.tagName === 'IMG') {
     const revealImage = function () {
       if (element.naturalWidth > 0) {
         element.classList.add('is-loaded');
+        if (isOnboardingMedia) {
+          revealMobileOnboardingMedia(element, mobileOnboardingMedia);
+        }
+      }
+    };
+    const handleImageError = function () {
+      if (isOnboardingMedia) {
+        revealMobileOnboardingMedia(element, mobileOnboardingMedia);
       }
     };
 
     element.addEventListener('load', revealImage, { once: true });
+    element.addEventListener('error', handleImageError, { once: true });
     if (!element.getAttribute('src') && element.dataset.src) {
       element.src = element.dataset.src;
     }
     if (element.complete) revealImage();
   } else {
+    const revealVideo = function () {
+      if (element.readyState >= 2 || element.videoWidth > 0) {
+        element.classList.add('is-loaded');
+        if (isOnboardingMedia) {
+          revealMobileOnboardingMedia(element, mobileOnboardingMedia);
+        }
+      }
+    };
+    const handleVideoError = function () {
+      if (isOnboardingMedia) {
+        revealMobileOnboardingMedia(element, mobileOnboardingMedia);
+      }
+    };
+
+    element.addEventListener('loadeddata', revealVideo, { once: true });
+    element.addEventListener('error', handleVideoError, { once: true });
     if (!element.getAttribute('poster') && element.dataset.poster) {
       element.poster = element.dataset.poster;
     }
@@ -64,6 +169,7 @@ function loadMedia(element) {
         /* Autoplay blocked — fail silently. */
       });
     }
+    if (element.readyState >= 2) revealVideo();
   }
 
   return waitForMedia(element);
@@ -73,25 +179,61 @@ export function initializeMedia(cols) {
   const orderedCols = getOrderedColumns(cols);
   const firstMedia = orderedCols.map(getFirstMediaElement).filter(Boolean);
   const isMobile = window.matchMedia('(max-width: 520px)').matches;
+  const isDesktop = window.matchMedia('(min-width: 901px)').matches;
+  const mobileOnboardingMedia =
+    isMobile && orderedCols[0] ? new Set(orderedCols[0].querySelectorAll('.media')) : null;
   let initialMediaReady = Promise.resolve();
 
   if (isMobile) {
-    // The mobile layout is a vertical staircase, so load media in the same
-    // order in which the projects are encountered while scrolling down.
+    // Mobile presents one continuous visual sequence, so load every media
+    // element in project order, including secondary videos and images.
     initialMediaReady = (async function () {
-      for (const element of firstMedia) {
-        await loadMedia(element);
+      for (const col of orderedCols) {
+        for (const element of getColumnMedia(col)) {
+          await loadMedia(element, mobileOnboardingMedia);
+        }
       }
     })();
   } else {
-    // Desktop presents one column from each project, so start all first media
-    // before allowing secondary media to compete for bandwidth.
-    firstMedia.forEach(function (element) {
-      loadMedia(element);
-    });
+    // Desktop shows the top media of every project immediately.
+    initialMediaReady = Promise.all(
+      firstMedia.map(function (element) {
+        return loadMedia(element, null);
+      }),
+    );
+
+    if (isDesktop) {
+      // After the initial row, give bandwidth to the first column the user
+      // actively scrolls instead of loading all columns' secondary media.
+      cols.forEach(function (col) {
+        const remainingMedia = getColumnMedia(col).slice(1);
+        if (!remainingMedia.length) return;
+
+        let lastScrollTop = col.scrollTop;
+        let activated = false;
+        const onScroll = function () {
+          const currentScrollTop = col.scrollTop;
+          const movedDown = currentScrollTop > lastScrollTop;
+          lastScrollTop = currentScrollTop;
+          if (!movedDown || activated) return;
+
+          activated = true;
+          (async function () {
+            for (const element of remainingMedia) {
+              await loadMedia(element, null);
+            }
+          })();
+        };
+
+        col.addEventListener('scroll', onScroll, { passive: true });
+      });
+    }
   }
 
-  /* Lazy-load deferred videos and images within each column's scroll root. */
+  /* Mobile and desktop use explicit queues instead of intersection loading. */
+  if (isMobile || isDesktop) return;
+
+  /* Tablet keeps intersection-based loading inside its grouped scroll roots. */
   cols.forEach(function (col) {
     const firstMediaElement = getFirstMediaElement(col);
     const lazyEls = Array.prototype.filter.call(
@@ -109,7 +251,7 @@ export function initializeMedia(cols) {
           entries.forEach(function (entry) {
             if (!entry.isIntersecting) return;
             const el = entry.target;
-            loadMedia(el);
+            loadMedia(el, null);
             obs.unobserve(el);
           });
         });
