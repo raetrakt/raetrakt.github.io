@@ -713,6 +713,28 @@ a:active {
       transform 400ms var(--ease);
   }
 
+  /* Keep the uninitialized page usable while the module script loads. */
+  .grid:not(.is-ready) {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    gap: var(--gap);
+    overflow: visible;
+  }
+
+  .grid:not(.is-ready) .col {
+    height: auto;
+    min-height: 0;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    padding-top: 5lh;
+    margin-top: 0;
+    transform: none;
+    animation: none;
+  }
+
   .grid .col[data-col='3'] {
     order: 0;
   }
