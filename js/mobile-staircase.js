@@ -100,10 +100,7 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
 
   function setGridPosition(index, transitionDuration) {
     if (transitionDuration) {
-      grid.style.setProperty(
-        '--mobile-grid-transition-duration',
-        `${transitionDuration}ms`,
-      );
+      grid.style.setProperty('--mobile-grid-transition-duration', `${transitionDuration}ms`);
       clearTimeout(transitionResetTimer);
       transitionResetTimer = setTimeout(function () {
         if (!destroyed) {
@@ -120,14 +117,9 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     const fastSpeed = 2.5;
     const minimumDuration = 140;
     const defaultDuration = 800;
-    const progress = Math.max(
-      0,
-      Math.min(1, (scrollSpeed - slowSpeed) / (fastSpeed - slowSpeed)),
-    );
+    const progress = Math.max(0, Math.min(1, (scrollSpeed - slowSpeed) / (fastSpeed - slowSpeed)));
 
-    return Math.round(
-      defaultDuration - progress * (defaultDuration - minimumDuration),
-    );
+    return Math.round(defaultDuration - progress * (defaultDuration - minimumDuration));
   }
 
   function updateMediaReferences() {
@@ -240,10 +232,7 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
         index += 1;
       }
     } else if (scrollTop < lastStageScrollTop) {
-      while (
-        index > 0 &&
-        scrollTop <= getUpTrigger(index)
-      ) {
+      while (index > 0 && scrollTop <= getUpTrigger(index)) {
         index -= 1;
       }
     }
@@ -268,8 +257,7 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     const currentScrollTop = stage.scrollTop;
     const currentTime = performance.now();
     const elapsed = Math.max(16, currentTime - lastScrollSampleTime);
-    const scrollSpeed =
-      Math.abs(currentScrollTop - lastScrollSampleTop) / elapsed;
+    const scrollSpeed = Math.abs(currentScrollTop - lastScrollSampleTop) / elapsed;
     lastScrollSampleTop = currentScrollTop;
     lastScrollSampleTime = currentTime;
     const nextIndex = getIndexForScrollTop(currentScrollTop);
@@ -277,10 +265,7 @@ export function setupMobileScrollRail({ grid, cols, enabled = true }) {
     markScrolling();
     if (nextIndex !== activeIndex) {
       activeIndex = nextIndex;
-      setGridPosition(
-        activeIndex,
-        getGridTransitionDuration(scrollSpeed),
-      );
+      setGridPosition(activeIndex, getGridTransitionDuration(scrollSpeed));
     }
   }
 

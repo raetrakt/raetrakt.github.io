@@ -748,7 +748,7 @@ a:active {
     animation: none;
   }
 
-  .grid .col[data-col='3'] {
+  .grid .col.mobile-first-project {
     order: 0;
   }
 
@@ -762,6 +762,31 @@ a:active {
 
   .col-content {
     gap: 1lh;
+  }
+
+  /* On mobile, show the animation before the project description and move
+     the preview image into the animation's original position. */
+  .grid .col.mobile-first-project .col-content > :nth-child(1) {
+    order: 0;
+  }
+
+  .grid .col.mobile-first-project .col-content > :nth-child(2) {
+    order: 3;
+  }
+
+  .grid .col.mobile-first-project .col-content > :nth-child(3),
+  .grid .col.mobile-first-project .col-content > :nth-child(4) {
+    order: 2;
+  }
+
+  .grid .col.mobile-first-project .col-content > :nth-child(5) {
+    order: 1;
+  }
+
+  .grid .col.mobile-first-project .col-content > :nth-child(6),
+  .grid .col.mobile-first-project .col-content > :nth-child(7),
+  .grid .col.mobile-first-project .col-content > :nth-child(8) {
+    order: 4;
   }
 
   .title-short {
@@ -788,7 +813,7 @@ a:active {
   }
 
   /* Let the top mobile project’s text flow before its media arrives. */
-  .grid .col[data-col='3'] .col-content > .media {
+  .grid .col.mobile-first-project .col-content > .media {
     height: 0;
     margin-bottom: -1lh;
     overflow: hidden;
@@ -800,36 +825,19 @@ a:active {
     transition-delay: 300ms;
   }
 
-  .grid .col[data-col='3'] .col-content > .media > img,
-  .grid .col[data-col='3'] .col-content > .media > video {
+  .grid .col.mobile-first-project .col-content > .media > img,
+  .grid .col.mobile-first-project .col-content > .media > video {
     opacity: 0;
-    transition: opacity 500ms ease 700ms;
+    transition: opacity 400ms ease 700ms;
   }
 
-  .grid .col[data-col='3'] .col-content > .media.reveal-ready {
+  .grid .col.mobile-first-project .col-content > .media.reveal-ready {
     height: var(--mobile-onboarding-media-height);
     margin-bottom: 0;
   }
 
-  .grid .col[data-col='3'] .col-content > .media.reveal-ready > img.is-loaded,
-  .grid .col[data-col='3'] .col-content > .media.reveal-ready > video.is-loaded {
-    opacity: 1;
-  }
-
-  .grid .col[data-col='3'] .col-content > .media.waiting-ready {
-    height: var(--mobile-onboarding-media-height);
-    margin-bottom: 0;
-    background: #f0f0f0;
-    transition: none;
-  }
-
-  .grid .col[data-col='3'] .col-content > .media.waiting-ready > img,
-  .grid .col[data-col='3'] .col-content > .media.waiting-ready > video {
-    transition: none;
-  }
-
-  .grid .col[data-col='3'] .col-content > .media.waiting-ready > img.is-loaded,
-  .grid .col[data-col='3'] .col-content > .media.waiting-ready > video.is-loaded {
+  .grid .col.mobile-first-project .col-content > .media.reveal-ready > img.is-loaded,
+  .grid .col.mobile-first-project .col-content > .media.reveal-ready > video.is-loaded {
     opacity: 1;
   }
 
@@ -939,20 +947,16 @@ a:active {
     --mobile-column-offset: 0px;
   }
 
-  .grid .col[data-col='3'] .col-content > .media {
+  .grid .col.mobile-first-project .col-content > .media {
     transition: none;
   }
 
-  .grid .col[data-col='3'] .col-content > .media.reveal-ready {
+  .grid .col.mobile-first-project .col-content > .media.reveal-ready {
     margin-bottom: 0;
   }
 
-  .grid .col[data-col='3'] .col-content > .media.waiting-ready {
-    transition: none;
-  }
-
-  .grid .col[data-col='3'] .col-content > .media > img,
-  .grid .col[data-col='3'] .col-content > .media > video {
+  .grid .col.mobile-first-project .col-content > .media > img,
+  .grid .col.mobile-first-project .col-content > .media > video {
     transition: none;
   }
 }

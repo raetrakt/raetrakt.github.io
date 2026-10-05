@@ -7,12 +7,22 @@ function getOrderedColumns(cols) {
 }
 
 function getFirstMediaElement(col) {
-  const media = col.querySelector('.media');
+  const media = getOrderedMediaContainers(col)[0];
   return media ? media.querySelector('img, video') : null;
 }
 
+function getOrderedMediaContainers(col) {
+  return Array.from(col.querySelectorAll('.media')).sort(function (a, b) {
+    const orderA = Number.parseInt(getComputedStyle(a).order, 10) || 0;
+    const orderB = Number.parseInt(getComputedStyle(b).order, 10) || 0;
+    return orderA - orderB;
+  });
+}
+
 function getColumnMedia(col) {
-  return Array.from(col.querySelectorAll('.media > img, .media > video'));
+  return getOrderedMediaContainers(col).flatMap(function (media) {
+    return Array.from(media.querySelectorAll('img, video'));
+  });
 }
 
 function getDeferredMedia(col) {
@@ -81,7 +91,7 @@ function revealRemainingMobileMedia(onboardingMedia) {
       '--mobile-onboarding-media-height',
       `${dimensions.height}px`,
     );
-    dimensions.media.classList.add('waiting-ready');
+    dimensions.media.classList.add('reveal-ready');
   });
 }
 
@@ -94,31 +104,9 @@ function revealMobileOnboardingMedia(element, onboardingMedia) {
     return;
   }
 
-  dimensions.media.style.setProperty(
-    '--mobile-onboarding-media-height',
-    `${dimensions.height}px`,
-  );
+  dimensions.media.style.setProperty('--mobile-onboarding-media-height', `${dimensions.height}px`);
   dimensions.media.classList.add('reveal-ready');
-
-  let completed = false;
-  const completeOnboarding = function () {
-    if (completed) return;
-    completed = true;
-    dimensions.media.removeEventListener('transitionend', handleTransitionEnd);
-    revealRemainingMobileMedia(onboardingMedia);
-  };
-  const handleTransitionEnd = function (event) {
-    if (event.target === dimensions.media && event.propertyName === 'height') {
-      completeOnboarding();
-    }
-  };
-
-  dimensions.media.addEventListener('transitionend', handleTransitionEnd);
-  const duration = Number.parseFloat(getComputedStyle(dimensions.media).transitionDuration);
-  window.setTimeout(
-    completeOnboarding,
-    Number.isFinite(duration) ? duration * 1000 + 50 : 750,
-  );
+  revealRemainingMobileMedia(onboardingMedia);
 }
 
 function loadMedia(element, mobileOnboardingMedia) {
@@ -189,8 +177,9 @@ export function initializeMedia(cols) {
   const firstMedia = orderedCols.map(getFirstMediaElement).filter(Boolean);
   const isMobile = window.matchMedia('(max-width: 520px)').matches;
   const isDesktop = window.matchMedia('(min-width: 901px)').matches;
+  const mobileFirstProject = document.querySelector('.mobile-first-project');
   const mobileOnboardingMedia =
-    isMobile && orderedCols[0] ? new Set(orderedCols[0].querySelectorAll('.media')) : null;
+    isMobile && mobileFirstProject ? new Set(getOrderedMediaContainers(mobileFirstProject)) : null;
   const mediaPromises = new WeakMap();
   const loadOnce = function (element, onboardingMedia) {
     if (!mediaPromises.has(element)) {
